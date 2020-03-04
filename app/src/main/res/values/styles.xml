@@ -1,0 +1,43 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="drawerArrowStyle">@style/drawerAroowStyle</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="drawerAroowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="spinBars">true</item>
+        <item name="color">@android:color/white</item>
+    </style>
+
+    <style name="Jeff.TextInputStyle" parent="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="hintTextColor">@android:color/white</item>
+        <item name="strokeColor">@android:color/white</item>
+        <item name="boxBackgroundColor">@color/colorPrimary</item>
+        <item name="colorControlActivated">@android:color/white</item>
+        <item name="colorControlNormal">@android:color/white</item>
+    </style>
+    <style name="Jeff.TextButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="fontFamily">@font/anton</item>
+    </style>
+
+    <style name="Jeff.Button" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:startColor">@color/colorPrimaryDark</item>
+        <item name="android:centerColor">@color/colorPrimaryDark</item>
+        <item name="android:endColor">@color/colorAccent</item>
+        <item name="android:angle">90</item>
+        <item name="cornerRadius">16dp</item>
+    </style>
+</resources>

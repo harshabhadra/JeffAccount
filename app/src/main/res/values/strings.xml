@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">JEFF ACCOUNT</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home">Home</string>
+    <string name="about">About Us</string>
+    <string name="faq">FAQ</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="blog">BLog</string>
+    <string name="log_in_now">LogIn Now</string>
+    <string name="sign_in">Sign In</string>
+    <string name="enter_your_email">Enter Your Email</string>
+    <string name="enter_password">Enter Password</string>
+    <string name="or_log_in_with">Or Log In With</string>
+    <string name="forget_password">Forget Password</string>
+    <string name="company_details">Company Details</string>
+    <string name="name">Name</string>
+    <string name="street_address">Street Address</string>
+    <string name="country">Country</string>
+    <string name="post_code">Post Code</string>
+    <string name="telephone_no">Telephone No</string>
+    <string name="email_address">Email Address</string>
+    <string name="web_address">Web Address</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="print">Print</string>
+    <string name="add_customer">Add Customer</string>
+    <string name="add_supplier">Add Supplier</string>
+    <string name="quotation">Quotation</string>
+    <string name="purchase">Purchase</string>
+    <string name="invoice">Invoice</string>
+    <string name="worksheet">WorkSheet</string>
+</resources>
