@@ -48,7 +48,7 @@ class LogInActivity : AppCompatActivity() {
                 snackbar.animationMode = Snackbar.ANIMATION_MODE_SLIDE
                 snackbar.show()
             }
-            
+
         }
 
         //Observe login message from viewModel
