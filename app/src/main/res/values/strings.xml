@@ -47,4 +47,5 @@
     <string name="customer_name">Customer Name</string>
     <string name="currently_you_don_t_have_any_customer">Currently you don\'t have any customer</string>
     <string name="qty">Qty</string>
+    <string name="enter_valid_email">Enter Valid Email Address</string>
 </resources>
