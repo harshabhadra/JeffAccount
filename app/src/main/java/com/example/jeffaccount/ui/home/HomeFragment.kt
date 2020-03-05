@@ -9,6 +9,7 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.HomeFragmentBinding
 
@@ -28,32 +29,32 @@ class HomeFragment : Fragment() {
         val homeBinding = HomeFragmentBinding.inflate(inflater,container,false)
 
         val homeRecyclerAdapter = HomeRecyclerAdapter()
-        homeBinding.homeRecycler.layoutManager = GridLayoutManager(context,2)
+        homeBinding.homeRecycler.layoutManager = GridLayoutManager(context,2) as RecyclerView.LayoutManager?
         homeBinding.homeRecycler.adapter = homeRecyclerAdapter
 
         val homeList = listOf(
             Home(
-                R.drawable.ic_launcher_background,
+                R.drawable.customer,
                 getString(R.string.add_customer)
             ),
             Home(
-                R.drawable.ic_launcher_background,
+                R.drawable.supplier,
                 getString(R.string.add_supplier)
             ),
             Home(
-                R.drawable.ic_launcher_foreground,
+                R.drawable.quote,
                 getString(R.string.quotation)
             ),
             Home(
-                R.drawable.ic_launcher_background,
+                R.drawable.purchase,
                 getString(R.string.purchase)
             ),
             Home(
-                R.drawable.ic_launcher_background,
+                R.drawable.invoice,
                 getString(R.string.invoice)
             ),
             Home(
-                R.drawable.ic_launcher_background,
+                R.drawable.worksheet,
                 getString(R.string.worksheet)
             )
         )
@@ -76,14 +77,17 @@ class HomeFragment : Fragment() {
     fun navigateTo(name:String){
         when(name){
              getString(R.string.add_customer)->{
-                 findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddCustomer())
+                 this.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCustomerFragment())
              }
             getString(R.string.add_supplier)->{
 
-                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddSupplierFragment())
+                this.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSupplierFragment())
             }
             getString(R.string.quotation)->{
-                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToAddQuotationFragment())
+                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToQuotationFragment())
+            }
+            getString(R.string.purchase)->{
+                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToPurchaseFragment())
             }
         }
     }

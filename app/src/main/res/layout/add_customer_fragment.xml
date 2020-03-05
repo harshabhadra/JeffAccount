@@ -10,12 +10,11 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimary">
+        android:background="@drawable/loginpage">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
+            android:layout_height="wrap_content"
             tools:context=".ui.home.customer.AddCustomerFragment">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -34,6 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/name"
+                    android:textColor="@android:color/white"
                     android:inputType="text"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -54,6 +54,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/street_address"
+                    android:textColor="@android:color/white"
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,6 +99,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/post_code"
+                    android:textColor="@android:color/white"
                     android:inputType="text|number"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -119,6 +121,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/telephone_no"
                     android:inputType="number"
+                    android:textColor="@android:color/white"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,6 +141,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/email_address"
+                    android:textColor="@android:color/white"
                     android:inputType="textEmailAddress"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -158,6 +162,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/web_address"
+                    android:textColor="@android:color/white"
                     android:inputType="textWebEditText"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>

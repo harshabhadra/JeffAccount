@@ -1,4 +1,4 @@
-package com.example.jeffaccount.ui
+package com.example.jeffaccount.ui.contactus
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -12,7 +12,8 @@ import com.example.jeffaccount.R
 class ContactUsFragment : Fragment() {
 
     companion object {
-        fun newInstance() = ContactUsFragment()
+        fun newInstance() =
+            ContactUsFragment()
     }
 
     private lateinit var viewModel: ContactUsViewModel

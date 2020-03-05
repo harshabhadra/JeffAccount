@@ -1,4 +1,4 @@
-package com.example.jeffaccount.ui
+package com.example.jeffaccount.ui.about
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

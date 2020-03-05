@@ -7,61 +7,113 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.example.jeffaccount.ui.home.HomeFragment"
-        android:label="@string/app_name"
-        tools:layout="@layout/home_fragment" >
+        android:label=""
+        tools:layout="@layout/home_fragment">
         <action
-            android:id="@+id/action_homeFragment_to_addCustomer"
-            app:destination="@id/addCustomer" />
+            android:id="@+id/action_homeFragment_to_customerFragment"
+            app:destination="@id/customerFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_addSupplierFragment"
-            app:destination="@id/addSupplierFragment" />
+            android:id="@+id/action_homeFragment_to_supplierFragment"
+            app:destination="@id/supplierFragment" />
         <action
-            android:id="@+id/action_homeFragment_to_addQuotationFragment"
-            app:destination="@id/addQuotationFragment" />
+            android:id="@+id/action_homeFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_purchaseFragment"
+            app:destination="@id/purchaseFragment" />
     </fragment>
     <fragment
         android:id="@+id/aboutFragment"
-        android:name="com.example.jeffaccount.ui.AboutFragment"
-        android:label="@string/about" />
+        android:name="com.example.jeffaccount.ui.about.AboutFragment"
+        android:label="" />
     <fragment
         android:id="@+id/blogFragment"
-        android:name="com.example.jeffaccount.ui.BlogFragment"
+        android:name="com.example.jeffaccount.ui.blog.BlogFragment"
         android:label="@string/blog"
         tools:layout="@layout/blog_fragment" />
     <fragment
         android:id="@+id/contactUsFragment"
-        android:name="com.example.jeffaccount.ui.ContactUsFragment"
-        android:label="@string/contact_us"
+        android:name="com.example.jeffaccount.ui.contactus.ContactUsFragment"
+        android:label=""
         tools:layout="@layout/contact_us_fragment" />
     <fragment
         android:id="@+id/faqFragment"
-        android:name="com.example.jeffaccount.ui.FaqFragment"
-        android:label="@string/faq"
+        android:name="com.example.jeffaccount.ui.faq.FaqFragment"
+        android:label=""
         tools:layout="@layout/faq_fragment" />
     <fragment
         android:id="@+id/addCustomer"
         android:name="com.example.jeffaccount.ui.home.customer.AddCustomerFragment"
-        android:label="Add Customer"
+        android:label=""
         tools:layout="@layout/add_customer_fragment">
         <action
-            android:id="@+id/action_addCustomer_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            android:id="@+id/action_addCustomer_to_customerFragment"
+            app:destination="@id/customerFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/addSupplierFragment"
-        android:name="com.example.jeffaccount.AddSupplierFragment"
-        android:label="add_supplier_fragment"
+        android:name="com.example.jeffaccount.ui.home.supplier.AddSupplierFragment"
+        android:label=""
         tools:layout="@layout/add_supplier_fragment" >
         <action
-            android:id="@+id/action_addSupplierFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            android:id="@+id/action_addSupplierFragment_to_supplierFragment"
+            app:destination="@id/supplierFragment"
+            app:popUpTo="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/addQuotationFragment"
-        android:name="com.example.jeffaccount.AddQuotationFragment"
-        android:label="AddQuotationFragment" >
+        android:name="com.example.jeffaccount.ui.home.quotation.AddQuotationFragment"
+        android:label="" >
         <action
-            android:id="@+id/action_addQuotationFragment_to_homeFragment"
-            app:destination="@id/homeFragment" />
+            android:id="@+id/action_addQuotationFragment_to_quotationFragment"
+            app:destination="@id/quotationFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addPurchaseFragment"
+        android:name="com.example.jeffaccount.ui.home.purchase.AddPurchaseFragment"
+        android:label="" >
+        <action
+            android:id="@+id/action_addPurchaseFragment_to_purchaseFragment"
+            app:destination="@id/purchaseFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/customerFragment"
+        android:name="com.example.jeffaccount.ui.home.customer.CustomerFragment"
+        android:label=""
+        tools:layout="@layout/fragment_customer" >
+        <action
+            android:id="@+id/action_customerFragment_to_addCustomer"
+            app:destination="@id/addCustomer" />
+    </fragment>
+    <fragment
+        android:id="@+id/supplierFragment"
+        android:name="com.example.jeffaccount.ui.home.supplier.SupplierFragment"
+        android:label=""
+        tools:layout="@layout/fragment_supplier" >
+        <action
+            android:id="@+id/action_supplierFragment_to_addSupplierFragment"
+            app:destination="@id/addSupplierFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/quotationFragment"
+        android:name="com.example.jeffaccount.ui.home.quotation.QuotationFragment"
+        android:label=""
+        tools:layout="@layout/fragment_quotation" >
+        <action
+            android:id="@+id/action_quotationFragment_to_addQuotationFragment"
+            app:destination="@id/addQuotationFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/purchaseFragment"
+        android:name="com.example.jeffaccount.ui.home.purchase.PurchaseFragment"
+        android:label=""
+        tools:layout="@layout/fragment_purchase" >
+        <action
+            android:id="@+id/action_purchaseFragment_to_addPurchaseFragment"
+            app:destination="@id/addPurchaseFragment" />
     </fragment>
 </navigation>

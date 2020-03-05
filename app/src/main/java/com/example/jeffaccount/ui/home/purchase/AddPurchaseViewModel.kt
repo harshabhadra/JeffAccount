@@ -1,4 +1,4 @@
-package com.example.jeffaccount
+package com.example.jeffaccount.ui.home.purchase
 
 import androidx.lifecycle.ViewModel
 

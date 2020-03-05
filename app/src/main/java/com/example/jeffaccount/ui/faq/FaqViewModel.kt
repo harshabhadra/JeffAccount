@@ -1,7 +1,7 @@
-package com.example.jeffaccount.ui
+package com.example.jeffaccount.ui.faq
 
 import androidx.lifecycle.ViewModel
 
-class BlogViewModel : ViewModel() {
+class FaqViewModel : ViewModel() {
     // TODO: Implement the ViewModel
 }

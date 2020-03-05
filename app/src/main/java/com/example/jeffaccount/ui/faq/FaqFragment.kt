@@ -1,4 +1,4 @@
-package com.example.jeffaccount.ui
+package com.example.jeffaccount.ui.faq
 
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -9,24 +9,24 @@ import android.view.ViewGroup
 import com.example.jeffaccount.R
 
 
-class BlogFragment : Fragment() {
+class FaqFragment : Fragment() {
 
     companion object {
-        fun newInstance() = BlogFragment()
+        fun newInstance() = FaqFragment()
     }
 
-    private lateinit var viewModel: BlogViewModel
+    private lateinit var viewModel: FaqViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.blog_fragment, container, false)
+        return inflater.inflate(R.layout.faq_fragment, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(BlogViewModel::class.java)
+        viewModel = ViewModelProviders.of(this).get(FaqViewModel::class.java)
         // TODO: Use the ViewModel
     }
 

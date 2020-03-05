@@ -32,4 +32,19 @@
     <string name="purchase">Purchase</string>
     <string name="invoice">Invoice</string>
     <string name="worksheet">WorkSheet</string>
+    <string name="job_no">Job No</string>
+    <string name="quotation_no">Quotation No.</string>
+    <string name="vat">Vat %</string>
+    <string name="date">Date</string>
+    <string name="supplier_name">Supplier Name</string>
+    <string name="special_instruction_comment">Special Instruction/Comment</string>
+    <string name="item_description">Item Description</string>
+    <string name="payment_method">Payment Method</string>
+    <string name="unit_amount">Unit Amount</string>
+    <string name="advance_amount">Advance Amount</string>
+    <string name="discount_amount">Discount Amount</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="customer_name">Customer Name</string>
+    <string name="currently_you_don_t_have_any_customer">Currently you don\'t have any customer</string>
+    <string name="qty">Qty</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.jeffaccount.ui
+package com.example.jeffaccount.ui.contactus
 
 import androidx.lifecycle.ViewModel
 

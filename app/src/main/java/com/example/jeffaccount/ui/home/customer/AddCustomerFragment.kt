@@ -26,7 +26,7 @@ class AddCustomerFragment : Fragment() {
         val addCustomerBinding = AddCustomerFragmentBinding.inflate(inflater,container,false)
 
         addCustomerBinding.customerSaveButton.setOnClickListener{
-            findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToHomeFragment())
+            findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToCustomerFragment())
         }
         return addCustomerBinding.root
     }
@@ -36,5 +36,7 @@ class AddCustomerFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(AddCustomerViewModel::class.java)
         // TODO: Use the ViewModel
     }
+
+
 
 }

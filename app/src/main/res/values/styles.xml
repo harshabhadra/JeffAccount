@@ -7,6 +7,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="drawerArrowStyle">@style/drawerAroowStyle</item>
+        <item name="textInputStyle">@style/Jeff.TextInputStyle</item>
+        <item name="android:statusBarColor">@color/statusbarColor</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="AppTheme">
@@ -20,13 +22,12 @@
     </style>
 
     <style name="Jeff.TextInputStyle" parent="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
-        <item name="android:textColor">@android:color/white</item>
         <item name="hintTextColor">@android:color/white</item>
-        <item name="strokeColor">@android:color/white</item>
-        <item name="boxBackgroundColor">@color/colorPrimary</item>
-        <item name="colorControlActivated">@android:color/white</item>
-        <item name="colorControlNormal">@android:color/white</item>
+        <item name="boxBackgroundMode">none</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="colorControlNormal">@color/colorAccent</item>
     </style>
+
     <style name="Jeff.TextButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="android:textColor">@android:color/white</item>
         <item name="fontFamily">@font/anton</item>
@@ -39,5 +40,12 @@
         <item name="android:endColor">@color/colorAccent</item>
         <item name="android:angle">90</item>
         <item name="cornerRadius">16dp</item>
+    </style>
+
+    <style name="Jeff.Fab" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="backgroundTint">@android:color/white</item>
+        <item name="elevation">10dp</item>
+        <item name="rippleColor">@color/colorPrimary</item>
+        <item name="tint">@color/colorPrimary</item>
     </style>
 </resources>
