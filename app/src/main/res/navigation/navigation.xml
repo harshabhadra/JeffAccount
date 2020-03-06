@@ -67,6 +67,12 @@
             android:id="@+id/action_addSupplierFragment_to_supplierFragment"
             app:destination="@id/supplierFragment"
             app:popUpTo="@id/homeFragment" />
+        <argument
+            android:name="supplier"
+            app:argType="com.example.jeffaccount.model.SupPost" />
+        <argument
+            android:name="update"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addQuotationFragment"

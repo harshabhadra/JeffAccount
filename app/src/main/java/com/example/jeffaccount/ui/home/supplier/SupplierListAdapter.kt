@@ -10,13 +10,14 @@ import com.example.jeffaccount.databinding.CustomerListItemBinding
 import com.example.jeffaccount.databinding.SupplierListItemBinding
 import com.example.jeffaccount.model.SupPost
 
-class SupplierListAdapter:ListAdapter<SupPost,SupplierListAdapter.SupplierViewHolder>(SupplierDiffUtilCallBack()){
+class SupplierListAdapter(val clickListener:SupplierItemListener)
+    :ListAdapter<SupPost,SupplierListAdapter.SupplierViewHolder>(SupplierDiffUtilCallBack()){
 
     class SupplierViewHolder private constructor(val binding:SupplierListItemBinding):
             RecyclerView.ViewHolder(binding.root){
 
-        fun bind(item:SupPost){
-
+        fun bind(clickListener: SupplierItemListener, item:SupPost){
+            binding.clicklistener = clickListener
             binding.supPost = item
         }
 
@@ -34,10 +35,13 @@ class SupplierListAdapter:ListAdapter<SupPost,SupplierListAdapter.SupplierViewHo
     }
 
     override fun onBindViewHolder(holder: SupplierViewHolder, position: Int) {
-
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(clickListener,item)
     }
+}
+
+class SupplierItemListener(val clickListener:(supplier:SupPost)->Unit){
+    fun onSupplierClick(supplier: SupPost) = clickListener(supplier)
 }
 
 class SupplierDiffUtilCallBack:DiffUtil.ItemCallback<SupPost>(){

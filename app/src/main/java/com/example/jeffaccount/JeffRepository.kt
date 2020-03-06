@@ -10,6 +10,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
 
 class JeffRepository {
 
@@ -73,10 +74,27 @@ class JeffRepository {
         return _updateCustomerMessage
     }
 
+    //Update Supplier
+    fun getUpdateSupplierMessage(
+        supplierId: String, supplierName: String, streetAdd: String, coutry: String,
+        postCode: String, telephone: String, email: String, web: String
+    ):LiveData<String> {
+        updateSupplier(
+           supplierId, supplierName, streetAdd, coutry, postCode, telephone, email, web
+        )
+        return updateSupplierMessage
+    }
+
     //Delete customer
     fun getDeleteCustomerMessage(customerId: String): LiveData<String> {
         deleteUser(customerId)
         return _deleteCustomerMessage
+    }
+
+    //Delete Supplier
+    fun getDeleteSupplierMessage(supplierId: String):LiveData<String>{
+        deleteSupplier(supplierId)
+        return deleteSupplierMessage
     }
 
     //Get All Customer
@@ -86,7 +104,7 @@ class JeffRepository {
     }
 
     //Get All Suppliers
-    fun getAllSuppliers():LiveData<Supplier>{
+    fun getAllSuppliers(): LiveData<Supplier> {
         getSupplierList()
         return supplierList
     }
@@ -110,7 +128,7 @@ class JeffRepository {
     //Network call to get all supplier list
     private fun getSupplierList() {
 
-        apiService.getSupplierList().enqueue(object :Callback<Supplier>{
+        apiService.getSupplierList().enqueue(object : Callback<Supplier> {
             override fun onFailure(call: Call<Supplier>, t: Throwable) {
                 Log.e("JeffRepository", "${t.message}")
             }
@@ -159,17 +177,18 @@ class JeffRepository {
         web: String
     ) {
 
-        apiService.addSupplier(supplierName,streetAdd,coutry,postCode,telephone,email,web).enqueue(object :Callback<String>{
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.e("JeffRepository", "${t.message}")
-            }
+        apiService.addSupplier(supplierName, streetAdd, coutry, postCode, telephone, email, web)
+            .enqueue(object : Callback<String> {
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Log.e("JeffRepository", "${t.message}")
+                }
 
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                val jsonObject = JSONObject(response.body()!!)
-                val message = jsonObject.optString("message")
-                addSupplierMessage.value = message
-            }
-        })
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    val jsonObject = JSONObject(response.body()!!)
+                    val message = jsonObject.optString("message")
+                    addSupplierMessage.value = message
+                }
+            })
     }
 
     //Network call to update customer details
@@ -205,6 +224,31 @@ class JeffRepository {
         })
     }
 
+    //Network call to update supplier data
+    private fun updateSupplier(
+        supplierId: String,
+        supplierName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
+        email: String,
+        web: String
+    ) {
+        apiService.updateSupplier(supplierId,supplierName,streetAdd,coutry,postCode,telephone,email,web).enqueue(object :Callback<String>{
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Failed to Update supplier: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                updateSupplierMessage.value = message
+            }
+        })
+    }
+
+
     //Network call to delete Customer
     private fun deleteUser(customerId: String) {
         apiService.deleteCustomer(customerId).enqueue(object : Callback<String> {
@@ -218,6 +262,22 @@ class JeffRepository {
                 _deleteCustomerMessage.value = message
             }
 
+        })
+    }
+
+    //Network call to delete supplier
+    private fun deleteSupplier(supplierId: String) {
+
+        apiService.deleteSupplier(supplierId).enqueue(object :Callback<String>{
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Failed to delete supplier ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                deleteSupplierMessage.value = message
+            }
         })
     }
 

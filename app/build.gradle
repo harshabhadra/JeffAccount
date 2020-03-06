@@ -92,4 +92,7 @@ dependencies {
 
     //LottieAnimation
     implementation 'com.airbnb.android:lottie:3.3.1'
+
+    //Timber
+    implementation 'com.jakewharton.timber:timber:4.7.1'
 }

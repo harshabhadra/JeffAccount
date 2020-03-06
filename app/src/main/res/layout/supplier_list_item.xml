@@ -7,6 +7,9 @@
         <variable
             name="supPost"
             type="com.example.jeffaccount.model.SupPost" />
+        <variable
+            name="clicklistener"
+            type="com.example.jeffaccount.ui.home.supplier.SupplierItemListener" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -14,6 +17,7 @@
         android:layout_height="wrap_content"
         app:cardUseCompatPadding="true"
         app:cardCornerRadius="10dp"
+        android:onClick="@{()->clicklistener.onSupplierClick(supPost)}"
         app:cardBackgroundColor="@android:color/transparent"
         app:strokeColor="@color/colorAccent"
         app:strokeWidth="2dp"

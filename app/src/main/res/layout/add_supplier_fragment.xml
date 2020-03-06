@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="supplier"
+            type="com.example.jeffaccount.model.SupPost" />
     </data>
 
     <ScrollView
@@ -34,6 +36,7 @@
                 android:textColor="@android:color/white"
                 android:inputType="text"
                 android:maxLines="1"
+                android:text="@{supplier.supname}"
                 android:hint="@string/name" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -54,6 +57,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 android:inputType="textMultiLine"
+                android:text="@{supplier.street}"
                 android:hint="@string/street_address" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -67,6 +71,7 @@
             android:hint="@string/country"
             android:textColorHint="@android:color/white"
             android:padding="16dp"
+            android:text="@{supplier.country}"
             android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -101,6 +106,7 @@
                 android:textColor="@android:color/white"
                 android:inputType="number|text"
                 android:maxLines="1"
+                android:text="@{supplier.postcode}"
                 android:hint="@string/post_code" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -122,6 +128,7 @@
                 android:textColor="@android:color/white"
                 android:inputType="phone"
                 android:maxLines="1"
+                android:text="@{supplier.telephone}"
                 android:hint="@string/telephone_no" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -142,6 +149,7 @@
                 android:layout_height="wrap_content"
                 android:textColor="@android:color/white"
                 android:maxLines="1"
+                android:text="@{supplier.supemail}"
                 android:inputType="textEmailAddress"
                 android:hint="@string/email_address" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -163,6 +171,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textWebEditText"
                 android:maxLines="1"
+                android:text="@{supplier.web}"
                 android:textColor="@android:color/white"
                 android:hint="@string/web_address" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -205,7 +214,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/supplier_print_button"
-            app:layout_constraintTop_toBottomOf="@+id/save_supplier_button" />
+            app:layout_constraintTop_toBottomOf="@+id/supplier_update_button" />
 
         <Button
             android:id="@+id/supplier_print_button"
@@ -216,11 +225,11 @@
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="32dp"
             android:text="@string/print"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/supplier_delete_button"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/save_supplier_button" />
+            app:layout_constraintTop_toBottomOf="@+id/supplier_update_button" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>
