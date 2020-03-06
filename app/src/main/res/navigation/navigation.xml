@@ -51,6 +51,12 @@
             app:destination="@id/customerFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false" />
+        <argument
+            android:name="post"
+            app:argType="com.example.jeffaccount.model.Post" />
+        <argument
+            android:name="add"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addSupplierFragment"

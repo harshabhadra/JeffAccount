@@ -23,7 +23,8 @@
 
     <style name="Jeff.TextInputStyle" parent="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="hintTextColor">@android:color/white</item>
-        <item name="boxBackgroundMode">none</item>
+        <item name="boxBackgroundMode">outline</item>
+        <item name="boxBackgroundColor">@android:color/transparent</item>
         <item name="android:textColorHint">@android:color/white</item>
         <item name="colorControlNormal">@color/colorAccent</item>
     </style>

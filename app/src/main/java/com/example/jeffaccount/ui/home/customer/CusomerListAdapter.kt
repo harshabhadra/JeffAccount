@@ -9,18 +9,20 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.jeffaccount.databinding.CustomerListItemBinding
 import com.example.jeffaccount.model.Post
 
-class CusomerListAdapter:ListAdapter<Post,CusomerListAdapter.CustomerListViewHolder>(CustomerListDiffUtilCallBack()) {
+class CusomerListAdapter(val clickListener:CustomerItemListener) :
+    ListAdapter<Post, CusomerListAdapter.CustomerListViewHolder>(CustomerListDiffUtilCallBack()) {
 
-    class CustomerListViewHolder private constructor(val binding:CustomerListItemBinding):
-            RecyclerView.ViewHolder(binding.root){
-        fun bind(item:Post){
+    class CustomerListViewHolder private constructor(val binding: CustomerListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(clickListener: CustomerItemListener,item: Post) {
             binding.post = item
+            binding.clickListener = clickListener
         }
 
-        companion object{
-            fun  from(parent: ViewGroup):CustomerListViewHolder{
+        companion object {
+            fun from(parent: ViewGroup): CustomerListViewHolder {
                 val binding = CustomerListItemBinding
-                    .inflate(LayoutInflater.from(parent.context),parent,false)
+                    .inflate(LayoutInflater.from(parent.context), parent, false)
 
                 return CustomerListViewHolder(binding)
             }
@@ -34,19 +36,23 @@ class CusomerListAdapter:ListAdapter<Post,CusomerListAdapter.CustomerListViewHol
     override fun onBindViewHolder(holder: CustomerListViewHolder, position: Int) {
 
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(clickListener,item)
 
     }
 }
 
-class CustomerListDiffUtilCallBack:DiffUtil.ItemCallback<Post>(){
+class CustomerItemListener(val clickListener: (customer: Post) -> Unit) {
+    fun onClick(customer: Post) = clickListener(customer)
+}
+
+class CustomerListDiffUtilCallBack : DiffUtil.ItemCallback<Post>() {
     override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
         return oldItem.custid == newItem.custid
     }
 
     override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
 
-       return oldItem == newItem
+        return oldItem == newItem
     }
 
 }

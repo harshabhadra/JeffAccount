@@ -13,7 +13,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/currently_you_don_t_have_any_customer"
+        android:text="@string/currently_you_don_t_have_any_supplier"
         android:textColor="@android:color/white"
         android:layout_gravity="center"
         style="@style/TextAppearance.AppCompat.Title"/>

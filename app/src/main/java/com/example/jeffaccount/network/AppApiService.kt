@@ -2,6 +2,7 @@ package com.example.jeffaccount.network
 
 import androidx.lifecycle.LiveData
 import com.example.jeffaccount.model.Customer
+import com.example.jeffaccount.model.Supplier
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -35,15 +36,71 @@ interface AppApiService {
         @Field("custname") customerName: String,
         @Field("street") streetAdd: String,
         @Field("country") country: String,
-        @Field("postcode") postCode: Int,
-        @Field("telephone") telephoneNo: Int,
+        @Field("postcode") postCode: String,
+        @Field("telephone") telephoneNo: String,
         @Field("customeremail") customerEmail: String,
         @Field("web") webAdd: String
     ): Call<String>
 
+    //Edit Customer
+    @POST("customerupdate.php")
+    @FormUrlEncoded
+    fun updateCustomer(
+        @Field("custid")customerId: String,
+        @Field("custname") customerName: String,
+        @Field("street") streetAdd: String,
+        @Field("country") country: String,
+        @Field("postcode") postCode: String,
+        @Field("telephone") telephoneNo: String,
+        @Field("customeremail") customerEmail: String,
+        @Field("web") webAdd: String
+    ): Call<String>
+
+    //Delete customer
+    @POST("customerdel.php")
+    @FormUrlEncoded
+    fun deleteCustomer(@Field("custid")customerId:String):Call<String>
+
     //Get List of Customer
     @POST("customerlist.php")
     fun getCustomerList():Call<Customer>
+
+    //Add Supplier
+    @POST("supplieradd.php")
+    @FormUrlEncoded
+    fun addSupplier(
+        @Field("supname") customerName: String,
+        @Field("street") streetAdd: String,
+        @Field("country") country: String,
+        @Field("postcode") postCode: String,
+        @Field("telephone") telephoneNo: String,
+        @Field("supemail") customerEmail: String,
+        @Field("web") webAdd: String
+    ): Call<String>
+
+    //Update Supplier
+    @POST("supplierupdate.php")
+    @FormUrlEncoded
+    fun updateSupplier(
+        @Field("supid")customerId: String,
+        @Field("supname") customerName: String,
+        @Field("street") streetAdd: String,
+        @Field("country") country: String,
+        @Field("postcode") postCode: String,
+        @Field("telephone") telephoneNo: String,
+        @Field("supemail") customerEmail: String,
+        @Field("web") webAdd: String
+    ): Call<String>
+
+    //Delete supplier
+    @POST("supplierdel.php")
+    @FormUrlEncoded
+    fun deleteSupplier(@Field("supid")customerId:String):Call<String>
+
+    //Get Supplier list
+    @POST("supplierlist.php")
+    fun getSupplierList():Call<Supplier>
+
 }
 
 object JeffApi {

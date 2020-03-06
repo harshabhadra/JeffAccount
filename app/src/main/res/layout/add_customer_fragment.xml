@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="customer"
+            type="com.example.jeffaccount.model.Post" />
     </data>
 
     <ScrollView
@@ -33,6 +36,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/name"
+                    android:text="@{customer.custname}"
                     android:textColor="@android:color/white"
                     android:inputType="text"
                     android:maxLines="1" />
@@ -54,6 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/street_address"
+                    android:text="@{customer.street}"
                     android:textColor="@android:color/white"
                     android:inputType="textMultiLine" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -99,6 +104,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/post_code"
+                    android:text="@{customer.postcode}"
                     android:textColor="@android:color/white"
                     android:inputType="text|number"
                     android:maxLines="1" />
@@ -120,6 +126,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/telephone_no"
+                    android:text="@{customer.telephone}"
                     android:inputType="number"
                     android:textColor="@android:color/white"
                     android:maxLines="1" />
@@ -141,6 +148,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/email_address"
+                    android:text="@{customer.customeremail}"
                     android:textColor="@android:color/white"
                     android:inputType="textEmailAddress"
                     android:maxLines="1" />
@@ -162,6 +170,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/web_address"
+                    android:text="@{customer.web}"
                     android:textColor="@android:color/white"
                     android:inputType="textWebEditText"
                     android:maxLines="1" />
@@ -178,38 +187,38 @@
                 android:text="@string/save"
                 app:cornerRadius="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/button"
+                app:layout_constraintStart_toEndOf="@+id/update_customer_button"
                 app:layout_constraintTop_toBottomOf="@+id/customer_web_textInputLayout" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/update_customer_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:text="@string/edit"
+                android:text="@string/update"
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@+id/customer_save_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customer_web_textInputLayout" />
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/delete_customer_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="32dp"
                 android:text="@string/delete"
-                android:visibility="invisible"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/button3"
-                app:layout_constraintTop_toBottomOf="@+id/customer_save_button" />
+                app:layout_constraintStart_toEndOf="@+id/print_customer_button"
+                app:layout_constraintTop_toBottomOf="@+id/update_customer_button" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/print_customer_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -219,9 +228,9 @@
                 android:text="@string/print"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/button2"
+                app:layout_constraintEnd_toStartOf="@+id/delete_customer_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/customer_save_button" />
+                app:layout_constraintTop_toBottomOf="@+id/update_customer_button" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

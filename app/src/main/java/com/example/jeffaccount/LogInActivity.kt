@@ -8,7 +8,9 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.util.Patterns
 import android.view.KeyEvent
+import android.view.LayoutInflater
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.widget.addTextChangedListener
@@ -19,7 +21,7 @@ import com.example.jeffaccount.databinding.LogInFragmentBinding
 import com.example.jeffaccount.ui.MainActivity
 import com.google.android.material.snackbar.Snackbar
 
-
+private var loadingDialog: AlertDialog? = null
 class LogInActivity : AppCompatActivity() {
 
     private lateinit var loginBinding:LogInFragmentBinding
@@ -38,6 +40,8 @@ class LogInActivity : AppCompatActivity() {
             val userEmail = loginBinding.logInEmailTextInput.text.toString()
             val password = loginBinding.logInPasswordTextInput.text.toString()
             if(isValidEmail(userEmail) && password.isNotEmpty()) {
+                loadingDialog = createLoadingDialog()
+                loadingDialog?.show()
                 loginViewModel.loginUser(userEmail, password)
             }else if (!isValidEmail(userEmail)){
                 loginBinding.logInEmailTextInputLayout.error = getString(R.string.enter_valid_email)
@@ -54,6 +58,7 @@ class LogInActivity : AppCompatActivity() {
         //Observe login message from viewModel
         loginViewModel.loginMessage.observe(this, Observer { message ->
             message?.let {
+                loadingDialog?.dismiss()
                 if (message == "success") {
                     val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
@@ -69,10 +74,47 @@ class LogInActivity : AppCompatActivity() {
                 }
             }
         })
+
+        //Add text watcher to email
+        loginBinding.logInEmailTextInput.addTextChangedListener(object :TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+                loginBinding.logInEmailTextInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                loginBinding.logInEmailTextInputLayout.isErrorEnabled = false
+            }
+        })
+
+        //Add Text watcher to password
+        loginBinding.logInPasswordTextInput.addTextChangedListener(object :TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+                loginBinding.logInPasswordTextInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                loginBinding.logInPasswordTextInputLayout.isErrorEnabled = false
+            }
+        })
     }
 
     //Check if the email is valid
     private fun isValidEmail(target: CharSequence): Boolean {
         return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches()
+    }
+
+    //Create a loading Dialog
+    private fun createLoadingDialog():androidx.appcompat.app.AlertDialog?{
+        val layout = LayoutInflater.from(this).inflate(R.layout.loading_layout,null)
+        val builder = this.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+        builder.setCancelable(false)
+        builder.setView(layout)
+        return builder.create()
     }
 }

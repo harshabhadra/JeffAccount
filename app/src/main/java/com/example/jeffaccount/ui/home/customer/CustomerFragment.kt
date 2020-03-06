@@ -11,9 +11,11 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 
 import com.example.jeffaccount.R
+import com.example.jeffaccount.model.Post
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
@@ -38,7 +40,9 @@ class CustomerFragment : Fragment() {
          noCusTv = view.findViewById<TextView>(R.id.no_customer_tv)
 
         //Setting up customer list
-        customerLisAdapter = CusomerListAdapter()
+        customerLisAdapter = CusomerListAdapter(CustomerItemListener { customer ->
+            customerViewModel.onCustomerItemClick(customer)
+        })
         customerRecycler.adapter = customerLisAdapter
 
         //Initializing ViewModel class
@@ -49,8 +53,18 @@ class CustomerFragment : Fragment() {
 
         //Set onClick listener to the add fab button
         fab.setOnClickListener {
-            view.findNavController().navigate(CustomerFragmentDirections.actionCustomerFragmentToAddCustomer())
+            this.findNavController().navigate(CustomerFragmentDirections.actionCustomerFragmentToAddCustomer(
+                Post("","","","","","","",""),getString(R.string.add)))
         }
+
+        //Observe when to move to Add Task fragment with customer values
+        customerViewModel.navigateToAddCustomerFragment.observe(viewLifecycleOwner, Observer { customer->
+            customer?.let {
+                this.findNavController().navigate(CustomerFragmentDirections
+                    .actionCustomerFragmentToAddCustomer(customer,getString(R.string.edit)))
+                customerViewModel.doneNavigating()
+            }
+        })
         return view
     }
 

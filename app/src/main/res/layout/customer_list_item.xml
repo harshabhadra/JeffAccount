@@ -8,6 +8,9 @@
         <variable
             name="post"
             type="com.example.jeffaccount.model.Post" />
+        <variable
+            name="clickListener"
+            type="com.example.jeffaccount.ui.home.customer.CustomerItemListener" />
     </data>
 
     <com.google.android.material.card.MaterialCardView
@@ -15,7 +18,10 @@
         android:layout_height="wrap_content"
         app:cardUseCompatPadding="true"
         app:cardCornerRadius="10dp"
-        app:cardBackgroundColor="@color/colorPrimary"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:strokeColor="@color/colorAccent"
+        app:strokeWidth="2dp"
+        android:onClick="@{()->clickListener.onClick(post)}"
         app:cardElevation="8dp">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

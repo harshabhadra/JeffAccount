@@ -17,7 +17,7 @@
         tools:context=".ui.home.supplier.AddSupplierFragment">
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout"
+            android:id="@+id/supplier_name_textInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -28,13 +28,17 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/supplier_name_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:inputType="text"
+                android:maxLines="1"
                 android:hint="@string/name" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout2"
+            android:id="@+id/supplier_address_textInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -42,16 +46,19 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+            app:layout_constraintTop_toBottomOf="@+id/supplier_name_textInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/supplier_address_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:inputType="textMultiLine"
                 android:hint="@string/street_address" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/supplier_country_tv"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -63,7 +70,7 @@
             android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout2" />
+            app:layout_constraintTop_toBottomOf="@+id/supplier_address_textInputLayout" />
 
         <View
             android:id="@+id/view4"
@@ -74,10 +81,10 @@
             android:background="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3" />
+            app:layout_constraintTop_toBottomOf="@+id/supplier_country_tv" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout3"
+            android:id="@+id/supplier_post_code_textInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -88,13 +95,17 @@
             app:layout_constraintTop_toBottomOf="@+id/view4">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/supplier_post_code_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:inputType="number|text"
+                android:maxLines="1"
                 android:hint="@string/post_code" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout4"
+            android:id="@+id/supplier_telephone_textInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -102,16 +113,20 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout3">
+            app:layout_constraintTop_toBottomOf="@+id/supplier_post_code_textInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/supplier_telephone_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:inputType="phone"
+                android:maxLines="1"
                 android:hint="@string/telephone_no" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout5"
+            android:id="@+id/supplier_email_textInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -119,16 +134,20 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout4">
+            app:layout_constraintTop_toBottomOf="@+id/supplier_telephone_textInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/supplier_email_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:maxLines="1"
+                android:inputType="textEmailAddress"
                 android:hint="@string/email_address" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/textInputLayout7"
+            android:id="@+id/supplier_web_textInputLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -136,11 +155,15 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout5">
+            app:layout_constraintTop_toBottomOf="@+id/supplier_email_textInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/supplier_web_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:inputType="textWebEditText"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
                 android:hint="@string/web_address" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -153,11 +176,11 @@
             android:layout_marginEnd="16dp"
             android:text="@string/save"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/button5"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout7" />
+            app:layout_constraintStart_toEndOf="@+id/supplier_update_button"
+            app:layout_constraintTop_toBottomOf="@+id/supplier_web_textInputLayout" />
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/supplier_update_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -167,10 +190,10 @@
             android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/save_supplier_button"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textInputLayout7" />
+            app:layout_constraintTop_toBottomOf="@+id/supplier_web_textInputLayout" />
 
         <Button
-            android:id="@+id/button6"
+            android:id="@+id/supplier_delete_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -181,11 +204,11 @@
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/button7"
+            app:layout_constraintStart_toEndOf="@+id/supplier_print_button"
             app:layout_constraintTop_toBottomOf="@+id/save_supplier_button" />
 
         <Button
-            android:id="@+id/button7"
+            android:id="@+id/supplier_print_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -195,7 +218,7 @@
             android:text="@string/print"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/button6"
+            app:layout_constraintEnd_toStartOf="@+id/supplier_delete_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/save_supplier_button" />
     </androidx.constraintlayout.widget.ConstraintLayout>

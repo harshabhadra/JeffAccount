@@ -46,6 +46,18 @@
     <string name="total_amount">Total Amount</string>
     <string name="customer_name">Customer Name</string>
     <string name="currently_you_don_t_have_any_customer">Currently you don\'t have any customer</string>
+    <string name="currently_you_don_t_have_any_supplier">Currently you don\'t have any supplier</string>
+    <string name="currently_you_don_t_have_any_quotation">Currently you don\'t have any quotation</string>
+    <string name="currently_you_don_t_have_any_purchase">Currently you don\'t have any purchase</string>
     <string name="qty">Qty</string>
     <string name="enter_valid_email">Enter Valid Email Address</string>
+    <string name="add_name">Add  Name</string>
+    <string name="add_address">Add an address</string>
+    <string name="enter_post_code">Enter a post code</string>
+    <string name="add_phone_no">Add a phone number</string>
+    <string name="add_email">Add an email</string>
+    <string name="add_web_address">Add a web address</string>
+    <string name="please_wait">Please Wait</string>
+    <string name="add">add</string>
+    <string name="update">Update</string>
 </resources>
