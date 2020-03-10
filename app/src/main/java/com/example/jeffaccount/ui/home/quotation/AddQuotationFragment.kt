@@ -65,7 +65,7 @@ class AddQuotationFragment : Fragment() {
             val quotationNo = quotationBinding.quotationQuotationoTextInput.text.toString()
 
             if (quotationBinding.quotationVatTextInput.text.toString().isNotEmpty()) {
-                vat = quotationBinding.quotationVatTextInput.toString().toDouble()
+                vat = quotationBinding.quotationVatTextInput.text.toString().toDouble()
             }
             val date = quotationBinding.quotationDateTextInput.text.toString()
             val customerName = quotationBinding.quotationCustomerNameTextInput.text.toString()
