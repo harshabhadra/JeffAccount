@@ -25,7 +25,6 @@
     <string name="save">Save</string>
     <string name="delete">Delete</string>
     <string name="edit">Edit</string>
-    <string name="print">Print</string>
     <string name="add_customer">Add Customer</string>
     <string name="add_supplier">Add Supplier</string>
     <string name="quotation">Quotation</string>
@@ -60,4 +59,16 @@
     <string name="please_wait">Please Wait</string>
     <string name="add">add</string>
     <string name="update">Update</string>
+    <string name="customer">Customer</string>
+    <string name="supplier">Supplier</string>
+    <string name="print">Print</string>
+    <string name="create_pdf">Create Pdf</string>
+    <string name="are_you_sure_want_to_delete">Are you sure want to delete?</string>
+    <string name="enter_job_no">Enter Job No</string>
+    <string name="enter_quotation_no">Enter Quotation No.</string>
+    <string name="enter_vat">Enter Vat%</string>
+    <string name="enter_date">Enter Date</string>
+    <string name="enter_customer_name">Enter Customer Name</string>
+    <string name="enter_comment">Enter Comment</string>
+    <string name="enter_item_des">Enter Item Description</string>
 </resources>

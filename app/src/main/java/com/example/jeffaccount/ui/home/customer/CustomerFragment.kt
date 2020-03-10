@@ -68,6 +68,11 @@ class CustomerFragment : Fragment() {
         return view
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+    }
+
     //Get CustomerList
     private fun getCustomerList(){
 

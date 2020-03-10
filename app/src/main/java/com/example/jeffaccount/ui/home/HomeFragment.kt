@@ -28,18 +28,20 @@ class HomeFragment : Fragment() {
     ): View? {
         val homeBinding = HomeFragmentBinding.inflate(inflater,container,false)
 
+        //Setting up Home Recycler
         val homeRecyclerAdapter = HomeRecyclerAdapter()
         homeBinding.homeRecycler.layoutManager = GridLayoutManager(context,2) as RecyclerView.LayoutManager?
         homeBinding.homeRecycler.adapter = homeRecyclerAdapter
 
+        //Creating the list of Item in Home
         val homeList = listOf(
             Home(
                 R.drawable.customer,
-                getString(R.string.add_customer)
+                getString(R.string.customer)
             ),
             Home(
                 R.drawable.supplier,
-                getString(R.string.add_supplier)
+               getString(R.string.supplier)
             ),
             Home(
                 R.drawable.quote,
@@ -76,10 +78,10 @@ class HomeFragment : Fragment() {
     //Function to Navigate to destination
     fun navigateTo(name:String){
         when(name){
-             getString(R.string.add_customer)->{
+             getString(R.string.customer)->{
                  this.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCustomerFragment())
              }
-            getString(R.string.add_supplier)->{
+            getString(R.string.supplier)->{
 
                 this.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSupplierFragment())
             }

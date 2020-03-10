@@ -22,8 +22,18 @@
                 android:layout_width="match_parent"
                 app:titleTextColor="@android:color/white"
                 android:gravity="center"
-                android:background="@drawable/top"
-                android:layout_height="70dp"/>
+                android:background="@drawable/ic_jeffactionbar"
+                android:layout_height="70dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/app_name"
+                    android:gravity="center"
+                    android:textColor="@android:color/white"
+                    android:fontFamily="@font/anton"
+                    android:layout_marginBottom="8dp"
+                    style="@style/TextAppearance.AppCompat.Display1"/>
+            </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

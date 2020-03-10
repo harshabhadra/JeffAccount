@@ -5,16 +5,17 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.*
+import android.widget.Button
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddCustomerFragmentBinding
+import com.example.jeffaccount.model.Post
+import timber.log.Timber
 import java.lang.NumberFormatException
 
 private var loadingDialog: androidx.appcompat.app.AlertDialog? = null
@@ -27,24 +28,24 @@ class AddCustomerFragment : Fragment() {
     }
 
     private lateinit var viewModel: CustomerViewModel
-
+    private lateinit var customer:Post
+    private lateinit var action:String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val addCustomerBinding = AddCustomerFragmentBinding.inflate(inflater, container, false)
 
+        setHasOptionsMenu(true)
 //        Getting arguments
         val arguments = AddCustomerFragmentArgs.fromBundle(arguments!!)
-        val customer = arguments.post
-        val action = arguments.add
+        customer = arguments.post
+        action = arguments.add
 
         if (action == getString(R.string.edit)) {
             addCustomerBinding.customer = customer
             addCustomerBinding.updateCustomerButton.visibility = View.VISIBLE
             addCustomerBinding.customerSaveButton.visibility = View.GONE
-            addCustomerBinding.deleteCustomerButton.visibility = View.VISIBLE
-            addCustomerBinding.printCustomerButton.visibility = View.VISIBLE
 
         }
 
@@ -145,13 +146,6 @@ class AddCustomerFragment : Fragment() {
             }
         }
 
-        //Delete User
-        addCustomerBinding.deleteCustomerButton.setOnClickListener {
-            loadingDialog = createLoadingDialog()
-            loadingDialog?.show()
-            deleteUser(customer.custid!!)
-        }
-
         //Adding text watcher to customer name
         addCustomerBinding.customerNameTextInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -249,6 +243,45 @@ class AddCustomerFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(CustomerViewModel::class.java)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        if (action.equals(getString(R.string.edit))) {
+            inflater.inflate(R.menu.main_menu, menu)
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        val id = item.itemId
+        if (id == R.id.delete_item){
+            val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation,null)
+            val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+            builder?.setCancelable(false)
+            builder?.setView(layout)
+            val dialog = builder?.create()
+            dialog?.show()
+
+            val delButton = layout.findViewById<Button>(R.id.delete_button)
+            val canButton:Button = layout.findViewById(R.id.cancel_del_button)
+
+            delButton.setOnClickListener {
+                loadingDialog = createLoadingDialog()
+                loadingDialog?.show()
+                deleteUser(customer.custid!!)
+                dialog?.dismiss()
+            }
+
+            canButton.setOnClickListener {
+                dialog?.dismiss()
+            }
+
+        }else if (id == R.id.convert_pdf_item){
+            Timber.e("Pdf click")
+            this.findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToCustomerPdfFragment(customer))
+        }
+        return true
+    }
+
     //Add Customer
     private fun addCustomer(
         customerName: String,
@@ -295,12 +328,14 @@ class AddCustomerFragment : Fragment() {
     }
 
     //Delete User
-    fun deleteUser(customerId: String){
+    private fun deleteUser(customerId: String){
         viewModel.deleteUser(customerId).observe(viewLifecycleOwner, Observer {
             it?.let {
                 Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                 loadingDialog?.dismiss()
                 findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToCustomerFragment())
+            }?:let {
+                loadingDialog?.dismiss()
             }
         })
     }

@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
-                    android:inputType="number"
+                    android:inputType="text|number"
                     android:maxLines="1"
                     android:hint="@string/job_no" />
             </com.google.android.material.textfield.TextInputLayout>

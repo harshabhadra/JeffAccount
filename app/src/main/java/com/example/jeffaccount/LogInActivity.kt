@@ -17,43 +17,80 @@ import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.databinding.LogInFragmentBinding
 import com.example.jeffaccount.ui.MainActivity
 import com.google.android.material.snackbar.Snackbar
+import timber.log.Timber
 
 private var loadingDialog: AlertDialog? = null
+
 class LogInActivity : AppCompatActivity() {
 
-    private lateinit var loginBinding:LogInFragmentBinding
+    private lateinit var loginBinding: LogInFragmentBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-         loginBinding =
+        loginBinding =
             DataBindingUtil.setContentView<LogInFragmentBinding>(this, R.layout.log_in_fragment)
 
-        val loginViewModel = ViewModelProvider(this).get(LogInViewModel::class.java)
+        //Initializing ViewModel class
+        val application = requireNotNull(this).application as JeffApplication
+        val loginViewModelFactory = LoginViewModelFactory(application)
+        val loginViewModel =
+            ViewModelProvider(this, loginViewModelFactory).get(LogInViewModel::class.java)
         val toolbar = loginBinding.logInToolbar
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
+
+        //Create Loading Dialog
+        loadingDialog = createLoadingDialog()
+
+        //Set On Click listener to the sign in button
         loginBinding.signInButton.setOnClickListener {
 
-            val userEmail = loginBinding.logInEmailTextInput.text.toString()
-            val password = loginBinding.logInPasswordTextInput.text.toString()
-            if(isValidEmail(userEmail) && password.isNotEmpty()) {
-                loadingDialog = createLoadingDialog()
+            var userEmail = loginBinding.logInEmailTextInput.text.toString()
+            var password = loginBinding.logInPasswordTextInput.text.toString()
+            if (isValidEmail(userEmail) && password.isNotEmpty()) {
                 loadingDialog?.show()
-                loginViewModel.loginUser(userEmail, password)
-            }else if (!isValidEmail(userEmail)){
+                //Log in user
+                loginViewModel.insertLoginCred(LogInCred(userName = userEmail, password = password))
+            } else if (!isValidEmail(userEmail)) {
                 loginBinding.logInEmailTextInputLayout.error = getString(R.string.enter_valid_email)
-            }else if(password.isEmpty()){
+            } else if (password.isEmpty()) {
                 loginBinding.logInPasswordTextInputLayout.error = "Enter Password"
-            }else{
-                val snackbar = Snackbar.make(findViewById(R.id.login_coordinator_layout),"Enter Credential",Snackbar.LENGTH_SHORT)
+            } else {
+                val snackbar = Snackbar.make(
+                    findViewById(R.id.login_coordinator_layout),
+                    "Enter Credential",
+                    Snackbar.LENGTH_SHORT
+                )
                 snackbar.animationMode = Snackbar.ANIMATION_MODE_SLIDE
                 snackbar.show()
             }
 
+            //Observe if log in cred inserted
+            loginViewModel.loginCredInserted.observe(this, Observer {
+                it?.let {
+                    if (it) {
+                        loginViewModel.loginUser(userEmail, password)
+                    }
+                }
+            })
         }
+
+        loginViewModel.userList.observe(this, Observer {
+            it?.let {
+                Timber.e("Size: ${it.size}")
+                if(it.isNotEmpty()) {
+                    val userCred = it[0]
+                    loadingDialog?.show()
+                    loginViewModel.loginUser(userCred.userName, userCred.password)
+                }
+            }?:let {
+                Timber.e("list is empty")
+            }
+        })
 
         //Observe login message from viewModel
         loginViewModel.loginMessage.observe(this, Observer { message ->
@@ -72,11 +109,13 @@ class LogInActivity : AppCompatActivity() {
                     snackbar.setBackgroundTint(Color.RED)
                     snackbar.show()
                 }
+            }?:let {
+                loadingDialog?.dismiss()
             }
         })
 
         //Add text watcher to email
-        loginBinding.logInEmailTextInput.addTextChangedListener(object :TextWatcher{
+        loginBinding.logInEmailTextInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 loginBinding.logInEmailTextInputLayout.isErrorEnabled = true
             }
@@ -90,7 +129,7 @@ class LogInActivity : AppCompatActivity() {
         })
 
         //Add Text watcher to password
-        loginBinding.logInPasswordTextInput.addTextChangedListener(object :TextWatcher{
+        loginBinding.logInPasswordTextInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 loginBinding.logInPasswordTextInputLayout.isErrorEnabled = true
             }
@@ -110,8 +149,8 @@ class LogInActivity : AppCompatActivity() {
     }
 
     //Create a loading Dialog
-    private fun createLoadingDialog():androidx.appcompat.app.AlertDialog?{
-        val layout = LayoutInflater.from(this).inflate(R.layout.loading_layout,null)
+    private fun createLoadingDialog(): androidx.appcompat.app.AlertDialog? {
+        val layout = LayoutInflater.from(this).inflate(R.layout.loading_layout, null)
         val builder = this.let { androidx.appcompat.app.AlertDialog.Builder(it) }
         builder.setCancelable(false)
         builder.setView(layout)
