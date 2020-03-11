@@ -6,9 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import com.example.jeffaccount.dataBase.JeffDataBase
 import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.dataBase.LogInDao
-import com.example.jeffaccount.model.Customer
-import com.example.jeffaccount.model.Quotation
-import com.example.jeffaccount.model.Supplier
+import com.example.jeffaccount.model.*
 import com.example.jeffaccount.network.JeffApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -72,6 +70,29 @@ class JeffRepository() {
     //Store list of quoation
     private var quotationList = MutableLiveData<Quotation>()
 
+    //Store company add message
+    private var companyAddMessage = MutableLiveData<String>()
+
+    //Store company update message
+    private var companyUpdateMessage = MutableLiveData<String>()
+
+    //Store company delete message
+    private var companyDeleteMessage = MutableLiveData<String>()
+
+    //Store company list
+    private var companyList = MutableLiveData<Company>()
+
+    //Store purchase add message
+    private var purchaseAddMessage = MutableLiveData<String>()
+
+    //Store purchase update message
+    private var purchaseUpdateMessage = MutableLiveData<String>()
+
+    //Store purchase delete message
+    private var purchaseDeleteMessage = MutableLiveData<String>()
+
+    //Store list of purchase
+    private var purchaseList = MutableLiveData<Purchase>()
 
     //Get LogInCred list
     fun getLogInCred(): LiveData<List<LogInCred>> {
@@ -111,6 +132,16 @@ class JeffRepository() {
         return addSupplierMessage
     }
 
+    //Add Company
+    fun getAddCompanyMessage(
+        companyName: String,
+        streetAdd: String, coutry: String,
+        postCode: String, telephone: String, email: String, web: String
+    ): LiveData<String> {
+        addCompany(companyName, streetAdd, coutry, postCode, telephone, email, web)
+        return companyAddMessage
+    }
+
     //Add Quotation
     fun getAddQuotationMessage(
         jobNo: String,
@@ -134,6 +165,29 @@ class JeffRepository() {
         return quotationAddMessage
     }
 
+    //Add Purchase
+    fun getAddPurchaseMessage(
+        jobNo: String,
+        quotationNo: String,
+        vat: Double,
+        date: String,
+        supplierName: String,
+        comment: String,
+        itemDes: String,
+        paymentMethod: String,
+        quantity: Int,
+        unitAmount: Double,
+        advanceAmount: Double,
+        discountAmount: Double,
+        totalAmount: Double
+    ): LiveData<String> {
+        addPurchase(
+            jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+        )
+        return purchaseAddMessage
+    }
+
     //Update customer
     fun getUpdateCustomerMessage(
         customerId: String,
@@ -155,6 +209,15 @@ class JeffRepository() {
         return updateSupplierMessage
     }
 
+    //Update Company details
+    fun getUpdateCompanyMessage(
+        companyId: Int, companyName: String, streetAdd: String, coutry: String,
+        postCode: String, telephone: String, email: String, web: String
+    ): LiveData<String> {
+        updateCompany(companyId, companyName, streetAdd, coutry, postCode, telephone, email, web)
+        return companyUpdateMessage
+    }
+
     //Update Supplier
     fun getUpdateQuotationMessage(
         id: Int,
@@ -171,10 +234,36 @@ class JeffRepository() {
         advanceAmount: Double,
         discountAmount: Double,
         totalAmount: Double
-    ):LiveData<String>{
-        updateQuotation(id,jobNo, quotationNo, vat, date, customerName, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount)
+    ): LiveData<String> {
+        updateQuotation(
+            id, jobNo, quotationNo, vat, date, customerName, comment, itemDes
+            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+        )
         return quotationUpdateMesage
+    }
+
+    //Update Purchase
+    fun getUpdatePurchaseMessage(
+        id: Int,
+        jobNo: String,
+        quotationNo: String,
+        vat: Double,
+        date: String,
+        supplierName: String,
+        comment: String,
+        itemDes: String,
+        paymentMethod: String,
+        quantity: Int,
+        unitAmount: Double,
+        advanceAmount: Double,
+        discountAmount: Double,
+        totalAmount: Double
+    ): LiveData<String> {
+        updatePurchase(
+            id, jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+        )
+        return purchaseUpdateMessage
     }
 
     //Delete customer
@@ -189,10 +278,22 @@ class JeffRepository() {
         return deleteSupplierMessage
     }
 
+    //Delete Company
+    fun getDeleteCompanyMessage(companyId: Int): LiveData<String> {
+        deleteCompany(companyId)
+        return companyDeleteMessage
+    }
+
     //Delete Quotation
-    fun getDeleteQuotationMessage(quotationId:Int):LiveData<String>{
+    fun getDeleteQuotationMessage(quotationId: Int): LiveData<String> {
         deleteQuotation(quotationId)
         return quotationDeleteMessage
+    }
+
+    //Delete Purchase
+    fun getDeletePurchaseMessage(purchaseId: Int): LiveData<String> {
+        deletePurchase(purchaseId)
+        return purchaseDeleteMessage
     }
 
     //Get All Customer
@@ -207,8 +308,20 @@ class JeffRepository() {
         return supplierList
     }
 
+    //Get all Company
+    fun getAllCompany(): LiveData<Company> {
+        getCompanyList()
+        return companyList
+    }
+
+    //Get all purchase
+    fun getAllPurchase(): LiveData<Purchase> {
+        getPurchaseList()
+        return purchaseList
+    }
+
     //Get All quotation
-    fun getAllQuotation():LiveData<Quotation>{
+    fun getAllQuotation(): LiveData<Quotation> {
         getQuotationList()
         return quotationList
     }
@@ -243,16 +356,43 @@ class JeffRepository() {
         })
     }
 
+    //Network call to get company list
+    private fun getCompanyList() {
+
+        apiService.getCompanyList().enqueue(object : Callback<Company> {
+            override fun onFailure(call: Call<Company>, t: Throwable) {
+                Timber.e("Error getting list of company")
+            }
+
+            override fun onResponse(call: Call<Company>, response: Response<Company>) {
+                companyList.value = response.body()
+            }
+        })
+    }
+
     //Network call to get all suppliers
     private fun getQuotationList() {
 
-        apiService.getQuotationList().enqueue(object :Callback<Quotation>{
+        apiService.getQuotationList().enqueue(object : Callback<Quotation> {
             override fun onFailure(call: Call<Quotation>, t: Throwable) {
                 Timber.e("Error getting list of quotation: ${t.message}")
             }
 
             override fun onResponse(call: Call<Quotation>, response: Response<Quotation>) {
                 quotationList.value = response.body()
+            }
+        })
+    }
+
+    //Network call to get purchase list
+    private fun getPurchaseList() {
+        apiService.getPurchaseList().enqueue(object : Callback<Purchase> {
+            override fun onFailure(call: Call<Purchase>, t: Throwable) {
+                Timber.e("Error getting purchase list")
+            }
+
+            override fun onResponse(call: Call<Purchase>, response: Response<Purchase>) {
+                purchaseList.value = response.body()
             }
         })
     }
@@ -309,6 +449,25 @@ class JeffRepository() {
             })
     }
 
+    //Network call to add company
+    private fun addCompany(
+        companyName: String, streetAdd: String, coutry: String,
+        postCode: String, telephone: String, email: String, web: String
+    ) {
+        apiService.addCompany(companyName, streetAdd, coutry, postCode, telephone, email, web)
+            .enqueue(object : Callback<String> {
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Timber.e("Error adding company ${t.message}")
+                }
+
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    val jsonObject = JSONObject(response.body()!!)
+                    val message = jsonObject.optString("message")
+                    companyAddMessage.value = message
+                }
+            })
+    }
+
     //Network call to add quotation
     private fun addQuotation(
         jobNo: String,
@@ -339,6 +498,38 @@ class JeffRepository() {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")
                 quotationAddMessage.value = message
+            }
+        })
+    }
+
+    //Network call to add purchase
+    private fun addPurchase(
+        jobNo: String,
+        quotationNo: String,
+        vat: Double,
+        date: String,
+        supplierName: String,
+        comment: String,
+        itemDes: String,
+        paymentMethod: String,
+        quantity: Int,
+        unitAmount: Double,
+        advanceAmount: Double,
+        discountAmount: Double,
+        totalAmount: Double
+    ) {
+        apiService.addPurchase(
+            jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+        ).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Error adding purchase ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                purchaseAddMessage.value = message
             }
         })
     }
@@ -409,6 +600,37 @@ class JeffRepository() {
         })
     }
 
+    //Network call to update company details
+    private fun updateCompany(
+        companyId: Int,
+        companyName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
+        email: String,
+        web: String
+    ) {
+        apiService.updateCompany(
+            companyId, companyName, streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            email,
+            web
+        ).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Error updating company details ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                companyUpdateMessage.value = message
+            }
+        })
+    }
+
     //Network call to update
     private fun updateQuotation(
         id: Int,
@@ -427,8 +649,10 @@ class JeffRepository() {
         totalAmount: Double
     ) {
 
-        apiService.updateQuotation(id,jobNo, quotationNo, vat, date, customerName, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount).enqueue(object :Callback<String>{
+        apiService.updateQuotation(
+            id, jobNo, quotationNo, vat, date, customerName, comment, itemDes
+            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+        ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Updating quotation failure: ${t.message}")
             }
@@ -437,6 +661,39 @@ class JeffRepository() {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")
                 quotationUpdateMesage.value = message
+            }
+        })
+    }
+
+    //Network call update purchase
+    private fun updatePurchase(
+        id: Int,
+        jobNo: String,
+        quotationNo: String,
+        vat: Double,
+        date: String,
+        supplierName: String,
+        comment: String,
+        itemDes: String,
+        paymentMethod: String,
+        quantity: Int,
+        unitAmount: Double,
+        advanceAmount: Double,
+        discountAmount: Double,
+        totalAmount: Double
+    ) {
+        apiService.updatePurchase(
+            id, jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+        ).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Error updating purchase")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                purchaseUpdateMessage.value = message
             }
         })
     }
@@ -473,10 +730,26 @@ class JeffRepository() {
         })
     }
 
+    //Network call to delete company
+    private fun deleteCompany(companyId: Int) {
+
+        apiService.deleteCompany(companyId).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Error delete company")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                companyDeleteMessage.value = message
+            }
+        })
+    }
+
     //Network call to delte quotation
     private fun deleteQuotation(quotationId: Int) {
 
-        apiService.deleteQuotation(quotationId).enqueue(object :Callback<String>{
+        apiService.deleteQuotation(quotationId).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("quotation Delete failure: ${t.message} ")
             }
@@ -489,4 +762,19 @@ class JeffRepository() {
         })
     }
 
+    //Network call to delete purchase
+    private fun deletePurchase(purchaseId: Int) {
+
+        apiService.deletePurchase(purchaseId).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Error deleting purchase")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                purchaseDeleteMessage.value = message
+            }
+        })
+    }
 }

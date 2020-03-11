@@ -11,7 +11,7 @@
         android:id="@+id/drawer_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:openDrawer="start">
+        tools:openDrawer="">
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:id="@+id/main_coordinator_layout"
@@ -22,47 +22,60 @@
             <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:elevation="0dp"
-                android:background="@android:color/transparent">
+                android:background="@android:color/transparent"
+                app:elevation="0dp">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/main_toolbar"
                     android:layout_width="match_parent"
-                    app:titleTextColor="@android:color/white"
+                    android:layout_height="70dp"
                     android:background="@drawable/ic_jeffactionbar"
-                    android:layout_height="70dp">
-                    <TextView
+                    app:titleTextColor="@android:color/white">
+
+                    <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="@string/app_name"
-                        android:gravity="center"
+                        android:layout_height="wrap_content"
                         android:layout_marginEnd="32dp"
-                        android:fontFamily="@font/anton"
-                        android:layout_marginBottom="8dp"
-                        style="@style/TextAppearance.AppCompat.Headline"
-                        android:textColor="@android:color/white"/>
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:padding="8dp"
+                            android:src="@drawable/jeff_logo"/>
+                        <TextView
+                            style="@style/TextAppearance.AppCompat.Headline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/anton"
+                            android:text="@string/app_name"
+                            android:layout_marginStart="8dp"
+                            android:gravity="center"
+                            android:textColor="@android:color/white" />
+
+                    </LinearLayout>
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.AppBarLayout>
 
             <fragment
                 android:id="@+id/nav_host_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="70dp"
+                app:defaultNavHost="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:navGraph="@navigation/navigation"
-                app:defaultNavHost="true"
-                android:name="androidx.navigation.fragment.NavHostFragment" />
+                app:navGraph="@navigation/navigation" />
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
         <com.google.android.material.navigation.NavigationView
             android:id="@+id/navigation_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            app:menu="@menu/navigation_menu"
-            android:menuCategory = "secondary"
-            android:layout_gravity="start" />
+            android:layout_gravity="start"
+            android:menuCategory="secondary"
+            app:menu="@menu/navigation_menu" />
     </com.infideap.drawerbehavior.Advance3DDrawerLayout>
 </layout>

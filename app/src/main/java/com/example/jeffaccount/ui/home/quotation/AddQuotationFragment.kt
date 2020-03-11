@@ -9,8 +9,10 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -20,6 +22,7 @@ import com.example.jeffaccount.databinding.FragmentQuotationBinding
 import com.example.jeffaccount.model.QuotationPost
 import com.google.android.material.snackbar.Snackbar
 import com.itextpdf.text.*
+import com.itextpdf.text.pdf.BaseFont
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
@@ -47,6 +50,7 @@ class AddQuotationFragment : Fragment() {
             AddQuotationFragment()
     }
 
+    private var loadingDialog:AlertDialog? = null
     private lateinit var viewModel: AddQuotationViewModel
     private lateinit var quotationBinding: AddQuotationFragmentBinding
     private var vat: Double? = null
@@ -55,8 +59,8 @@ class AddQuotationFragment : Fragment() {
     private var discountAmount: Double? = null
     private var totalAmount: Double? = null
     private var qty = 0
-    private lateinit var quotationItem:QuotationPost
-    private lateinit var action:String
+    private lateinit var quotationItem: QuotationPost
+    private lateinit var action: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,11 +76,12 @@ class AddQuotationFragment : Fragment() {
         val arguments = AddQuotationFragmentArgs.fromBundle(arguments!!)
         action = arguments.updateQuotation
 
-        if (action.equals(getString(R.string.update))){
+        if (action.equals(getString(R.string.update))) {
             quotationItem = arguments.quotationItem!!
             quotationBinding.quotation = quotationItem
             quotationBinding.supplierUpdateButton.visibility = View.VISIBLE
             quotationBinding.saveQuotationButton.visibility = View.GONE
+            qty = quotationItem.quantity!!.toInt()
         }
 
         setHasOptionsMenu(true)
@@ -182,12 +187,26 @@ class AddQuotationFragment : Fragment() {
                     quotationBinding.quotationTotalAmountTextinputlayout.error =
                         "Enter Total Amount"
                 }
-                else ->{
-                    viewModel.addQuotaiton(jobNo,quotationNo,vat!!,date,customerName,comment,itemDes,paymentMethod
-                    ,qty,unitAmount!!,advanceAmount!!,discountAmount!!,totalAmount!!).observe(viewLifecycleOwner,
+                else -> {
+                    viewModel.addQuotaiton(
+                        jobNo,
+                        quotationNo,
+                        vat!!,
+                        date,
+                        customerName,
+                        comment,
+                        itemDes,
+                        paymentMethod
+                        ,
+                        qty,
+                        unitAmount!!,
+                        advanceAmount!!,
+                        discountAmount!!,
+                        totalAmount!!
+                    ).observe(viewLifecycleOwner,
                         Observer {
                             it?.let {
-                                Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                                 findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
                             }
                         })
@@ -280,12 +299,27 @@ class AddQuotationFragment : Fragment() {
                     quotationBinding.quotationTotalAmountTextinputlayout.error =
                         "Enter Total Amount"
                 }
-                else ->{
-                    viewModel.updateQuotation(quotationItem.qid!!.toInt(),jobNo,quotationNo,vat!!,date,customerName,comment,itemDes,paymentMethod
-                        ,qty,unitAmount!!,advanceAmount!!,discountAmount!!,totalAmount!!).observe(viewLifecycleOwner,
+                else -> {
+                    viewModel.updateQuotation(
+                        quotationItem.qid!!.toInt(),
+                        jobNo,
+                        quotationNo,
+                        vat!!,
+                        date,
+                        customerName,
+                        comment,
+                        itemDes,
+                        paymentMethod
+                        ,
+                        qty,
+                        unitAmount!!,
+                        advanceAmount!!,
+                        discountAmount!!,
+                        totalAmount!!
+                    ).observe(viewLifecycleOwner,
                         Observer {
                             it?.let {
-                                Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                                 findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
                             }
                         })
@@ -439,6 +473,8 @@ class AddQuotationFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        requestReadPermissions()
         viewModel = ViewModelProvider(this).get(AddQuotationViewModel::class.java)
         // TODO: Use the ViewModel
 
@@ -452,8 +488,8 @@ class AddQuotationFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if(action.equals(getString(R.string.update))){
-            inflater.inflate(R.menu.main_menu,menu)
+        if (action.equals(getString(R.string.update))) {
+            inflater.inflate(R.menu.main_menu, menu)
         }
     }
 
@@ -461,15 +497,33 @@ class AddQuotationFragment : Fragment() {
 
         val itemid = item.itemId
 
-        when(itemid){
-             R.id.delete_item->{
-                 viewModel.deleteQuotaton(quotationItem.qid!!.toInt()).observe(viewLifecycleOwner,
-                     Observer {
-                         Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
-                         findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
-                     })
-             }
-            R.id.convert_pdf_item->{
+        when (itemid) {
+            R.id.delete_item -> {
+                val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation,null)
+                val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+                builder?.setCancelable(false)
+                builder?.setView(layout)
+                val dialog = builder?.create()
+                dialog?.show()
+
+                val delButton = layout.findViewById<Button>(R.id.delete_button)
+                val canButton: Button = layout.findViewById(R.id.cancel_del_button)
+                delButton.setOnClickListener {
+                    viewModel.deleteQuotaton(quotationItem.qid!!.toInt()).observe(viewLifecycleOwner,
+                        Observer {
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            dialog?.dismiss()
+                            findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
+                        })
+                }
+                canButton.setOnClickListener {
+                    dialog?.dismiss()
+                }
+
+            }
+            R.id.convert_pdf_item -> {
+                loadingDialog = createLoadingDialog()
+                loadingDialog?.show()
                 createPdf()
             }
         }
@@ -479,12 +533,19 @@ class AddQuotationFragment : Fragment() {
     //Function to request read and write storage
     private fun requestReadPermissions() {
         Dexter.withActivity(activity)
-            .withPermissions( Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE )
+            .withPermissions(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
             .withListener(object : MultiplePermissionsListener {
                 override fun onPermissionsChecked(report: MultiplePermissionsReport) {
                     // check if all permissions are granted
                     if (report.areAllPermissionsGranted()) {
-                        Toast.makeText(context, "All permissions are granted by user!", Toast.LENGTH_SHORT)
+                        Toast.makeText(
+                                context,
+                                "All permissions are granted by user!",
+                                Toast.LENGTH_SHORT
+                            )
                             .show()
                     }
 
@@ -495,7 +556,10 @@ class AddQuotationFragment : Fragment() {
                     }
                 }
 
-                override fun onPermissionRationaleShouldBeShown(permissions: List<PermissionRequest>, token: PermissionToken) {
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: List<PermissionRequest>,
+                    token: PermissionToken
+                ) {
                     token.continuePermissionRequest()
                 }
             }).withErrorListener(object : PermissionRequestErrorListener {
@@ -508,70 +572,170 @@ class AddQuotationFragment : Fragment() {
     }
 
     //Permission to make pdf
-    private fun createPdf(){
-        val mDoc = Document(PageSize.A4,8f,8f,8f,8f)
-        val folder = File(Environment.getExternalStorageDirectory(),getString(R.string.app_name))
+    private fun createPdf() {
+        val mDoc = Document(PageSize.A4, 8f, 8f, 8f, 8f)
+        val folder = File(Environment.getExternalStorageDirectory(), getString(R.string.app_name))
         Timber.e(folder.absolutePath)
         var success = true
-        if(!folder.exists()){
+        if (!folder.exists()) {
             success = folder.mkdirs()
-            Toast.makeText(context, "Folder created",Toast.LENGTH_SHORT).show()
-        }else{
-            Toast.makeText(context, "Folder exists",Toast.LENGTH_SHORT).show()
         }
-        val mFileName = "jeff_account_."+SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault())
+        val mFileName = "jeff_account_." + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
             .format(System.currentTimeMillis())
-        val filePath =folder.absolutePath + "/" + mFileName + ".pdf"
+        val filePath = folder.absolutePath + "/" + mFileName + ".pdf"
 
         try {
-            PdfWriter.getInstance(mDoc,FileOutputStream(filePath))
+            PdfWriter.getInstance(mDoc, FileOutputStream(filePath))
             mDoc.open()
             val lineSeparator = LineSeparator()
-            lineSeparator.lineColor = BaseColor.BLUE
+            lineSeparator.lineColor = BaseColor.WHITE
 
-            val mChunk = Chunk(getString(R.string.quotation)
-                ,Font(Font.FontFamily.TIMES_ROMAN,16.0f))
+            val mChunk = Chunk(
+                getString(R.string.quotation)
+                , Font(Font.FontFamily.TIMES_ROMAN, 24.0f)
+            )
             val title = Paragraph(mChunk)
             title.alignment = Element.ALIGN_CENTER
             mDoc.add(title)
-            mDoc.add(Chunk(lineSeparator))
-
+            mDoc.add(lineSeparator)
+            mDoc.add(Paragraph(" "))
             val quotationBody = Paragraph()
             createQuotationTable(quotationBody)
             mDoc.add(quotationBody)
-            mDoc.close()
-            val snackBar = Snackbar.make(quotationBinding.addQuotationCoordinator,"Pdf Created", Snackbar.LENGTH_INDEFINITE)
-            snackBar.setAction("Open", View.OnClickListener {
+            mDoc.close().let {
+                loadingDialog?.dismiss()
+                Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Intent.ACTION_VIEW)
-                val data = Uri.parse("file://" +filePath)
-                intent.setDataAndType(data,"application/pdf")
+                val data = Uri.parse("file://" + filePath)
+                intent.setDataAndType(data, "application/pdf")
                 startActivity(Intent.createChooser(intent, "Open Pdf"))
-            })
-            snackBar.show()
-        }catch (e:Exception){
+            }
+        } catch (e: Exception) {
 
-            Timber.e(e.message)
+            Timber.e(e)
         }
     }
 
+    //Create Quotation table
     private fun createQuotationTable(quotationBody: Paragraph) {
 
-        val table = PdfPTable(floatArrayOf(5f,5f))
+        val table = PdfPTable(floatArrayOf(5f, 5f))
         table.widthPercentage = 100f
         table.defaultCell.isUseAscender = true
 
-        var cell = PdfPCell(Phrase("Job No", Font(Font.FontFamily.TIMES_ROMAN)))
-        var cell1 = PdfPCell(Phrase(quotationItem.jobNo))
+        val cell = PdfPCell(Phrase("Job No"))
+        cell.paddingBottom = 8f
+        cell.paddingLeft = 8f
+        val cell1 = PdfPCell(Phrase(quotationItem.jobNo))
+        cell1.paddingBottom = 8f
+        cell1.paddingLeft = 8f
+        val qnoCell = PdfPCell(Phrase("Qutation No"))
+        qnoCell.paddingBottom = 8f
+        qnoCell.paddingLeft = 8f
+        val qnoDCell = PdfPCell(Phrase(quotationItem.quotationNo))
+        qnoDCell.paddingBottom = 8f
+        qnoDCell.paddingLeft = 8f
+        val vatCell = PdfPCell(Phrase("Vat%"))
+        vatCell.paddingBottom = 8f
+        vatCell.paddingLeft = 8f
+        val vatDCell = PdfPCell(Phrase(quotationItem.vat))
+        vatDCell.paddingBottom = 8f
+        vatDCell.paddingLeft = 8f
+        val dateCell = PdfPCell(Phrase("Date"))
+        dateCell.paddingBottom = 8f
+        dateCell.paddingLeft = 8f
+        val dateDCell = PdfPCell(Phrase(quotationItem.date))
+        dateDCell.paddingBottom = 8f
+        dateDCell.paddingLeft = 8f
+        val nameCell = PdfPCell(Phrase("Customer Name"))
+        nameCell.paddingBottom = 8f
+        nameCell.paddingLeft = 8f
+        val nameDCell = PdfPCell(Phrase(quotationItem.customerName))
+        nameDCell.paddingBottom = 8f
+        nameDCell.paddingLeft = 8f
+        val commentCell = PdfPCell(Phrase("Special Instruction"))
+        commentCell.paddingBottom = 8f
+        commentCell.paddingLeft = 8f
+        val commentDCell = PdfPCell(Phrase(quotationItem.specialInstruction))
+        commentDCell.paddingBottom = 8f
+        commentDCell.paddingLeft = 8f
+        val desCell = PdfPCell(Phrase("Item Description"))
+        desCell.paddingBottom = 8f
+        desCell.paddingLeft = 8f
+        val desDCell = PdfPCell(Phrase(quotationItem.itemDescription))
+        desDCell.paddingBottom = 8f
+        desDCell.paddingLeft = 8f
+        val paymentCell = PdfPCell(Phrase("Payment Method"))
+        paymentCell.paddingBottom = 8f
+        paymentCell.paddingLeft = 8f
+        val paymentDCell = PdfPCell(Phrase(quotationItem.paymentMethod))
+        paymentDCell.paddingBottom = 8f
+        paymentDCell.paddingLeft = 8f
+        val qtyCell = PdfPCell(Phrase("Quantity"))
+        qtyCell.paddingBottom = 8f
+        qtyCell.paddingLeft = 8f
+        val qtyDCell = PdfPCell(Phrase(quotationItem.quantity))
+        qtyDCell.paddingBottom = 8f
+        qtyDCell.paddingLeft = 8f
+        val unitCell = PdfPCell(Phrase("Unit Amount"))
+        unitCell.paddingBottom = 8f
+        unitCell.paddingLeft = 8f
+        val unitDCell = PdfPCell(Phrase(quotationItem.unitAmount))
+        unitDCell.paddingBottom = 8f
+        unitDCell.paddingLeft = 8f
+        val advanceCell = PdfPCell(Phrase("Advance Amount"))
+        advanceCell.paddingBottom = 8f
+        advanceCell.paddingLeft = 8f
+        val advanceDCell = PdfPCell(Phrase(quotationItem.advanceAmount))
+        advanceDCell.paddingBottom = 8f
+        advanceDCell.paddingLeft = 8f
+        val discountCell = PdfPCell(Phrase("Discount Amount"))
+        discountCell.paddingBottom = 8f
+        discountCell.paddingLeft = 8f
+        val discountDcell = PdfPCell(Phrase(quotationItem.discountAmount))
+        discountDcell.paddingBottom = 8f
+        discountDcell.paddingLeft = 8f
+        val totalCell = PdfPCell(Phrase("Total Amount"))
+        totalCell.paddingBottom = 8f
+        totalCell.paddingLeft = 8f
+        val totalDCell = PdfPCell(Phrase(quotationItem.totalAmount))
+        totalDCell.paddingBottom = 8f
+        totalDCell.paddingLeft = 8f
         table.addCell(cell)
         table.addCell(cell1)
-        table.addCell(PdfPCell(Phrase("Qutation No")))
-        table.addCell(PdfPCell(Phrase(quotationItem.quotationNo)))
-        table.addCell(PdfPCell(Phrase("Vat%")))
-        table.addCell(PdfPCell(Phrase(quotationItem.vat)))
-//        table.addCell(PdfPCell(Phrase("Qutation No")))
-//        table.addCell(PdfPCell(Phrase("Qutation No")))
-//        table.addCell(PdfPCell(Phrase("Qutation No")))
-//        table.addCell(PdfPCell(Phrase("Qutation No")))
+        table.addCell(qnoCell)
+        table.addCell(qnoDCell)
+        table.addCell(vatCell)
+        table.addCell(vatDCell)
+        table.addCell(dateCell)
+        table.addCell(dateDCell)
+        table.addCell(nameCell)
+        table.addCell(nameDCell)
+        table.addCell(commentCell)
+        table.addCell(commentDCell)
+        table.addCell(desCell)
+        table.addCell(desDCell)
+        table.addCell(paymentCell)
+        table.addCell(paymentDCell)
+        table.addCell(qtyCell)
+        table.addCell(qtyDCell)
+        table.addCell(unitCell)
+        table.addCell(unitDCell)
+        table.addCell(advanceCell)
+        table.addCell(advanceDCell)
+        table.addCell(discountCell)
+        table.addCell(discountDcell)
+        table.addCell(totalCell)
+        table.addCell(totalDCell)
         quotationBody.add(table)
+    }
+
+    //Create a loading Dialog
+    private fun createLoadingDialog(): AlertDialog? {
+        val layout = LayoutInflater.from(context).inflate(R.layout.loading_layout, null)
+        val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+        builder?.setCancelable(false)
+        builder?.setView(layout)
+        return builder?.create()
     }
 }

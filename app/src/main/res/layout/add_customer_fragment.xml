@@ -73,7 +73,9 @@
                 android:drawableEnd="@drawable/ic_arrow_drop_down_white_24dp"
                 android:fontFamily="@font/anton"
                 android:padding="16dp"
-                android:text="@string/country"
+                android:text="@string/united_kingdom"
+                android:textColorHint="@android:color/white"
+                android:hint="@string/country"
                 android:textColor="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -106,7 +108,7 @@
                     android:hint="@string/post_code"
                     android:text="@{customer.postcode}"
                     android:textColor="@android:color/white"
-                    android:inputType="text|number"
+                    android:inputType="text"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 

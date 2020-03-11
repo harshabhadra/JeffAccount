@@ -57,9 +57,6 @@
         <argument
             android:name="add"
             app:argType="string" />
-        <action
-            android:id="@+id/action_addCustomer_to_customerPdfFragment"
-            app:destination="@id/customerPdfFragment" />
     </fragment>
     <fragment
         android:id="@+id/addSupplierFragment"
@@ -76,9 +73,6 @@
         <argument
             android:name="update"
             app:argType="string" />
-        <action
-            android:id="@+id/action_addSupplierFragment_to_supplierPdfFragment"
-            app:destination="@id/supplierPdfFragment" />
     </fragment>
     <fragment
         android:id="@+id/addQuotationFragment"
@@ -140,22 +134,5 @@
         <action
             android:id="@+id/action_purchaseFragment_to_addPurchaseFragment"
             app:destination="@id/addPurchaseFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/customerPdfFragment"
-        android:name="com.example.jeffaccount.ui.home.customer.CustomerPdfFragment"
-        android:label="CustomerPdfFragment" >
-        <argument
-            android:name="customer_pdf"
-            app:argType="com.example.jeffaccount.model.Post" />
-    </fragment>
-    <fragment
-        android:id="@+id/supplierPdfFragment"
-        android:name="com.example.jeffaccount.ui.home.supplier.SupplierPdfFragment"
-        android:label="fragment_supplier_pdf"
-        tools:layout="@layout/fragment_supplier_pdf" >
-        <argument
-            android:name="supplier_pdf"
-            app:argType="com.example.jeffaccount.model.SupPost" />
     </fragment>
 </navigation>

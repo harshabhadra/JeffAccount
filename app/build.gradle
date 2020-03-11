@@ -108,4 +108,7 @@ dependencies {
     implementation 'com.karumi:dexter:5.0.0'
     //write pdf library
     implementation 'com.itextpdf:itextg:5.5.10'
+
+    //Date Picker
+    implementation 'com.github.drawers:SpinnerDatePicker:2.0.1'
 }

@@ -1,7 +1,11 @@
 package com.example.jeffaccount.ui.home.customer
 
+import android.Manifest
 import android.app.AlertDialog
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -15,8 +19,25 @@ import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddCustomerFragmentBinding
 import com.example.jeffaccount.model.Post
+import com.itextpdf.text.*
+import com.itextpdf.text.pdf.PdfPCell
+import com.itextpdf.text.pdf.PdfPTable
+import com.itextpdf.text.pdf.PdfWriter
+import com.itextpdf.text.pdf.draw.LineSeparator
+import com.karumi.dexter.Dexter
+import com.karumi.dexter.MultiplePermissionsReport
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.DexterError
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.PermissionRequestErrorListener
+import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.lang.Exception
 import java.lang.NumberFormatException
+import java.text.SimpleDateFormat
+import java.util.*
 
 private var loadingDialog: androidx.appcompat.app.AlertDialog? = null
 
@@ -28,8 +49,8 @@ class AddCustomerFragment : Fragment() {
     }
 
     private lateinit var viewModel: CustomerViewModel
-    private lateinit var customer:Post
-    private lateinit var action:String
+    private lateinit var customer: Post
+    private lateinit var action: String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -241,6 +262,7 @@ class AddCustomerFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(CustomerViewModel::class.java)
+        requestReadPermissions()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -253,8 +275,8 @@ class AddCustomerFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         val id = item.itemId
-        if (id == R.id.delete_item){
-            val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation,null)
+        if (id == R.id.delete_item) {
+            val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
             val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
             builder?.setCancelable(false)
             builder?.setView(layout)
@@ -262,7 +284,7 @@ class AddCustomerFragment : Fragment() {
             dialog?.show()
 
             val delButton = layout.findViewById<Button>(R.id.delete_button)
-            val canButton:Button = layout.findViewById(R.id.cancel_del_button)
+            val canButton: Button = layout.findViewById(R.id.cancel_del_button)
 
             delButton.setOnClickListener {
                 loadingDialog = createLoadingDialog()
@@ -275,9 +297,9 @@ class AddCustomerFragment : Fragment() {
                 dialog?.dismiss()
             }
 
-        }else if (id == R.id.convert_pdf_item){
+        } else if (id == R.id.convert_pdf_item) {
             Timber.e("Pdf click")
-            this.findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToCustomerPdfFragment(customer))
+            createPdf()
         }
         return true
     }
@@ -286,7 +308,7 @@ class AddCustomerFragment : Fragment() {
     private fun addCustomer(
         customerName: String,
         streetAdd: String,
-        coutry: String,
+        coutry: String = getString(R.string.united_kingdom),
         postCode: String,
         telephone: String,
         email: String,
@@ -328,13 +350,13 @@ class AddCustomerFragment : Fragment() {
     }
 
     //Delete User
-    private fun deleteUser(customerId: String){
+    private fun deleteUser(customerId: String) {
         viewModel.deleteUser(customerId).observe(viewLifecycleOwner, Observer {
             it?.let {
                 Toast.makeText(context, it, Toast.LENGTH_LONG).show()
                 loadingDialog?.dismiss()
                 findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToCustomerFragment())
-            }?:let {
+            } ?: let {
                 loadingDialog?.dismiss()
             }
         })
@@ -347,5 +369,156 @@ class AddCustomerFragment : Fragment() {
         builder?.setCancelable(false)
         builder?.setView(layout)
         return builder?.create()
+    }
+
+    //Permission to make pdf
+    private fun createPdf() {
+        val mDoc = Document(PageSize.A4, 8f, 8f, 8f, 8f)
+        val folder = File(Environment.getExternalStorageDirectory(), getString(R.string.app_name))
+        Timber.e(folder.absolutePath)
+        var success = true
+        if (!folder.exists()) {
+            success = folder.mkdirs()
+        }
+        val mFileName =
+            "jeff_account_." + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
+                .format(System.currentTimeMillis())
+        val filePath = folder.absolutePath + "/" + mFileName + ".pdf"
+
+        try {
+            PdfWriter.getInstance(mDoc, FileOutputStream(filePath))
+            mDoc.open()
+            val lineSeparator = LineSeparator()
+            lineSeparator.lineColor = BaseColor.WHITE
+
+            val mChunk = Chunk(
+                getString(R.string.customer)
+                , Font(Font.FontFamily.TIMES_ROMAN, 24.0f)
+            )
+            val title = Paragraph(mChunk)
+            title.alignment = Element.ALIGN_CENTER
+            mDoc.add(title)
+            mDoc.add(lineSeparator)
+            mDoc.add(Paragraph(" "))
+            val customerBody = Paragraph()
+            createCustomerTable(customerBody)
+            mDoc.add(customerBody)
+            mDoc.close().let {
+                Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
+                val intent = Intent(Intent.ACTION_VIEW)
+                val data = Uri.parse("file://" + filePath)
+                intent.setDataAndType(data, "application/pdf")
+                startActivity(Intent.createChooser(intent, "Open Pdf"))
+            }
+        } catch (e: Exception) {
+
+            Timber.e(e)
+        }
+    }
+
+    private fun createCustomerTable(customerBody: Paragraph) {
+
+        val table = PdfPTable(floatArrayOf(5f, 5f))
+        table.widthPercentage = 100f
+        table.defaultCell.isUseAscender = true
+
+        val nameCell = PdfPCell(Phrase("Name"))
+        nameCell.paddingLeft = 8f
+        nameCell.paddingBottom = 8f
+        val nameDCell = PdfPCell(Phrase(customer.custname))
+        nameDCell.paddingLeft = 8f
+        nameDCell.paddingBottom = 8f
+        val addressCell = PdfPCell(Phrase("Street Address"))
+        addressCell.paddingLeft = 8f
+        addressCell.paddingBottom = 8f
+        val addrDCell = PdfPCell(Phrase(customer.street))
+        addrDCell.paddingBottom = 8f
+        addrDCell.paddingLeft = 8f
+        val countryCell = PdfPCell(Phrase("Country"))
+        countryCell.paddingLeft = 8f
+        countryCell.paddingBottom = 8f
+        val countryDCell = PdfPCell(Phrase(customer.country))
+        countryDCell.paddingBottom = 8f
+        countryDCell.paddingLeft = 8f
+        val postCell = PdfPCell(Phrase("Post Code"))
+        val postDCell = PdfPCell(Phrase(customer.postcode))
+        postCell.paddingLeft = 8f
+        postCell.paddingBottom = 8f
+        postDCell.paddingBottom = 8f
+        postDCell.paddingLeft = 8f
+        val phoneCell = PdfPCell(Phrase("Telephone No"))
+        val phoneDCell = PdfPCell(Phrase(customer.telephone))
+        val emailCell = PdfPCell(Phrase("Email Address"))
+        val emailDCell = PdfPCell(Phrase(customer.customeremail))
+        val webCell = PdfPCell(Phrase("Web Address"))
+        val webDCell = PdfPCell(Phrase(customer.web))
+        phoneCell.paddingLeft = 8f
+        phoneDCell.paddingLeft = 8f
+        emailCell.paddingLeft = 8f
+        emailDCell.paddingLeft = 8f
+        webCell.paddingLeft = 8f
+        webDCell.paddingLeft = 8f
+        webDCell.paddingBottom = 8f
+        webCell.paddingBottom = 8f
+        phoneCell.paddingBottom = 8f
+        phoneDCell.paddingBottom = 8f
+        emailCell.paddingBottom = 8f
+        emailDCell.paddingBottom = 8f
+        table.addCell(nameCell)
+        table.addCell(nameDCell)
+        table.addCell(addressCell)
+        table.addCell(addrDCell)
+        table.addCell(countryCell)
+        table.addCell(countryDCell)
+        table.addCell(postCell)
+        table.addCell(postDCell)
+        table.addCell(phoneCell)
+        table.addCell(phoneDCell)
+        table.addCell(emailCell)
+        table.addCell(emailDCell)
+        table.addCell(webCell)
+        table.addCell(webDCell)
+        customerBody.add(table)
+    }
+
+    //Function to request read and write storage
+    private fun requestReadPermissions() {
+        Dexter.withActivity(activity)
+            .withPermissions(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+            .withListener(object : MultiplePermissionsListener {
+                override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+                    // check if all permissions are granted
+                    if (report.areAllPermissionsGranted()) {
+                        Toast.makeText(
+                                context,
+                                "All permissions are granted by user!",
+                                Toast.LENGTH_SHORT
+                            )
+                            .show()
+                    }
+
+                    // check for permanent denial of any permission
+                    if (report.isAnyPermissionPermanentlyDenied) {
+                        // show alert dialog navigating to Settings
+                        //openSettingsDialog();
+                    }
+                }
+
+                override fun onPermissionRationaleShouldBeShown(
+                    permissions: List<PermissionRequest>,
+                    token: PermissionToken
+                ) {
+                    token.continuePermissionRequest()
+                }
+            }).withErrorListener(object : PermissionRequestErrorListener {
+                override fun onError(error: DexterError) {
+                    Toast.makeText(context, "Some Error! ", Toast.LENGTH_SHORT).show()
+                }
+            })
+            .onSameThread()
+            .check()
     }
 }

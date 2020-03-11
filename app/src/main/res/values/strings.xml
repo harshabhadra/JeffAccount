@@ -71,4 +71,6 @@
     <string name="enter_customer_name">Enter Customer Name</string>
     <string name="enter_comment">Enter Comment</string>
     <string name="enter_item_des">Enter Item Description</string>
+    <string name="united_kingdom">United Kingdom</string>
+    <string name="enter_supplier_name">Enter Supplier Name</string>
 </resources>
