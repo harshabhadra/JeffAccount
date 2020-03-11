@@ -4,13 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="quotation"
+            type="com.example.jeffaccount.model.QuotationPost" />
     </data>
 
     <ScrollView
         android:layout_height="match_parent"
         android:background="@drawable/loginpage"
         android:layout_width="match_parent">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/add_quotation_coordinator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -35,6 +42,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="text|number"
                     android:maxLines="1"
+                    android:text="@{quotation.jobNo}"
                     android:hint="@string/job_no" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -56,6 +64,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{quotation.quotationNo}"
                     android:hint="@string/quotation_no" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -77,6 +86,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{String.valueOf(quotation.vat)}"
                     android:hint="@string/vat" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -96,6 +106,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
+                    android:text="@{quotation.date}"
                     android:hint="@string/date" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -117,6 +128,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="text"
                     android:maxLines="1"
+                    android:text="@{quotation.customerName}"
                     android:hint="@string/customer_name" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -138,6 +150,7 @@
                     android:textColor="@android:color/white"
                     android:maxLines="1"
                     android:inputType="textMultiLine"
+                    android:text="@{quotation.specialInstruction}"
                     android:hint="@string/special_instruction_comment" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -158,6 +171,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
                     android:inputType="textMultiLine"
+                    android:text="@{quotation.itemDescription}"
                     android:hint="@string/item_description" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -177,6 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
+                    android:text="@{quotation.paymentMethod}"
                     android:hint="@string/payment_method" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -209,7 +224,7 @@
                 android:id="@+id/quotation_qty_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:text="0"
+                android:text="@{String.valueOf(quotation.quantity)}"
                 android:textColor="@android:color/black"
                 android:gravity="center"
                 android:background="@android:color/white"
@@ -249,6 +264,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{String.valueOf(quotation.unitAmount)}"
                     android:hint="@string/unit_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -270,6 +286,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{String.valueOf(quotation.advanceAmount)}"
                     android:hint="@string/advance_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -291,6 +308,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{String.valueOf(quotation.discountAmount)}"
                     android:hint="@string/discount_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -312,6 +330,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{String.valueOf(quotation.totalAmount)}"
                     android:hint="@string/total_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -322,7 +341,9 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
                 android:text="@string/save"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/supplier_update_button"
                 app:layout_constraintTop_toBottomOf="@+id/quotation_total_amount_textinputlayout" />
@@ -334,41 +355,14 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:text="@string/edit"
+                android:layout_marginBottom="32dp"
+                android:text="@string/update"
                 android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/save_quotation_button"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/quotation_total_amount_textinputlayout" />
-
-            <Button
-                android:id="@+id/supplier_delete_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
-                android:text="@string/delete"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/supplier_print_button"
-                app:layout_constraintTop_toBottomOf="@+id/save_quotation_button" />
-
-            <Button
-                android:id="@+id/supplier_print_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="32dp"
-                android:text="@string/print"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/supplier_delete_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/save_quotation_button" />
         </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </ScrollView>
 </layout>

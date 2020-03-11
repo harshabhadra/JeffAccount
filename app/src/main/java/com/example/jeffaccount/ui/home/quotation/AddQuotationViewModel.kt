@@ -19,8 +19,10 @@ class AddQuotationViewModel : ViewModel() {
     val quotationQuantityValue: LiveData<Int>
         get() = _quotationQuantityValue
 
+
     init {
         _quotationQuantityValue.value = 0
+        _navigateToAddQuotationFragment.value = null
     }
 
     //Add Quotation
@@ -106,8 +108,17 @@ class AddQuotationViewModel : ViewModel() {
         _quotationQuantityValue.value = quantity
     }
 
-    //SusTrace Quantity
+    //Subtract Quantity
     fun removeQuantity(quantity: Int) {
         _quotationQuantityValue.value = quantity
+    }
+
+    //On Quotation item click
+    fun onQuotationItemClick(quotation:QuotationPost){
+        _navigateToAddQuotationFragment.value = quotation
+    }
+
+    fun doneNavigating(){
+        _navigateToAddQuotationFragment.value = null
     }
 }

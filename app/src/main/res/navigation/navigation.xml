@@ -88,6 +88,13 @@
             android:id="@+id/action_addQuotationFragment_to_quotationFragment"
             app:destination="@id/quotationFragment"
             app:popUpTo="@id/homeFragment" />
+        <argument
+            android:name="quotation_item"
+            app:argType="com.example.jeffaccount.model.QuotationPost"
+            app:nullable="true" />
+        <argument
+            android:name="update_quotation"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/addPurchaseFragment"
