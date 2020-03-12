@@ -21,6 +21,9 @@
         <action
             android:id="@+id/action_homeFragment_to_purchaseFragment"
             app:destination="@id/purchaseFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_companyFragment"
+            app:destination="@id/companyFragment" />
     </fragment>
     <fragment
         android:id="@+id/aboutFragment"
@@ -141,5 +144,30 @@
         <action
             android:id="@+id/action_purchaseFragment_to_addPurchaseFragment"
             app:destination="@id/addPurchaseFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/companyFragment"
+        android:name="com.example.jeffaccount.ui.home.company.CompanyFragment"
+        android:label="company_fragment"
+        tools:layout="@layout/company_fragment" >
+        <action
+            android:id="@+id/action_companyFragment_to_addCompanyFragment"
+            app:destination="@id/addCompanyFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addCompanyFragment"
+        android:name="com.example.jeffaccount.ui.home.company.AddCompanyFragment"
+        android:label="AddCompanyFragment" >
+        <action
+            android:id="@+id/action_addCompanyFragment_to_companyFragment"
+            app:destination="@id/companyFragment"
+            app:popUpTo="@id/homeFragment" />
+        <argument
+            android:name="company_item"
+            app:argType="com.example.jeffaccount.model.ComPost"
+            app:nullable="true" />
+        <argument
+            android:name="action"
+            app:argType="string" />
     </fragment>
 </navigation>

@@ -95,6 +95,9 @@ class HomeFragment : Fragment() {
             getString(R.string.purchase)->{
                 findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToPurchaseFragment())
             }
+            getString(R.string.company)->{
+                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCompanyFragment())
+            }
         }
     }
 }

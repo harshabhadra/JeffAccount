@@ -5,10 +5,10 @@
     <item android:id="@+id/convert_pdf_item"
         android:title="@string/create_pdf"
         android:icon="@drawable/ic_picture_as_pdf_white_24dp"
-        app:showAsAction="always"/>
+        app:showAsAction="ifRoom"/>
 
     <item android:id="@+id/delete_item"
         android:title="@string/delete"
         android:icon="@drawable/ic_delete_white_24dp"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="never"/>
 </menu>

@@ -80,4 +80,6 @@
     <string name="enter_total_amount">Enter Total Amount</string>
     <string name="company">Company</string>
     <string name="add_new_companies">Add new Companies</string>
+    <string name="enter_company_name">Enter Company Name</string>
+    <string name="enter_street_address">Enter street address</string>
 </resources>
