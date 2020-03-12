@@ -79,31 +79,27 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:text="@{String.valueOf(purchase.vat)}"
+                    android:text="@{purchase.vat}"
                     android:layout_height="wrap_content"
                     android:hint="@string/vat" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <TextView
                 android:id="@+id/purchase_date_textInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:padding="16dp"
+                android:text="@{purchase.date}"
+                android:hint="@string/date"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:drawableEnd="@drawable/ic_edit_white_24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_vat_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_date_textInput"
-                    android:layout_width="match_parent"
-                    android:textColor="@android:color/white"
-                    android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:text="@{purchase.date}"
-                    android:hint="@string/date" />
-            </com.google.android.material.textfield.TextInputLayout>
+                app:layout_constraintTop_toBottomOf="@+id/purchase_vat_textInputLayout"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/purchase_supplier_textInputLayout"

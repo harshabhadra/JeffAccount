@@ -32,6 +32,7 @@ import com.karumi.dexter.listener.DexterError
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.PermissionRequestErrorListener
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -40,7 +41,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class AddPurchaseFragment : Fragment() {
+class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
     private lateinit var purchaseBinding: AddPurchaseFragmentBinding
     private lateinit var action: String
@@ -102,7 +103,7 @@ class AddPurchaseFragment : Fragment() {
             if (vat.isNotEmpty()) {
                 _vat = vat.toDouble()
             }
-            val date = purchaseBinding.purchaseDateTextInput.text.toString()
+            val date = purchaseBinding.purchaseDateTextInputLayout.text.toString()
             val supplierName = purchaseBinding.purchaseSupplierTextInput.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
             val itemDes = purchaseBinding.purchaseItemdesTextInput.text.toString()
@@ -193,7 +194,7 @@ class AddPurchaseFragment : Fragment() {
             if (vat.isNotEmpty()) {
                 _vat = vat.toDouble()
             }
-            val date = purchaseBinding.purchaseDateTextInput.text.toString()
+            val date = purchaseBinding.purchaseDateTextInputLayout.text.toString()
             val supplierName = purchaseBinding.purchaseSupplierTextInput.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
             val itemDes = purchaseBinding.purchaseItemdesTextInput.text.toString()
@@ -438,6 +439,19 @@ class AddPurchaseFragment : Fragment() {
                 purchaseBinding.purchaseQtyTv.text = it.toString()
             }
         })
+
+        //Set on click listener to date tv
+        purchaseBinding.purchaseDateTextInputLayout.setOnClickListener {
+            val now = Calendar.getInstance()
+            val dpd =
+                DatePickerDialog.newInstance(
+                    this,
+                    now[Calendar.YEAR],  // Initial year selection
+                    now[Calendar.MONTH],  // Initial month selection
+                    now[Calendar.DAY_OF_MONTH] // Inital day selection
+                )
+            dpd.show(activity?.supportFragmentManager!!, "Datepickerdialog")
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -474,7 +488,7 @@ class AddPurchaseFragment : Fragment() {
                     dialog?.dismiss()
                 }
             }
-            R.id.convert_pdf_item->{
+            R.id.convert_pdf_item -> {
                 createPdf()
             }
         }
@@ -531,8 +545,9 @@ class AddPurchaseFragment : Fragment() {
         if (!folder.exists()) {
             success = folder.mkdirs()
         }
-        val mFileName = "jeff_account_." + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
-            .format(System.currentTimeMillis())
+        val mFileName =
+            "jeff_account_." + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
+                .format(System.currentTimeMillis())
         val filePath = folder.absolutePath + "/" + mFileName + ".pdf"
 
         try {
@@ -542,7 +557,7 @@ class AddPurchaseFragment : Fragment() {
             lineSeparator.lineColor = BaseColor.WHITE
 
             val jeffChunk = Chunk(
-                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN,32.0f)
+                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN, 32.0f)
             )
             val heading = Paragraph(jeffChunk)
             heading.alignment = Element.ALIGN_CENTER
@@ -684,5 +699,9 @@ class AddPurchaseFragment : Fragment() {
         table.addCell(totalCell)
         table.addCell(totalDCell)
         purchaseBody.add(table)
+    }
+
+    override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        purchaseBinding.purchaseDateTextInputLayout.text = viewModel.changeDateFormat(dayOfMonth,monthOfYear,year)
     }
 }

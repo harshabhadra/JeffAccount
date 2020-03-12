@@ -86,29 +86,26 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:text="@{String.valueOf(quotation.vat)}"
+                    android:text="@{quotation.vat}"
                     android:hint="@string/vat" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <TextView
                 android:id="@+id/quotation_date_textInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:padding="16dp"
+                android:drawableEnd="@drawable/ic_edit_white_24dp"
+                android:hint="@string/date"
+                android:text="@{quotation.date}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/quotation_vat_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/quotation_date_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:text="@{quotation.date}"
-                    android:hint="@string/date" />
-            </com.google.android.material.textfield.TextInputLayout>
+                app:layout_constraintTop_toBottomOf="@+id/quotation_vat_textInputLayout"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/quotation_customer_name_textInputLayout"
@@ -224,7 +221,7 @@
                 android:id="@+id/quotation_qty_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:text="@{String.valueOf(quotation.quantity)}"
+                android:text="@{quotation.quantity}"
                 android:textColor="@android:color/black"
                 android:gravity="center"
                 android:background="@android:color/white"
@@ -264,7 +261,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:text="@{String.valueOf(quotation.unitAmount)}"
+                    android:text="@{quotation.unitAmount}"
                     android:hint="@string/unit_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -286,7 +283,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:text="@{String.valueOf(quotation.advanceAmount)}"
+                    android:text="@{quotation.advanceAmount}"
                     android:hint="@string/advance_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -308,7 +305,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:text="@{String.valueOf(quotation.discountAmount)}"
+                    android:text="@{quotation.discountAmount}"
                     android:hint="@string/discount_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -330,7 +327,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
-                    android:text="@{String.valueOf(quotation.totalAmount)}"
+                    android:text="@{quotation.totalAmount}"
                     android:hint="@string/total_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 

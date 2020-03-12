@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
 import com.example.jeffaccount.model.Purchase
 import com.example.jeffaccount.model.PurchasePost
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AddPurchaseViewModel : ViewModel() {
 
@@ -19,6 +21,10 @@ class AddPurchaseViewModel : ViewModel() {
     private var _navigateToAddPurchaseFragment = MutableLiveData<PurchasePost>()
     val navigateToAddPurchaseFragment: LiveData<PurchasePost>
         get() = _navigateToAddPurchaseFragment
+
+    private var _dateString = MutableLiveData<String>()
+    val dateString: LiveData<String>
+        get() = _dateString
 
     init {
         _navigateToAddPurchaseFragment.value = null
@@ -90,5 +96,20 @@ class AddPurchaseViewModel : ViewModel() {
 
     fun doneNavigating(){
         _navigateToAddPurchaseFragment.value = null
+    }
+
+    //Format Date
+    fun changeDateFormat(day: Int, month: Int, year: Int): String {
+
+        val calender = Calendar.getInstance()
+        calender.set(year, month, day)
+        val d = calender.time
+        _dateString.value = d.toString("E, dd MMM yyyy")
+        return d.toString("E, dd MMM yyyy")
+    }
+
+    private fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String {
+        val formatter = SimpleDateFormat(format, locale)
+        return formatter.format(this)
     }
 }

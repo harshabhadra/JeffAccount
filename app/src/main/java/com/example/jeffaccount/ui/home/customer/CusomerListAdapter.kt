@@ -9,12 +9,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.jeffaccount.databinding.CustomerListItemBinding
 import com.example.jeffaccount.model.Post
 
-class CusomerListAdapter(val clickListener:CustomerItemListener) :
+class CusomerListAdapter(val clickListener: CustomerItemListener) :
     ListAdapter<Post, CusomerListAdapter.CustomerListViewHolder>(CustomerListDiffUtilCallBack()) {
 
     class CustomerListViewHolder private constructor(val binding: CustomerListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(clickListener: CustomerItemListener,item: Post) {
+        fun bind(clickListener: CustomerItemListener, item: Post) {
             binding.post = item
             binding.clickListener = clickListener
         }
@@ -36,7 +36,7 @@ class CusomerListAdapter(val clickListener:CustomerItemListener) :
     override fun onBindViewHolder(holder: CustomerListViewHolder, position: Int) {
 
         val item = getItem(position)
-        holder.bind(clickListener,item)
+        holder.bind(clickListener, item)
 
     }
 }

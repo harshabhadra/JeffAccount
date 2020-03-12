@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
 import com.example.jeffaccount.model.Quotation
 import com.example.jeffaccount.model.QuotationPost
+import com.itextpdf.xmp.XMPDateTimeFactory.getCurrentDateTime
+import java.text.SimpleDateFormat
+import java.util.*
 
 class AddQuotationViewModel : ViewModel() {
 
@@ -19,6 +22,10 @@ class AddQuotationViewModel : ViewModel() {
     val quotationQuantityValue: LiveData<Int>
         get() = _quotationQuantityValue
 
+    //Current Date String
+    private var _dateString = MutableLiveData<String>()
+    val dateString: LiveData<String>
+        get() = _dateString
 
     init {
         _quotationQuantityValue.value = 0
@@ -120,5 +127,31 @@ class AddQuotationViewModel : ViewModel() {
 
     fun doneNavigating(){
         _navigateToAddQuotationFragment.value = null
+    }
+
+    //Get current Date
+    fun getDate() {
+        val date = getCurrentDateTime()
+        _dateString.value = date.toString("E, dd MMM yyyy")
+    }
+
+    private fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String {
+        val formatter = SimpleDateFormat(format, locale)
+        return formatter.format(this)
+    }
+
+    //Get Current Time
+    private fun getCurrentDateTime(): Date {
+        return Calendar.getInstance().time
+    }
+
+    //Format Date
+    fun changeDateFormat(day: Int, month: Int, year: Int): String {
+
+        val calender = Calendar.getInstance()
+        calender.set(year, month, day)
+        val d = calender.time
+        _dateString.value = d.toString("E, dd MMM yyyy")
+        return d.toString("E, dd MMM yyyy")
     }
 }

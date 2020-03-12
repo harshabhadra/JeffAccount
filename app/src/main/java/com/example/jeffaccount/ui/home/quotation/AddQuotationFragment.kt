@@ -34,6 +34,7 @@ import com.karumi.dexter.listener.DexterError
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.PermissionRequestErrorListener
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -43,7 +44,7 @@ import java.util.*
 import java.util.concurrent.Phaser
 
 
-class AddQuotationFragment : Fragment() {
+class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
 
     companion object {
         fun newInstance() =
@@ -102,6 +103,17 @@ class AddQuotationFragment : Fragment() {
             viewModel.removeQuantity(qty)
         }
 
+        quotationBinding.quotationDateTextInputLayout.setOnClickListener {
+            val now = Calendar.getInstance()
+            val dpd =
+                DatePickerDialog.newInstance(
+                    this,
+                    now[Calendar.YEAR],  // Initial year selection
+                    now[Calendar.MONTH],  // Initial month selection
+                    now[Calendar.DAY_OF_MONTH] // Inital day selection
+                )
+            dpd.show(activity?.supportFragmentManager!!, "Datepickerdialog")
+        }
         //Set on click listener to the quotation save button
         quotationBinding.saveQuotationButton.setOnClickListener {
             val jobNo = quotationBinding.quotationJobTextInput.text.toString()
@@ -110,7 +122,7 @@ class AddQuotationFragment : Fragment() {
             if (quotationBinding.quotationVatTextInput.text.toString().isNotEmpty()) {
                 vat = quotationBinding.quotationVatTextInput.text.toString().toDouble()
             }
-            val date = quotationBinding.quotationDateTextInput.text.toString()
+            val date = quotationBinding.quotationDateTextInputLayout.text.toString()
             val customerName = quotationBinding.quotationCustomerNameTextInput.text.toString()
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
             val itemDes = quotationBinding.quotationItemdesTextInput.text.toString()
@@ -222,7 +234,7 @@ class AddQuotationFragment : Fragment() {
             if (quotationBinding.quotationVatTextInput.text.toString().isNotEmpty()) {
                 vat = quotationBinding.quotationVatTextInput.text.toString().toDouble()
             }
-            val date = quotationBinding.quotationDateTextInput.text.toString()
+            val date = quotationBinding.quotationDateTextInputLayout.text.toString()
             val customerName = quotationBinding.quotationCustomerNameTextInput.text.toString()
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
             val itemDes = quotationBinding.quotationItemdesTextInput.text.toString()
@@ -476,14 +488,23 @@ class AddQuotationFragment : Fragment() {
 
         requestReadPermissions()
         viewModel = ViewModelProvider(this).get(AddQuotationViewModel::class.java)
-        // TODO: Use the ViewModel
 
+        //Observe quantity value
         viewModel.quotationQuantityValue.observe(viewLifecycleOwner, Observer {
             it?.let {
-                Timber.e("${it.toString()}")
+                Timber.e("$it")
                 quotationBinding.quotationQtyTv.text = it.toString()
             }
         })
+
+        viewModel.dateString.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                Timber.e(it)
+                quotationBinding.quotationDateTextInputLayout.setText(it)
+            }
+        })
+
+        viewModel.getDate()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -742,5 +763,9 @@ class AddQuotationFragment : Fragment() {
         builder?.setCancelable(false)
         builder?.setView(layout)
         return builder?.create()
+    }
+
+    override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
+        quotationBinding.quotationDateTextInputLayout.setText(viewModel.changeDateFormat(dayOfMonth,monthOfYear,year))
     }
 }
