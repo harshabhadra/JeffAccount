@@ -292,12 +292,18 @@ class AddSupplierFragment : Fragment() {
             val lineSeparator = LineSeparator()
             lineSeparator.lineColor = BaseColor.WHITE
 
+            val jeffChunk = Chunk(
+                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN,32.0f)
+            )
+            val heading = Paragraph(jeffChunk)
+            heading.alignment = Element.ALIGN_CENTER
             val mChunk = Chunk(
                 getString(R.string.supplier)
                 , Font(Font.FontFamily.TIMES_ROMAN, 24.0f)
             )
             val title = Paragraph(mChunk)
             title.alignment = Element.ALIGN_CENTER
+            mDoc.add(heading)
             mDoc.add(title)
             mDoc.add(lineSeparator)
             mDoc.add(Paragraph(" "))

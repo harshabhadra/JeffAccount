@@ -73,4 +73,11 @@
     <string name="enter_item_des">Enter Item Description</string>
     <string name="united_kingdom">United Kingdom</string>
     <string name="enter_supplier_name">Enter Supplier Name</string>
+    <string name="enter_payment_method">Enter Payment Method</string>
+    <string name="enter_unit_amount">Enter Unit Amount</string>
+    <string name="enter_advance_amount">Enter Advance Amount</string>
+    <string name="enter_discount_amount">Enter discount amount</string>
+    <string name="enter_total_amount">Enter Total Amount</string>
+    <string name="company">Company</string>
+    <string name="add_new_companies">Add new Companies</string>
 </resources>

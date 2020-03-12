@@ -225,7 +225,6 @@ interface AppApiService {
 
     //Get purchase list
     @POST("purchaselist.php")
-    @FormUrlEncoded
     fun getPurchaseList():Call<Purchase>
 
     //Delete Purchase

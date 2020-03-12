@@ -5,6 +5,9 @@
 
     <data>
 
+        <variable
+            name="purchase"
+            type="com.example.jeffaccount.model.PurchasePost" />
     </data>
 
     <ScrollView
@@ -32,8 +35,8 @@
                     android:id="@+id/purchase_jobno_textInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text|number"
                     android:maxLines="1"
+                    android:text="@{purchase.jobNo}"
                     android:textColor="@android:color/white"
                     android:hint="@string/job_no" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -53,8 +56,8 @@
                     android:id="@+id/purchase_quotation_textInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text|number"
                     android:maxLines="1"
+                    android:text="@{purchase.quotationNo}"
                     android:textColor="@android:color/white"
                     android:hint="@string/quotation_no" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -75,6 +78,8 @@
                     android:layout_width="match_parent"
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:text="@{String.valueOf(purchase.vat)}"
                     android:layout_height="wrap_content"
                     android:hint="@string/vat" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -95,6 +100,8 @@
                     android:layout_width="match_parent"
                     android:textColor="@android:color/white"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@{purchase.date}"
                     android:hint="@string/date" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -116,6 +123,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="text"
                     android:maxLines="1"
+                    android:text="@{purchase.customerName}"
                     android:hint="@string/supplier_name" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -135,6 +143,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
+                    android:text="@{purchase.specialInstruction}"
                     android:textColor="@android:color/white"
                     android:hint="@string/special_instruction_comment" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -156,6 +165,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@android:color/white"
                     android:inputType="textMultiLine"
+                    android:text="@{purchase.itemDescription}"
                     android:hint="@string/item_description" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -174,6 +184,9 @@
                     android:id="@+id/purchase_payment_method_textInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:text="@{purchase.paymentMethod}"
                     android:hint="@string/payment_method" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -206,7 +219,7 @@
                 android:id="@+id/purchase_qty_tv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:text="0"
+                android:text="@{String.valueOf(purchase.quantity)}"
                 android:textColor="@android:color/black"
                 android:gravity="center"
                 android:background="@android:color/white"
@@ -246,6 +259,7 @@
                     android:inputType="numberDecimal"
                     android:textColor="@android:color/white"
                     android:maxLines="1"
+                    android:text="@{purchase.unitAmount}"
                     android:hint="@string/unit_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -267,6 +281,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{purchase.advanceAmount}"
                     android:hint="@string/advance_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -288,6 +303,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{purchase.discountAmount}"
                     android:hint="@string/discount_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -309,6 +325,7 @@
                     android:textColor="@android:color/white"
                     android:inputType="numberDecimal"
                     android:maxLines="1"
+                    android:text="@{purchase.totalAmount}"
                     android:hint="@string/total_amount" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -331,7 +348,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:text="@string/edit"
+                android:text="@string/update"
                 android:visibility="gone"
                 app:layout_constraintEnd_toStartOf="@+id/purchase_save_button"
                 app:layout_constraintStart_toStartOf="parent"

@@ -1,5 +1,7 @@
 package com.example.jeffaccount.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.Expose
 
 import com.google.gson.annotations.SerializedName
@@ -7,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 data class Purchase(
     @SerializedName("posts")
     @Expose
-    var posts: List<Post>?
+    var posts: List<PurchasePost>?
 )
 
 data class PurchasePost(
@@ -66,4 +68,53 @@ data class PurchasePost(
     @SerializedName("discount_amount")
     @Expose
     var discountAmount: String?
-)
+):Parcelable {
+    constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString()
+    ) {
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(pid)
+        parcel.writeString(jobNo)
+        parcel.writeString(quotationNo)
+        parcel.writeString(customerName)
+        parcel.writeString(itemDescription)
+        parcel.writeString(quantity)
+        parcel.writeString(totalAmount)
+        parcel.writeString(unitAmount)
+        parcel.writeString(advanceAmount)
+        parcel.writeString(vat)
+        parcel.writeString(specialInstruction)
+        parcel.writeString(date)
+        parcel.writeString(paymentMethod)
+        parcel.writeString(discountAmount)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<PurchasePost> {
+        override fun createFromParcel(parcel: Parcel): PurchasePost {
+            return PurchasePost(parcel)
+        }
+
+        override fun newArray(size: Int): Array<PurchasePost?> {
+            return arrayOfNulls(size)
+        }
+    }
+}

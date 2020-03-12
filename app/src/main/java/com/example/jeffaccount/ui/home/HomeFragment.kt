@@ -58,6 +58,10 @@ class HomeFragment : Fragment() {
             Home(
                 R.drawable.worksheet,
                 getString(R.string.worksheet)
+            ),
+            Home(
+                R.drawable.customer,
+                getString(R.string.company)
             )
         )
         homeRecyclerAdapter.submitList(homeList)
@@ -76,7 +80,7 @@ class HomeFragment : Fragment() {
     }
 
     //Function to Navigate to destination
-    fun navigateTo(name:String){
+    private fun navigateTo(name:String){
         when(name){
              getString(R.string.customer)->{
                  this.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCustomerFragment())

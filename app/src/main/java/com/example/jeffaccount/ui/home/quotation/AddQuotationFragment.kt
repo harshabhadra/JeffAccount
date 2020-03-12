@@ -53,11 +53,11 @@ class AddQuotationFragment : Fragment() {
     private var loadingDialog:AlertDialog? = null
     private lateinit var viewModel: AddQuotationViewModel
     private lateinit var quotationBinding: AddQuotationFragmentBinding
-    private var vat: Double? = null
-    private var unitAmount: Double? = null
-    private var advanceAmount: Double? = null
-    private var discountAmount: Double? = null
-    private var totalAmount: Double? = null
+    private var vat: Double? = 0.0
+    private var unitAmount: Double? = 0.0
+    private var advanceAmount: Double? = 0.0
+    private var discountAmount: Double? = 0.0
+    private var totalAmount: Double? = 0.0
     private var qty = 0
     private lateinit var quotationItem: QuotationPost
     private lateinit var action: String
@@ -589,13 +589,18 @@ class AddQuotationFragment : Fragment() {
             mDoc.open()
             val lineSeparator = LineSeparator()
             lineSeparator.lineColor = BaseColor.WHITE
-
+            val jeffChunk = Chunk(
+                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN,32.0f)
+            )
+            val heading = Paragraph(jeffChunk)
+            heading.alignment = Element.ALIGN_CENTER
             val mChunk = Chunk(
                 getString(R.string.quotation)
                 , Font(Font.FontFamily.TIMES_ROMAN, 24.0f)
             )
             val title = Paragraph(mChunk)
             title.alignment = Element.ALIGN_CENTER
+            mDoc.add(heading)
             mDoc.add(title)
             mDoc.add(lineSeparator)
             mDoc.add(Paragraph(" "))
