@@ -57,7 +57,7 @@ class HomeFragment : Fragment() {
             ),
             Home(
                 R.drawable.worksheet,
-                getString(R.string.worksheet)
+                getString(R.string.time_sheet)
             ),
             Home(
                 R.drawable.customer,
@@ -97,6 +97,9 @@ class HomeFragment : Fragment() {
             }
             getString(R.string.company)->{
                 findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCompanyFragment())
+            }
+            getString(R.string.time_sheet)->{
+                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTimeSheetFragment())
             }
         }
     }

@@ -232,6 +232,53 @@ interface AppApiService {
     @FormUrlEncoded
     fun deletePurchase(@Field("pid")purchaseId:Int):Call<String>
 
+    //Add TimeSheet
+    @POST("timesheetadd.php")
+    @FormUrlEncoded
+    fun addTimeSheet(
+        @Field("job_no") jobNo: String,
+        @Field("quotation_no") quotationNo: String,
+        @Field("vat") vat: Double,
+        @Field("date") date: String,
+        @Field("name") supplierName: String,
+        @Field("special_instruction") specialIns: String,
+        @Field("item_description") itemDes: String,
+        @Field("payment_method") paymentMethod: String,
+        @Field("hrs") quantity: Int,
+        @Field("amount") unitAmount: Double,
+        @Field("advance_amount") advanceAmount: Double,
+        @Field("discount_amount") discountAmount: Double,
+        @Field("total_amount") totoalAmount: Double
+    ):Call<String>
+
+    //Update time sheet
+    @POST("timesheetupdate.php")
+    @FormUrlEncoded
+    fun updateTimeSheet(
+        @Field("tid")timesheetId:Int,
+        @Field("job_no") jobNo: String,
+        @Field("quotation_no") quotationNo: String,
+        @Field("vat") vat: Double,
+        @Field("date") date: String,
+        @Field("name") supplierName: String,
+        @Field("special_instruction") specialIns: String,
+        @Field("item_description") itemDes: String,
+        @Field("payment_method") paymentMethod: String,
+        @Field("hrs") quantity: Int,
+        @Field("amount") unitAmount: Double,
+        @Field("advance_amount") advanceAmount: Double,
+        @Field("discount_amount") discountAmount: Double,
+        @Field("total_amount") totoalAmount: Double
+    ):Call<String>
+
+    //Delete time sheet
+    @POST("timesheetdel.php")
+    @FormUrlEncoded
+    fun deleteTimeSheet(@Field("tid")timeSheetId:Int):Call<String>
+
+    //Get list of time sheet
+    @POST("timesheetlist.php")
+    fun getTimeSheetList():Call<TimeSheet>
 }
 
 object JeffApi {

@@ -30,7 +30,7 @@
     <string name="quotation">Quotation</string>
     <string name="purchase">Purchase</string>
     <string name="invoice">Invoice</string>
-    <string name="worksheet">WorkSheet</string>
+    <string name="time_sheet">Time Sheet</string>
     <string name="job_no">Job No</string>
     <string name="quotation_no">Quotation No.</string>
     <string name="vat">Vat %</string>
@@ -82,4 +82,9 @@
     <string name="add_new_companies">Add new Companies</string>
     <string name="enter_company_name">Enter Company Name</string>
     <string name="enter_street_address">Enter street address</string>
+    <string name="add_time_sheet">Add Time Sheet</string>
+    <string name="hours">Hours</string>
+    <string name="amount">Amount</string>
+    <string name="enter_name">Enter Name</string>
+    <string name="enter_amount">Enter Amount</string>
 </resources>

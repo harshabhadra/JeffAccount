@@ -94,6 +94,18 @@ class JeffRepository() {
     //Store list of purchase
     private var purchaseList = MutableLiveData<Purchase>()
 
+    //Store time sheet add message
+    private var timeSheetAddMessage = MutableLiveData<String>()
+
+    //Store timeSheet update message
+    private var timeSheetUpdateMessage = MutableLiveData<String>()
+
+    //Store time sheet delete message
+    private var timeSheetDeleteMessage = MutableLiveData<String>()
+
+    //Store list of time sheet list
+    private var timeSheetListMutableLiveData = MutableLiveData<TimeSheet>()
+
     //Get LogInCred list
     fun getLogInCred(): LiveData<List<LogInCred>> {
         return userList
@@ -188,6 +200,29 @@ class JeffRepository() {
         return purchaseAddMessage
     }
 
+    //Add time sheet
+    fun getAddTimeSheetMessage(
+        jobNo: String,
+        quotationNo: String,
+        vat: Double,
+        date: String,
+        name: String,
+        comment: String,
+        itemDes: String,
+        paymentMethod: String,
+        hrs: Int,
+        unitAmount: Double,
+        advanceAmount: Double,
+        discountAmount: Double,
+        totalAmount: Double
+    ): LiveData<String> {
+        addTimeSheet(
+            jobNo, quotationNo, vat, date, name, comment, itemDes
+            , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
+        )
+        return timeSheetAddMessage
+    }
+
     //Update customer
     fun getUpdateCustomerMessage(
         customerId: String,
@@ -266,6 +301,30 @@ class JeffRepository() {
         return purchaseUpdateMessage
     }
 
+    //Update time sheet
+    fun getUpdateTimeSheetMessage(
+        tid: Int,
+        jobNo: String,
+        quotationNo: String,
+        vat: Double,
+        date: String,
+        name: String,
+        comment: String,
+        itemDes: String,
+        paymentMethod: String,
+        hrs: Int,
+        unitAmount: Double,
+        advanceAmount: Double,
+        discountAmount: Double,
+        totalAmount: Double
+    ): LiveData<String> {
+        updateTimeSheet(
+            tid, jobNo, quotationNo, vat, date, name, comment, itemDes
+            , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
+        )
+        return timeSheetUpdateMessage
+    }
+
     //Delete customer
     fun getDeleteCustomerMessage(customerId: String): LiveData<String> {
         deleteUser(customerId)
@@ -294,6 +353,12 @@ class JeffRepository() {
     fun getDeletePurchaseMessage(purchaseId: Int): LiveData<String> {
         deletePurchase(purchaseId)
         return purchaseDeleteMessage
+    }
+
+    //Delete TimeSheet
+    fun getDeleteTimeSheetMessage(timeSheetId: Int): LiveData<String> {
+        deleteTimeSheet(timeSheetId)
+        return timeSheetDeleteMessage
     }
 
     //Get All Customer
@@ -326,12 +391,18 @@ class JeffRepository() {
         return quotationList
     }
 
+    //Get all time sheet
+    fun getAllTimeSheet(): LiveData<TimeSheet> {
+        getTimeSheetList()
+        return timeSheetListMutableLiveData
+    }
+
     //Network call to get all customer list
     private fun getCustomerList() {
 
         apiService.getCustomerList().enqueue(object : Callback<Customer> {
             override fun onFailure(call: Call<Customer>, t: Throwable) {
-                Log.e("JeffRepository", "${t.message}")
+                Timber.e("JeffRepository ${t.message}")
             }
 
             override fun onResponse(call: Call<Customer>, response: Response<Customer>) {
@@ -393,6 +464,20 @@ class JeffRepository() {
 
             override fun onResponse(call: Call<Purchase>, response: Response<Purchase>) {
                 purchaseList.value = response.body()
+            }
+        })
+    }
+
+    //Network call to get Time Sheet list
+    private fun getTimeSheetList() {
+
+        apiService.getTimeSheetList().enqueue(object : Callback<TimeSheet> {
+            override fun onFailure(call: Call<TimeSheet>, t: Throwable) {
+                Timber.e("Error getting time sheet list ${t.message}")
+            }
+
+            override fun onResponse(call: Call<TimeSheet>, response: Response<TimeSheet>) {
+                timeSheetListMutableLiveData.value = response.body()
             }
         })
     }
@@ -530,6 +615,39 @@ class JeffRepository() {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")
                 purchaseAddMessage.value = message
+            }
+        })
+    }
+
+    //Network call to add time sheet
+    private fun addTimeSheet(
+        jobNo: String,
+        quotationNo: String,
+        vat: Double,
+        date: String,
+        name: String,
+        comment: String,
+        itemDes: String,
+        paymentMethod: String,
+        hrs: Int,
+        unitAmount: Double,
+        advanceAmount: Double,
+        discountAmount: Double,
+        totalAmount: Double
+    ) {
+
+        apiService.addTimeSheet(
+            jobNo, quotationNo, vat, date, name, comment, itemDes
+            , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
+        ).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Error adding time sheet ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                timeSheetAddMessage.value = message
             }
         })
     }
@@ -698,6 +816,39 @@ class JeffRepository() {
         })
     }
 
+    //Network call to update time sheet
+    private fun updateTimeSheet(
+        tid: Int,
+        jobNo: String,
+        quotationNo: String,
+        vat: Double,
+        date: String,
+        name: String,
+        comment: String,
+        itemDes: String,
+        paymentMethod: String,
+        hrs: Int,
+        unitAmount: Double,
+        advanceAmount: Double,
+        discountAmount: Double,
+        totalAmount: Double
+    ) {
+        apiService.updateTimeSheet(
+            tid, jobNo, quotationNo, vat, date, name, comment, itemDes
+            , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
+        ).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Error update time sheet ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                timeSheetUpdateMessage.value = message
+            }
+        })
+    }
+
     //Network call to delete Customer
     private fun deleteUser(customerId: String) {
         apiService.deleteCustomer(customerId).enqueue(object : Callback<String> {
@@ -774,6 +925,22 @@ class JeffRepository() {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")
                 purchaseDeleteMessage.value = message
+            }
+        })
+    }
+
+    //Network call to delete time sheet
+    private fun deleteTimeSheet(timeSheetId: Int) {
+
+        apiService.deleteTimeSheet(timeSheetId).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Error delete time sheet ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                timeSheetDeleteMessage.value = message
             }
         })
     }

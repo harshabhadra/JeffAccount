@@ -24,6 +24,9 @@
         <action
             android:id="@+id/action_homeFragment_to_companyFragment"
             app:destination="@id/companyFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_timeSheetFragment"
+            app:destination="@id/timeSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/aboutFragment"
@@ -169,5 +172,25 @@
         <argument
             android:name="action"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/timeSheetFragment"
+        android:name="com.example.jeffaccount.ui.home.timeSheet.TimeSheetFragment"
+        android:label=""
+        tools:layout="@layout/time_sheet_fragment" >
+        <action
+            android:id="@+id/action_timeSheetFragment_to_addTimeSheetFragment"
+            app:destination="@id/addTimeSheetFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addTimeSheetFragment"
+        android:name="com.example.jeffaccount.ui.home.timeSheet.AddTimeSheetFragment"
+        android:label=""
+        tools:layout="@layout/fragment_add_time_sheet" >
+        <action
+            android:id="@+id/action_addTimeSheetFragment_to_timeSheetFragment"
+            app:destination="@id/timeSheetFragment"
+            app:popUpTo="@id/homeFragment"
+            app:popUpToInclusive="false" />
     </fragment>
 </navigation>
