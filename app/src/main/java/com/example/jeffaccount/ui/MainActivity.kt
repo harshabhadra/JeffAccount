@@ -13,13 +13,17 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import com.example.jeffaccount.R
+import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.databinding.ActivityMainBinding
 import com.infideap.drawerbehavior.Advance3DDrawerLayout
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout:Advance3DDrawerLayout
     private lateinit var appBarConfigaration: AppBarConfiguration
+    var loginCred:LogInCred? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,6 +57,10 @@ class MainActivity : AppCompatActivity() {
 
         drawerLayout.setViewRotation(Gravity.START, 10F)
         drawerLayout.setViewElevation(Gravity.START, 15F)
+
+        //Getting intent
+        loginCred = intent.getParcelableExtra("login")
+        Timber.e("username: ${loginCred?.userName}, password: ${loginCred?.password}")
     }
 
     override fun onSupportNavigateUp(): Boolean {

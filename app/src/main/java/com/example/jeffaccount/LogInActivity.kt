@@ -28,6 +28,7 @@ private var loadingDialog: AlertDialog? = null
 class LogInActivity : AppCompatActivity() {
 
     private lateinit var loginBinding: LogInFragmentBinding
+    private lateinit var logInCred: LogInCred
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -54,7 +55,8 @@ class LogInActivity : AppCompatActivity() {
             if (isValidEmail(userEmail) && password.isNotEmpty()) {
                 loadingDialog?.show()
                 //Log in user
-                loginViewModel.insertLoginCred(LogInCred(userName = userEmail, password = password))
+                logInCred = LogInCred(userName = userEmail, password = password)
+                loginViewModel.insertLoginCred(logInCred)
             } else if (!isValidEmail(userEmail)) {
                 loginBinding.logInEmailTextInputLayout.error = getString(R.string.enter_valid_email)
             } else if (password.isEmpty()) {
@@ -83,9 +85,9 @@ class LogInActivity : AppCompatActivity() {
             it?.let {
                 Timber.e("Size: ${it.size}")
                 if(it.isNotEmpty()) {
-                    val userCred = it[0]
+                    logInCred = it[0]
                     loadingDialog?.show()
-                    loginViewModel.loginUser(userCred.userName, userCred.password)
+                    loginViewModel.loginUser(logInCred.userName!!, logInCred.password!!)
                 }
             }?:let {
                 Timber.e("list is empty")
@@ -98,6 +100,7 @@ class LogInActivity : AppCompatActivity() {
                 loadingDialog?.dismiss()
                 if (message == "success") {
                     val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("login",logInCred)
                     startActivity(intent)
                     finish()
                 } else {

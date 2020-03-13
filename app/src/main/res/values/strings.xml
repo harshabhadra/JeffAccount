@@ -87,4 +87,5 @@
     <string name="amount">Amount</string>
     <string name="enter_name">Enter Name</string>
     <string name="enter_amount">Enter Amount</string>
+    <string name="log_out">Log out</string>
 </resources>
