@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/loginpage"
+        tools:context=".ui.home.timeSheet.TimeSheetFragment">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/time_sheet_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <TextView
+            android:id="@+id/no_time_sheet_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="16dp"
+            android:text="@string/add_time_sheet"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            style="@style/TextAppearance.AppCompat.Title"
+            android:layout_marginEnd="16dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/time_sheet_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Jeff.Fab"
+            android:src="@drawable/ic_add_white_24dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

@@ -192,5 +192,12 @@
             app:destination="@id/timeSheetFragment"
             app:popUpTo="@id/homeFragment"
             app:popUpToInclusive="false" />
+        <argument
+            android:name="time_sheet_item"
+            app:argType="com.example.jeffaccount.model.TimeSheetPost"
+            app:nullable="true" />
+        <argument
+            android:name="action"
+            app:argType="string" />
     </fragment>
 </navigation>

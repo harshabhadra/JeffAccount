@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="timeSheet"
+            type="com.example.jeffaccount.model.TimeSheetPost" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/loginpage">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".ui.home.timeSheet.AddTimeSheetFragment">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/time_sheet_job_no_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/time_sheet_job_no_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1"
+                android:text="@{timeSheet.jobNo}"
+                android:textColor="@android:color/white"
+                android:hint="@string/job_no" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_quotation_no_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/time_sheet_job_no_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_quotation_no_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:inputType="text"
+                android:text="@{timeSheet.quotationNo}"
+                android:textColor="@android:color/white"
+                android:hint="@string/quotation_no" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_vat_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_quotation_no_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_vat_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@{timeSheet.vat}"
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/white"
+                android:hint="@string/vat" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/ts_date_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="@string/date"
+            android:textColorHint="@android:color/white"
+            android:padding="16dp"
+            android:text="@{timeSheet.date}"
+            android:textColor="@android:color/white"
+            android:drawableEnd="@drawable/ic_edit_white_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_vat_textInputLayout" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_name_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_date_tv">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_name_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@{timeSheet.name}"
+                android:inputType="text"
+                android:textColor="@android:color/white"
+                android:hint="@string/name" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_comment_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_name_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_comment_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:text="@{timeSheet.specialInstruction}"
+                android:textColor="@android:color/white"
+                android:hint="@string/special_instruction_comment" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_item_des_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_comment_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_item_des_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:textColor="@android:color/white"
+                android:text="@{timeSheet.itemDescription}"
+                android:hint="@string/item_description" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_payment_method_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_item_des_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_payment_method_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:inputType="text"
+                android:text="@{timeSheet.paymentMethod}"
+                android:textColor="@android:color/white"
+                android:hint="@string/payment_method" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/textView70"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/hours"
+            android:gravity="center"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/ts_minus_button"
+            app:layout_constraintEnd_toStartOf="@+id/ts_minus_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/ts_minus_button" />
+
+        <ImageView
+            android:id="@+id/ts_minus_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:padding="8dp"
+            android:background="@android:color/darker_gray"
+            android:src="@drawable/ic_exposure_neg_1_black_24dp"
+            app:layout_constraintEnd_toStartOf="@+id/ts_hours_tv"
+            app:layout_constraintStart_toEndOf="@+id/textView70"
+            app:layout_constraintTop_toBottomOf="@+id/ts_payment_method_textInputLayout" />
+
+        <TextView
+            android:id="@+id/ts_hours_tv"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:text="@{timeSheet.hrs}"
+            android:hint="0"
+            android:textColorHint="@android:color/black"
+            android:background="@android:color/white"
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            app:layout_constraintBottom_toBottomOf="@+id/ts_plus_button"
+            app:layout_constraintEnd_toStartOf="@+id/ts_plus_button"
+            app:layout_constraintStart_toEndOf="@+id/ts_minus_button"
+            app:layout_constraintTop_toTopOf="@+id/ts_minus_button" />
+
+        <ImageView
+            android:id="@+id/ts_plus_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@android:color/darker_gray"
+            android:padding="8dp"
+            android:src="@drawable/ic_exposure_plus_1_black_24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ts_hours_tv"
+            app:layout_constraintTop_toBottomOf="@+id/ts_payment_method_textInputLayout" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_amount_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_minus_button">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_amount_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@{timeSheet.amount}"
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/white"
+                android:hint="@string/amount" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_advance_amount_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_amount_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_advance_amount_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@{timeSheet.advanceAmount}"
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/white"
+                android:hint="@string/advance_amount" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_discount_amount_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_advance_amount_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_discount_amount_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@{timeSheet.discountAmount}"
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/white"
+                android:hint="@string/discount_amount" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ts_total_amount_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_discount_amount_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ts_total_amount_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@{timeSheet.totalAmount}"
+                android:inputType="numberDecimal"
+                android:textColor="@android:color/white"
+                android:hint="@string/total_amount" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/ts_save_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:text="@string/save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/ts_update_button"
+            app:layout_constraintTop_toBottomOf="@+id/ts_total_amount_textInputLayout" />
+
+        <Button
+            android:id="@+id/ts_update_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/update"
+            android:visibility="gone"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ts_save_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ts_total_amount_textInputLayout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>
