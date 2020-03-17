@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">JEFF ACCOUNT</string>
+    <string name="api_key">AngE9676#254r5</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home">Home</string>
     <string name="about">About Us</string>
@@ -88,4 +88,6 @@
     <string name="enter_name">Enter Name</string>
     <string name="enter_amount">Enter Amount</string>
     <string name="log_out">Log out</string>
+    <string name="jeff_message_to_cus"><![CDATA[ALL KIND OF ELECTRICAL WORK SUCH AS REWIRING, REPLACE, CONSUMER UNIT, IN & OUT LIGHT SOCKET, COOKERS, SHOWERS, ELECTRIC HOBS & HOOD, UNDER FLOOR HEATER ETC.]]></string>
+    <string name="jeff_inquiry_message">If have nay inquiry drop your work on www.jeffelectrical.com</string>
 </resources>

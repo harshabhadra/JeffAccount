@@ -156,11 +156,16 @@ class JeffRepository() {
 
     //Add Quotation
     fun getAddQuotationMessage(
+        apiKey: String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         customerName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -171,7 +176,7 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         addQuotation(
-            jobNo, quotationNo, vat, date, customerName, comment, itemDes
+           apiKey, jobNo, quotationNo, vat, date, customerName,streetAdd,coutry,postCode,telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         )
         return quotationAddMessage
@@ -179,11 +184,16 @@ class JeffRepository() {
 
     //Add Purchase
     fun getAddPurchaseMessage(
+        apiKey: String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         supplierName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -194,7 +204,7 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         addPurchase(
-            jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            apiKey,jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         )
         return purchaseAddMessage
@@ -255,12 +265,17 @@ class JeffRepository() {
 
     //Update Supplier
     fun getUpdateQuotationMessage(
+        apiKey: String,
         id: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         customerName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -271,7 +286,7 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         updateQuotation(
-            id, jobNo, quotationNo, vat, date, customerName, comment, itemDes
+            apiKey,id, jobNo, quotationNo, vat, date, customerName,streetAdd,coutry,postCode,telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         )
         return quotationUpdateMesage
@@ -279,12 +294,17 @@ class JeffRepository() {
 
     //Update Purchase
     fun getUpdatePurchaseMessage(
+        apiKey: String,
         id: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         supplierName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -295,7 +315,7 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         updatePurchase(
-            id, jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            apiKey,id, jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         )
         return purchaseUpdateMessage
@@ -380,14 +400,14 @@ class JeffRepository() {
     }
 
     //Get all purchase
-    fun getAllPurchase(): LiveData<Purchase> {
-        getPurchaseList()
+    fun getAllPurchase(apiKey: String): LiveData<Purchase> {
+        getPurchaseList(apiKey)
         return purchaseList
     }
 
     //Get All quotation
-    fun getAllQuotation(): LiveData<Quotation> {
-        getQuotationList()
+    fun getAllQuotation(apiKey: String): LiveData<Quotation> {
+        getQuotationList(apiKey)
         return quotationList
     }
 
@@ -442,9 +462,9 @@ class JeffRepository() {
     }
 
     //Network call to get all suppliers
-    private fun getQuotationList() {
+    private fun getQuotationList(apiKey: String) {
 
-        apiService.getQuotationList().enqueue(object : Callback<Quotation> {
+        apiService.getQuotationList(apiKey).enqueue(object : Callback<Quotation> {
             override fun onFailure(call: Call<Quotation>, t: Throwable) {
                 Timber.e("Error getting list of quotation: ${t.message}")
             }
@@ -456,8 +476,8 @@ class JeffRepository() {
     }
 
     //Network call to get purchase list
-    private fun getPurchaseList() {
-        apiService.getPurchaseList().enqueue(object : Callback<Purchase> {
+    private fun getPurchaseList(apiKey: String) {
+        apiService.getPurchaseList(apiKey).enqueue(object : Callback<Purchase> {
             override fun onFailure(call: Call<Purchase>, t: Throwable) {
                 Timber.e("Error getting purchase list")
             }
@@ -555,11 +575,16 @@ class JeffRepository() {
 
     //Network call to add quotation
     private fun addQuotation(
+        apiKey: String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         customerName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -569,10 +594,26 @@ class JeffRepository() {
         discountAmount: Double,
         totalAmount: Double
     ) {
-
         apiService.addQuotation(
-            jobNo, quotationNo, vat, date, customerName, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            customerName,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            quantity,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
 
@@ -589,11 +630,16 @@ class JeffRepository() {
 
     //Network call to add purchase
     private fun addPurchase(
+        apiKey: String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         supplierName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -604,7 +650,7 @@ class JeffRepository() {
         totalAmount: Double
     ) {
         apiService.addPurchase(
-            jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            apiKey,jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
@@ -751,12 +797,17 @@ class JeffRepository() {
 
     //Network call to update
     private fun updateQuotation(
+        apiKey: String,
         id: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         customerName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -768,7 +819,7 @@ class JeffRepository() {
     ) {
 
         apiService.updateQuotation(
-            id, jobNo, quotationNo, vat, date, customerName, comment, itemDes
+            apiKey,id, jobNo, quotationNo, vat, date, customerName,streetAdd, coutry,postCode,telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
@@ -785,12 +836,17 @@ class JeffRepository() {
 
     //Network call update purchase
     private fun updatePurchase(
+        apiKey: String,
         id: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         supplierName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -801,7 +857,7 @@ class JeffRepository() {
         totalAmount: Double
     ) {
         apiService.updatePurchase(
-            id, jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            apiKey,id, jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {

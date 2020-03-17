@@ -32,11 +32,16 @@ class AddPurchaseViewModel : ViewModel() {
 
     //Add purchase
     fun addPurchase(
+        apikey: String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         supplierName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -47,24 +52,29 @@ class AddPurchaseViewModel : ViewModel() {
         totalAmount: Double
     ): LiveData<String> {
         return jeffRepository.getAddPurchaseMessage(
-            jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            apikey,jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         )
     }
 
     //Get List of purchase
-    fun getPurchaseList(): LiveData<Purchase> {
-        return jeffRepository.getAllPurchase()
+    fun getPurchaseList(apikey: String): LiveData<Purchase> {
+        return jeffRepository.getAllPurchase(apikey)
     }
 
     //Update purchase
     fun updatePurchase(
+        apikey:String,
         purchaseId: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         supplierName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -75,7 +85,7 @@ class AddPurchaseViewModel : ViewModel() {
         totalAmount: Double
     ): LiveData<String> {
         return jeffRepository.getUpdatePurchaseMessage(
-            purchaseId, jobNo, quotationNo, vat, date, supplierName, comment, itemDes
+            apikey,purchaseId, jobNo, quotationNo, vat, date, supplierName,streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
         )
     }

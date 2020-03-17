@@ -1,28 +1,26 @@
 package com.example.jeffaccount.ui.home.quotation
 
 import android.Manifest
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.provider.DocumentsContract
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.Button
-import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddQuotationFragmentBinding
-import com.example.jeffaccount.databinding.FragmentQuotationBinding
 import com.example.jeffaccount.model.QuotationPost
-import com.google.android.material.snackbar.Snackbar
 import com.itextpdf.text.*
-import com.itextpdf.text.pdf.BaseFont
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
@@ -38,20 +36,21 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.concurrent.Phaser
 
 
-class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
+class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
+
+    private lateinit var filePath: String
+//    private var apiKey = getString(R.string.api_key)
 
     companion object {
         fun newInstance() =
             AddQuotationFragment()
     }
 
-    private var loadingDialog:AlertDialog? = null
+    private var loadingDialog: AlertDialog? = null
     private lateinit var viewModel: AddQuotationViewModel
     private lateinit var quotationBinding: AddQuotationFragmentBinding
     private var vat: Double? = 0.0
@@ -127,6 +126,10 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
             val itemDes = quotationBinding.quotationItemdesTextInput.text.toString()
             val paymentMethod = quotationBinding.quotationPayementMethodTextInput.text.toString()
+            val streetAdd = quotationBinding.quotationStreetAddressTextInput.text.toString()
+            val postCode = quotationBinding.quotationPostCodeTextInput.text.toString()
+            val telephone = quotationBinding.quotationTelephoneTextInput.text.toString()
+
             if (quotationBinding.quotationUnitAmountTextInput.text.toString().isNotEmpty()) {
                 unitAmount =
                     quotationBinding.quotationUnitAmountTextInput.text.toString().toDouble()
@@ -199,17 +202,31 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
                     quotationBinding.quotationTotalAmountTextinputlayout.error =
                         "Enter Total Amount"
                 }
+                streetAdd.isEmpty() -> {
+                    quotationBinding.quotationStreetAddressTextInputLayout.error =
+                        "Enter street Address"
+                }
+                postCode.isEmpty() -> {
+                    quotationBinding.quotationPostCodeTextInputLayout.error = "Enter Post Code"
+                }
+                telephone.isEmpty() -> {
+                    quotationBinding.quotationTelephoneTextInputLayout.error = "Enter telephone no"
+                }
                 else -> {
                     viewModel.addQuotaiton(
+                        "AngE9676#254r5",
                         jobNo,
                         quotationNo,
                         vat!!,
                         date,
                         customerName,
+                        streetAdd,
+                        "United Kingdom",
+                        postCode,
+                        telephone,
                         comment,
                         itemDes,
-                        paymentMethod
-                        ,
+                        paymentMethod,
                         qty,
                         unitAmount!!,
                         advanceAmount!!,
@@ -239,6 +256,9 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
             val itemDes = quotationBinding.quotationItemdesTextInput.text.toString()
             val paymentMethod = quotationBinding.quotationPayementMethodTextInput.text.toString()
+            val streetAdd = quotationBinding.quotationStreetAddressTextInput.text.toString()
+            val postCode = quotationBinding.quotationPostCodeTextInput.text.toString()
+            val telephone = quotationBinding.quotationTelephoneTextInput.text.toString()
             if (quotationBinding.quotationUnitAmountTextInput.text.toString().isNotEmpty()) {
                 unitAmount =
                     quotationBinding.quotationUnitAmountTextInput.text.toString().toDouble()
@@ -311,14 +331,29 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
                     quotationBinding.quotationTotalAmountTextinputlayout.error =
                         "Enter Total Amount"
                 }
+                streetAdd.isEmpty() -> {
+                    quotationBinding.quotationStreetAddressTextInputLayout.error =
+                        "Enter street Address"
+                }
+                postCode.isEmpty() -> {
+                    quotationBinding.quotationPostCodeTextInputLayout.error = "Enter Post Code"
+                }
+                telephone.isEmpty() -> {
+                    quotationBinding.quotationTelephoneTextInputLayout.error = "Enter telephone no"
+                }
                 else -> {
                     viewModel.updateQuotation(
+                        "AngE9676#254r5",
                         quotationItem.qid!!.toInt(),
                         jobNo,
                         quotationNo,
                         vat!!,
                         date,
                         customerName,
+                        streetAdd,
+                        "United Kingdom",
+                        postCode,
+                        telephone,
                         comment,
                         itemDes,
                         paymentMethod
@@ -480,6 +515,46 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
                 quotationBinding.quotationTotalAmountTextinputlayout.isErrorEnabled = false
             }
         })
+
+        quotationBinding.quotationStreetAddressTextInput.addTextChangedListener(object :
+            TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                quotationBinding.quotationStreetAddressTextInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                quotationBinding.quotationStreetAddressTextInputLayout.isErrorEnabled = false
+            }
+        })
+
+        quotationBinding.quotationPostCodeTextInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                quotationBinding.quotationPostCodeTextInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                quotationBinding.quotationPostCodeTextInputLayout.isErrorEnabled = false
+            }
+        })
+
+        quotationBinding.quotationTelephoneTextInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                quotationBinding.quotationTelephoneTextInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                quotationBinding.quotationTelephoneTextInputLayout.isErrorEnabled = false
+            }
+        })
         return quotationBinding.root
     }
 
@@ -520,7 +595,8 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
 
         when (itemid) {
             R.id.delete_item -> {
-                val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation,null)
+                val layout =
+                    LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
                 val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
                 builder?.setCancelable(false)
                 builder?.setView(layout)
@@ -530,12 +606,13 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
                 val delButton = layout.findViewById<Button>(R.id.delete_button)
                 val canButton: Button = layout.findViewById(R.id.cancel_del_button)
                 delButton.setOnClickListener {
-                    viewModel.deleteQuotaton(quotationItem.qid!!.toInt()).observe(viewLifecycleOwner,
-                        Observer {
-                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                            dialog?.dismiss()
-                            findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
-                        })
+                    viewModel.deleteQuotaton(quotationItem.qid!!.toInt())
+                        .observe(viewLifecycleOwner,
+                            Observer {
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                dialog?.dismiss()
+                                findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
+                            })
                 }
                 canButton.setOnClickListener {
                     dialog?.dismiss()
@@ -545,10 +622,34 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
             R.id.convert_pdf_item -> {
                 loadingDialog = createLoadingDialog()
                 loadingDialog?.show()
-                createPdf()
+                val mFileName =
+                    "jeff_account_" + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
+                        .format(System.currentTimeMillis())
+                val folder = File(
+                    Environment.getExternalStorageDirectory(),
+                    getString(R.string.app_name)
+                )
+                Timber.e(folder.absolutePath)
+                var success = true
+                if (!folder.exists()) {
+                    success = folder.mkdirs()
+                }
+                filePath = "$folder/$mFileName.pdf"
+                Timber.e("file path: $filePath")
+//                createPdf()
+
+                savePdf()
             }
         }
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == 1 && resultCode == Activity.RESULT_OK) {
+            data?.data?.also {
+                Toast.makeText(context, "Pdf saved at ${it.toString()}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     //Function to request read and write storage
@@ -595,23 +696,13 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
     //Permission to make pdf
     private fun createPdf() {
         val mDoc = Document(PageSize.A4, 8f, 8f, 8f, 8f)
-        val folder = File(Environment.getExternalStorageDirectory(), getString(R.string.app_name))
-        Timber.e(folder.absolutePath)
-        var success = true
-        if (!folder.exists()) {
-            success = folder.mkdirs()
-        }
-        val mFileName = "jeff_account_." + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
-            .format(System.currentTimeMillis())
-        val filePath = folder.absolutePath + "/" + mFileName + ".pdf"
-
         try {
             PdfWriter.getInstance(mDoc, FileOutputStream(filePath))
             mDoc.open()
             val lineSeparator = LineSeparator()
             lineSeparator.lineColor = BaseColor.WHITE
             val jeffChunk = Chunk(
-                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN,32.0f)
+                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN, 32.0f)
             )
             val heading = Paragraph(jeffChunk)
             heading.alignment = Element.ALIGN_CENTER
@@ -640,6 +731,238 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
 
             Timber.e(e)
         }
+    }
+
+    private fun savePdf() {
+        val doc = Document(PageSize.A4)
+        try {
+            PdfWriter.getInstance(doc, FileOutputStream(filePath))
+            doc.open()
+            val headTable = PdfPTable(2)
+            headTable.setWidths(intArrayOf(4, 2))
+            headTable.widthPercentage = 100f
+            val addressCell = getAddressTable()
+            val dateCell = PdfPCell()
+            dateCell.border = PdfPCell.NO_BORDER
+            dateCell.addElement(Paragraph(quotationItem.date))
+            dateCell.addElement(Paragraph(quotationItem.quotationNo))
+            dateCell.horizontalAlignment = Element.ALIGN_RIGHT
+            headTable.addCell(addressCell)
+            headTable.addCell(dateCell)
+            doc.add(headTable)
+            doc.add(Paragraph(" "))
+            val detailsTable = populateDetailsTable()
+            doc.add(detailsTable)
+            doc.add(Paragraph(" "))
+            doc.add(
+                Paragraph(
+                    "WEBSITE: www.jeffelectrical.com", Font(
+                        Font.FontFamily.COURIER, 10f, Font.BOLD,
+                        BaseColor.RED
+                    )
+                )
+            )
+            doc.add(Paragraph(" "))
+            val invoiceTitle =
+                Paragraph("INVOICE", Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD))
+            invoiceTitle.alignment = Element.ALIGN_CENTER
+            val invoiceTable = createInvoiceTable()
+            doc.add(invoiceTitle)
+            doc.add(Paragraph(" "))
+            doc.add(invoiceTable)
+            doc.add(Paragraph(" "))
+            doc.add(Paragraph("Additional Charges"))
+            doc.add(Paragraph(" "))
+            val totalTable = createTotalTable()
+            doc.add(totalTable)
+            doc.add(Paragraph())
+            doc.add(Paragraph(getString(R.string.jeff_message_to_cus)))
+            doc.add(
+                Paragraph(
+                    getString(R.string.jeff_inquiry_message),
+                    Font(Font.FontFamily.COURIER, 16f, Font.BOLD, BaseColor.RED)
+                )
+            )
+            doc.close().let {
+                loadingDialog?.dismiss()
+                Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
+                val intent = Intent(Intent.ACTION_VIEW)
+                val data = Uri.parse("file://" + filePath)
+                intent.setDataAndType(data, "application/pdf")
+                startActivity(Intent.createChooser(intent, "Open Pdf"))
+//                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+//                    addCategory(Intent.CATEGORY_OPENABLE)
+//                    type = "application/pdf"
+//                    putExtra(Intent.EXTRA_TITLE,filePath)
+//                }
+//                startActivityForResult(intent,1)
+            }
+        } catch (e: java.lang.Exception) {
+
+            Timber.e("Error: ${e.message}")
+        }
+    }
+
+    private fun createTotalTable(): PdfPTable {
+        val table = PdfPTable(2)
+        table.widthPercentage = 100f
+        val subTotalCell = PdfPCell()
+        subTotalCell.addElement(Paragraph("SUB TOTAL"))
+        subTotalCell.setPadding(8f)
+        table.addCell(subTotalCell)
+        val subTotalDCell = PdfPCell()
+        subTotalDCell.addElement(Paragraph(" "))
+        subTotalDCell.setPadding(8f)
+        table.addCell(subTotalDCell)
+        val taxCell = PdfPCell()
+        taxCell.addElement(Paragraph("TAX %"))
+        taxCell.setPadding(8f)
+        table.addCell(taxCell)
+        val taxDCell = PdfPCell()
+        taxDCell.addElement(Paragraph(quotationItem.vat))
+        taxDCell.setPadding(8f)
+        table.addCell(taxDCell)
+        val taxAmountCell = PdfPCell()
+        taxAmountCell.addElement(Paragraph("TAX AMOUNT"))
+        taxAmountCell.setPadding(8f)
+        table.addCell(taxAmountCell)
+        val taxAmountDCell = PdfPCell()
+        taxAmountDCell.addElement(Paragraph(" "))
+        taxAmountDCell.setPadding(8f)
+        table.addCell(taxAmountDCell)
+        val disocuntCell = PdfPCell()
+        disocuntCell.addElement(Paragraph("DISCOUNT AMOUNT"))
+        disocuntCell.setPadding(8f)
+        table.addCell(disocuntCell)
+        val discountDCell = PdfPCell()
+        discountDCell.addElement(Paragraph(quotationItem.discountAmount))
+        discountDCell.setPadding(8f)
+        table.addCell(discountDCell)
+        val totalAmountCell = PdfPCell()
+        totalAmountCell.addElement(Paragraph("TOTAL AMOUNT"))
+        totalAmountCell.setPadding(8f)
+        table.addCell(totalAmountCell)
+        val totalAmountDCell = PdfPCell()
+        totalAmountDCell.addElement(Paragraph(quotationItem.totalAmount))
+        totalAmountDCell.setPadding(8f)
+        table.addCell(totalAmountDCell)
+        return table
+    }
+
+    private fun createInvoiceTable(): PdfPTable {
+        val table = PdfPTable(5)
+        table.setWidths(intArrayOf(1, 4, 1, 2, 2))
+        table.addCell(PdfPCell(Paragraph("Job No.")))
+        val desCell = PdfPCell(Paragraph("Description"))
+        desCell.horizontalAlignment = Element.ALIGN_CENTER
+        table.addCell(desCell)
+        table.addCell("Quantity")
+        table.addCell("Unit Amount")
+        table.addCell("Discount Amount")
+
+        table.addCell("1.")
+        table.addCell(Paragraph(quotationItem.itemDescription))
+        table.addCell(Paragraph(quotationItem.quantity))
+        table.addCell(Paragraph(quotationItem.unitAmount))
+        table.addCell(Paragraph(quotationItem.discountAmount))
+        table.widthPercentage = 100f
+        return table
+    }
+
+    private fun populateDetailsTable(): PdfPTable {
+
+        val table = PdfPTable(2)
+        val nameCell = PdfPCell()
+        table.widthPercentage = 100f
+        nameCell.border = PdfPCell.NO_BORDER
+        nameCell.addElement(Paragraph("Name"))
+        val nameDataCell = PdfPCell()
+        nameDataCell.border = PdfPCell.NO_BORDER
+        nameDataCell.addElement(Paragraph(quotationItem.customerName))
+        nameDataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        val addressCell = PdfPCell()
+        addressCell.border = PdfPCell.NO_BORDER
+        addressCell.addElement(Paragraph("Street Address"))
+        val addressDataCell = PdfPCell()
+        addressDataCell.border = PdfPCell.NO_BORDER
+        addressDataCell.addElement(Paragraph(quotationItem.street))
+        addressDataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        val countryCell = PdfPCell()
+        countryCell.border = PdfPCell.NO_BORDER
+        countryCell.addElement(Paragraph("Country"))
+        val countrydataCell = PdfPCell()
+        countrydataCell.border = PdfPCell.NO_BORDER
+        countrydataCell.addElement(Paragraph(quotationItem.country))
+        countrydataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        val postCell = PdfPCell()
+        postCell.border = PdfPCell.NO_BORDER
+        postCell.addElement(Paragraph("Post Code"))
+        val postDataCell = PdfPCell()
+        postDataCell.border = PdfPCell.NO_BORDER
+        postDataCell.addElement(Paragraph(quotationItem.postCode))
+        postDataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        val teleCell = PdfPCell()
+        teleCell.border = PdfPCell.NO_BORDER
+        teleCell.addElement(Paragraph("Telephone No"))
+        val teleDataCell = PdfPCell()
+        teleDataCell.border = PdfPCell.NO_BORDER
+        teleDataCell.addElement(Paragraph(quotationItem.telephone))
+        teleDataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        table.addCell(nameCell)
+        table.addCell(nameDataCell)
+        table.addCell(addressCell)
+        table.addCell(addressDataCell)
+        table.addCell(countryCell)
+        table.addCell(countrydataCell)
+        table.addCell(postCell)
+        table.addCell(postDataCell)
+        table.addCell(teleCell)
+        table.addCell(teleDataCell)
+        return table
+    }
+
+    private fun getAddressTable(): PdfPCell {
+
+        val cell = PdfPCell()
+        cell.border = PdfPCell.NO_BORDER
+        cell.addElement(
+            Paragraph(
+                "JEFF Electrical installation and testing",
+                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD)
+            )
+        )
+        cell.addElement(
+            Paragraph(
+                "2 Palgrave Road",
+                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+            )
+        )
+        cell.addElement(
+            Paragraph(
+                "Bedform, MK429DH",
+                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+            )
+        )
+        cell.addElement(
+            Paragraph(
+                "Phone: 004-7881871100",
+                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+            )
+        )
+        return cell
+    }
+
+    fun openFile(pickerInitialUri: Uri) {
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
+            type = "application/pdf"
+
+            // Optionally, specify a URI for the file that should appear in the
+            // system file picker when it loads.
+            putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri)
+        }
+
+        startActivityForResult(intent, 2)
     }
 
     //Create Quotation table
@@ -766,6 +1089,12 @@ class AddQuotationFragment : Fragment() ,DatePickerDialog.OnDateSetListener{
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        quotationBinding.quotationDateTextInputLayout.setText(viewModel.changeDateFormat(dayOfMonth,monthOfYear,year))
+        quotationBinding.quotationDateTextInputLayout.setText(
+            viewModel.changeDateFormat(
+                dayOfMonth,
+                monthOfYear,
+                year
+            )
+        )
     }
 }

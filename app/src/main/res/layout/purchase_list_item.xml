@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -106,7 +107,7 @@
                 android:text="Special Instruction"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/p_textView46" />
+                app:layout_constraintTop_toBottomOf="@+id/textView86" />
 
             <TextView
                 android:id="@+id/p_textView36"
@@ -241,8 +242,9 @@
                 android:text="@{purchase.specialInstruction}"
                 android:textColor="@android:color/white"
                 app:layout_constraintEnd_toEndOf="@+id/p_textView46"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/p_textView46"
-                app:layout_constraintTop_toBottomOf="@+id/p_textView46" />
+                app:layout_constraintTop_toBottomOf="@+id/textView86" />
 
             <TextView
                 android:id="@+id/p_textView49"
@@ -347,6 +349,94 @@
                 app:layout_constraintEnd_toEndOf="@+id/p_textView52"
                 app:layout_constraintStart_toStartOf="@+id/p_textView52"
                 app:layout_constraintTop_toBottomOf="@+id/p_view5" />
+
+            <TextView
+                android:id="@+id/textView79"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/street_address"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/p_textView46" />
+
+            <TextView
+                android:id="@+id/textView80"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{purchase.street}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/p_textView46"
+                app:layout_constraintStart_toStartOf="@+id/p_textView46"
+                app:layout_constraintTop_toBottomOf="@+id/p_textView46" />
+
+            <TextView
+                android:id="@+id/textView81"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/country"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView80" />
+
+            <TextView
+                android:id="@+id/textView82"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{purchase.country}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/textView80"
+                app:layout_constraintStart_toStartOf="@+id/textView80"
+                app:layout_constraintTop_toBottomOf="@+id/textView80" />
+
+            <TextView
+                android:id="@+id/textView83"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/post_code"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView82" />
+
+            <TextView
+                android:id="@+id/textView84"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{purchase.postCode}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/textView82"
+                app:layout_constraintStart_toStartOf="@+id/textView82"
+                app:layout_constraintTop_toBottomOf="@+id/textView82" />
+
+            <TextView
+                android:id="@+id/textView85"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/telephone_no"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView84" />
+
+            <TextView
+                android:id="@+id/textView86"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{purchase.telephone}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/textView84"
+                app:layout_constraintStart_toStartOf="@+id/textView84"
+                app:layout_constraintTop_toBottomOf="@+id/textView84" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

@@ -124,7 +124,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_comment_textInputLayout"
+                android:id="@+id/purchase_street_textInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -133,6 +133,85 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_textInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/purchase_street_textInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/white"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:text="@{purchase.street}"
+                    android:hint="@string/street_address" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/purchase_country_textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@{purchase.country}"
+                android:hint="@string/united_kingdom"
+                android:textColorHint="@android:color/white"
+                android:padding="16dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_street_textInputLayout"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/purchase_post_code_textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_country_textInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/purchase_post_code_textInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:text="@{purchase.postCode}"
+                    android:textColor="@android:color/white"
+                    android:hint="@string/post_code" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/purchase_telephone_textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_post_code_textInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/purchase_telephone_textInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="phone"
+                    android:text="@{purchase.telephone}"
+                    android:textColor="@android:color/white"
+                    android:hint="@string/telephone_no" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/purchase_comment_textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_telephone_textInputLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/purchase_comment_textInput"

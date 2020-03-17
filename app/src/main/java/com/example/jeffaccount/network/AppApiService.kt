@@ -104,11 +104,16 @@ interface AppApiService {
     @POST("quatationadd.php")
     @FormUrlEncoded
     fun addQuotation(
+        @Field("apikey")apiKey:String,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("customer_name") customerName: String,
+        @Field("street_address")streetAddress:String,
+        @Field("country")country: String,
+        @Field("post_code")postCode: String,
+        @Field("telephone")telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -123,12 +128,17 @@ interface AppApiService {
     @POST("quatationupdate.php")
     @FormUrlEncoded
     fun updateQuotation(
+        @Field("apikey")apiKey:String,
         @Field("qid") quotationId: Int,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("customer_name") customerName: String,
+        @Field("street_address")streetAddress:String,
+        @Field("country")country: String,
+        @Field("post_code")postCode: String,
+        @Field("telephone")telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -141,7 +151,10 @@ interface AppApiService {
 
     //Get quotation list
     @POST("quatationlist.php")
-    fun getQuotationList(): Call<Quotation>
+    @FormUrlEncoded
+    fun getQuotationList(
+        @Field("apikey")apiKey: String
+    ): Call<Quotation>
 
     //Delete Quotation
     @POST("quatationdel.php")
@@ -188,11 +201,16 @@ interface AppApiService {
     @POST("purchaseadd.php")
     @FormUrlEncoded
     fun addPurchase(
+        @Field("apikey")apiKey: String,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("customer_name") supplierName: String,
+        @Field("street_address")streetAddress:String,
+        @Field("country")country: String,
+        @Field("post_code")postCode: String,
+        @Field("telephone")telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -207,12 +225,17 @@ interface AppApiService {
     @POST("purchaseupdate.php")
     @FormUrlEncoded
     fun updatePurchase(
+        @Field("apikey")apiKey: String,
         @Field("pid")purchaseId:Int,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("customer_name") supplierName: String,
+        @Field("street_address")streetAddress:String,
+        @Field("country")country: String,
+        @Field("post_code")postCode: String,
+        @Field("telephone")telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -225,7 +248,10 @@ interface AppApiService {
 
     //Get purchase list
     @POST("purchaselist.php")
-    fun getPurchaseList():Call<Purchase>
+    @FormUrlEncoded
+    fun getPurchaseList(
+        @Field("apikey")apiKey: String
+    ):Call<Purchase>
 
     //Delete Purchase
     @POST("purchasedel.php")

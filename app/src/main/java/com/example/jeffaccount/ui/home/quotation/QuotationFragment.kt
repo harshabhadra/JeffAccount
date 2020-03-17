@@ -62,7 +62,7 @@ class QuotationFragment : Fragment() {
         quotationViewModel = ViewModelProvider(this).get(AddQuotationViewModel::class.java)
 
         //Get list of quotations
-        quotationViewModel.getQuotationList().observe(viewLifecycleOwner, Observer {
+        quotationViewModel.getQuotationList(getString(R.string.api_key)).observe(viewLifecycleOwner, Observer {
             it?.let {
                 quotationListAdapter.submitList(it.posts)
                 quotationBinding.noQuotationTv.visibility = View.GONE

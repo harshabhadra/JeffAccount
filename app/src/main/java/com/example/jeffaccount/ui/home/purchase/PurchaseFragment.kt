@@ -56,7 +56,7 @@ class PurchaseFragment : Fragment() {
         purchaseViewModel = ViewModelProvider(this).get(AddPurchaseViewModel::class.java)
 
         //Getting list of purchase from view model class
-        purchaseViewModel.getPurchaseList().observe(viewLifecycleOwner, Observer {
+        purchaseViewModel.getPurchaseList("AngE9676#254r5").observe(viewLifecycleOwner, Observer {
             it?.let {
                 purchaseLisAdapter.submitList(it.posts)
                 purchaseBinding.purchaseNoTv.visibility = View.GONE

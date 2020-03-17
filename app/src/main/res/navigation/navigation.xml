@@ -151,7 +151,7 @@
     <fragment
         android:id="@+id/companyFragment"
         android:name="com.example.jeffaccount.ui.home.company.CompanyFragment"
-        android:label="company_fragment"
+        android:label=""
         tools:layout="@layout/company_fragment" >
         <action
             android:id="@+id/action_companyFragment_to_addCompanyFragment"
@@ -160,7 +160,7 @@
     <fragment
         android:id="@+id/addCompanyFragment"
         android:name="com.example.jeffaccount.ui.home.company.AddCompanyFragment"
-        android:label="AddCompanyFragment" >
+        android:label="" >
         <action
             android:id="@+id/action_addCompanyFragment_to_companyFragment"
             app:destination="@id/companyFragment"

@@ -2,20 +2,17 @@ package com.example.jeffaccount.ui.home.purchase
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.fonts.FontStyle
 import android.net.Uri
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
-import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddPurchaseFragmentBinding
@@ -36,7 +33,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -105,6 +101,10 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
             val date = purchaseBinding.purchaseDateTextInputLayout.text.toString()
             val supplierName = purchaseBinding.purchaseSupplierTextInput.text.toString()
+            val street = purchaseBinding.purchaseStreetTextInput.text.toString()
+            val country = purchaseBinding.purchaseCountryTextInputLayout.text.toString()
+            val postCode = purchaseBinding.purchasePostCodeTextInput.text.toString()
+            val telephone = purchaseBinding.purchaseTelephoneTextInput.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
             val itemDes = purchaseBinding.purchaseItemdesTextInput.text.toString()
             val paymentMethod = purchaseBinding.purchasePaymentMethodTextInput.text.toString()
@@ -162,13 +162,24 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     getString(
                         R.string.enter_total_amount
                     )
+                street.isEmpty() -> purchaseBinding.purchaseStreetTextInputLayout.error =
+                    getString(R.string.enter_street_address)
+                postCode.isEmpty() -> purchaseBinding.purchasePostCodeTextInputLayout.error =
+                    getString(R.string.enter_post_code)
+                telephone.isEmpty() -> purchaseBinding.purchaseTelephoneTextInputLayout.error =
+                    getString(R.string.telephone_no)
                 else -> {
                     viewModel.addPurchase(
+                        "AngE9676#254r5",
                         jobNo,
                         quotationNo,
                         _vat,
                         date,
                         supplierName,
+                        street,
+                        "United Kingdom",
+                        postCode,
+                        telephone,
                         comment,
                         itemDes,
                         paymentMethod,
@@ -196,6 +207,10 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
             val date = purchaseBinding.purchaseDateTextInputLayout.text.toString()
             val supplierName = purchaseBinding.purchaseSupplierTextInput.text.toString()
+            val street = purchaseBinding.purchaseStreetTextInput.text.toString()
+            val country = purchaseBinding.purchaseCountryTextInputLayout.text.toString()
+            val postCode = purchaseBinding.purchasePostCodeTextInput.text.toString()
+            val telephone = purchaseBinding.purchaseTelephoneTextInput.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
             val itemDes = purchaseBinding.purchaseItemdesTextInput.text.toString()
             val paymentMethod = purchaseBinding.purchasePaymentMethodTextInput.text.toString()
@@ -253,14 +268,25 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     getString(
                         R.string.enter_total_amount
                     )
+                street.isEmpty() -> purchaseBinding.purchaseStreetTextInputLayout.error =
+                    getString(R.string.enter_street_address)
+                postCode.isEmpty() -> purchaseBinding.purchasePostCodeTextInputLayout.error =
+                    getString(R.string.enter_post_code)
+                telephone.isEmpty() -> purchaseBinding.purchaseTelephoneTextInputLayout.error =
+                    getString(R.string.telephone_no)
                 else -> {
                     viewModel.updatePurchase(
+                        "AngE9676#254r5",
                         purchase.pid!!.toInt(),
                         jobNo,
                         quotationNo,
                         _vat,
                         date,
                         supplierName,
+                        street,
+                        "United Kingdom",
+                        postCode,
+                        telephone,
                         comment,
                         itemDes,
                         paymentMethod,
@@ -423,6 +449,46 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 purchaseBinding.purchaseTotalAmountTextinputlayout.isErrorEnabled = false
             }
         })
+
+        purchaseBinding.purchaseStreetTextInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                purchaseBinding.purchaseStreetTextInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                purchaseBinding.purchaseStreetTextInputLayout.isErrorEnabled = false
+            }
+        })
+
+        purchaseBinding.purchasePostCodeTextInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                purchaseBinding.purchasePostCodeTextInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                purchaseBinding.purchasePostCodeTextInputLayout.isErrorEnabled = false
+            }
+        })
+
+        purchaseBinding.purchaseTelephoneTextInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                purchaseBinding.purchaseTelephoneTextInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                purchaseBinding.purchaseTelephoneTextInputLayout.isErrorEnabled = false
+            }
+        })
+
         return purchaseBinding.root
 
     }
@@ -556,20 +622,7 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             val lineSeparator = LineSeparator()
             lineSeparator.lineColor = BaseColor.WHITE
 
-            val jeffChunk = Chunk(
-                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN, 32.0f)
-            )
-            val heading = Paragraph(jeffChunk)
-            heading.alignment = Element.ALIGN_CENTER
-            val mChunk = Chunk(
-                getString(R.string.purchase)
-                , Font(Font.FontFamily.TIMES_ROMAN, 24.0f)
-            )
-            val title = Paragraph(mChunk)
-            title.alignment = Element.ALIGN_CENTER
-            mDoc.add(heading)
-            mDoc.add(title)
-            mDoc.add(lineSeparator)
+
             mDoc.add(Paragraph(" "))
             val quotationBody = Paragraph()
             createQuotationTable(quotationBody)
@@ -702,6 +755,7 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        purchaseBinding.purchaseDateTextInputLayout.text = viewModel.changeDateFormat(dayOfMonth,monthOfYear,year)
+        purchaseBinding.purchaseDateTextInputLayout.text =
+            viewModel.changeDateFormat(dayOfMonth, monthOfYear, year)
     }
 }

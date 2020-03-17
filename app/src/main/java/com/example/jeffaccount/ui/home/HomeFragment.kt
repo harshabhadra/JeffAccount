@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -24,20 +23,21 @@ class HomeFragment : Fragment() {
 
     companion object {
         fun newInstance() = HomeFragment()
+        private const val MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100
     }
 
     private lateinit var viewModel: HomeViewModel
-    private lateinit var loginCred:LogInCred
+    private lateinit var loginCred: LogInCred
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val homeBinding = HomeFragmentBinding.inflate(inflater,container,false)
-
+        val homeBinding = HomeFragmentBinding.inflate(inflater, container, false)
         //Setting up Home Recycler
         val homeRecyclerAdapter = HomeRecyclerAdapter()
-        homeBinding.homeRecycler.layoutManager = GridLayoutManager(context,2) as RecyclerView.LayoutManager?
+        homeBinding.homeRecycler.layoutManager =
+            GridLayoutManager(context, 2) as RecyclerView.LayoutManager?
         homeBinding.homeRecycler.adapter = homeRecyclerAdapter
 
         setHasOptionsMenu(true)
@@ -50,7 +50,7 @@ class HomeFragment : Fragment() {
             ),
             Home(
                 R.drawable.supplier,
-               getString(R.string.supplier)
+                getString(R.string.supplier)
             ),
             Home(
                 R.drawable.quote,
@@ -59,10 +59,6 @@ class HomeFragment : Fragment() {
             Home(
                 R.drawable.purchase,
                 getString(R.string.purchase)
-            ),
-            Home(
-                R.drawable.invoice,
-                getString(R.string.invoice)
             ),
             Home(
                 R.drawable.worksheet,
@@ -74,8 +70,7 @@ class HomeFragment : Fragment() {
             )
         )
         homeRecyclerAdapter.submitList(homeList)
-        homeRecyclerAdapter.onItemClick ={
-            pos, view ->
+        homeRecyclerAdapter.onItemClick = { pos, view ->
             val home = homeRecyclerAdapter.getItemName(pos)
             navigateTo(home.title)
         }
@@ -86,13 +81,13 @@ class HomeFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         val application = requireNotNull(this.activity).application as JeffApplication
         val viewModelFactory = HomeViewModelFactory(application)
-        viewModel = ViewModelProvider(this,viewModelFactory).get(HomeViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
         // TODO: Use the ViewModel
 
         viewModel.logInCredDeleted.observe(viewLifecycleOwner, Observer {
             it?.let {
-                if (it){
-                    val intent = Intent(activity,LogInActivity::class.java)
+                if (it) {
+                    val intent = Intent(activity, LogInActivity::class.java)
                     startActivity(intent)
                     activity?.finish()
                 }
@@ -102,25 +97,27 @@ class HomeFragment : Fragment() {
     }
 
     //Function to Navigate to destination
-    private fun navigateTo(name:String){
-        when(name){
-             getString(R.string.customer)->{
-                 this.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCustomerFragment())
-             }
-            getString(R.string.supplier)->{
-
-                this.findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToSupplierFragment())
+    private fun navigateTo(name: String) {
+        when (name) {
+            getString(R.string.customer) -> {
+                this.findNavController()
+                    .navigate(HomeFragmentDirections.actionHomeFragmentToCustomerFragment())
             }
-            getString(R.string.quotation)->{
+            getString(R.string.supplier) -> {
+
+                this.findNavController()
+                    .navigate(HomeFragmentDirections.actionHomeFragmentToSupplierFragment())
+            }
+            getString(R.string.quotation) -> {
                 findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToQuotationFragment())
             }
-            getString(R.string.purchase)->{
+            getString(R.string.purchase) -> {
                 findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToPurchaseFragment())
             }
-            getString(R.string.company)->{
+            getString(R.string.company) -> {
                 findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCompanyFragment())
             }
-            getString(R.string.time_sheet)->{
+            getString(R.string.time_sheet) -> {
                 findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTimeSheetFragment())
             }
         }
@@ -136,13 +133,13 @@ class HomeFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.home_menu,menu)
+        inflater.inflate(R.menu.home_menu, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         val itemId = item.itemId
-        if (itemId == R.id.log_out){
+        if (itemId == R.id.log_out) {
             viewModel.deleteLogInCred(loginCred)
         }
         return true

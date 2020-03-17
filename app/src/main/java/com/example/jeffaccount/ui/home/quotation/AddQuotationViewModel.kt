@@ -34,11 +34,16 @@ class AddQuotationViewModel : ViewModel() {
 
     //Add Quotation
     fun addQuotaiton(
+        apiKey:String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         customerName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -49,11 +54,16 @@ class AddQuotationViewModel : ViewModel() {
         totalAmount: Double
     ): LiveData<String> {
         return jeffRepository.getAddQuotationMessage(
+            apiKey,
             jobNo,
             quotationNo,
             vat,
             date,
             customerName,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
             comment,
             itemDes,
             paymentMethod,
@@ -67,12 +77,17 @@ class AddQuotationViewModel : ViewModel() {
 
     //Update Quotation
     fun updateQuotation(
+        apiKey: String,
         id: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         customerName: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -83,12 +98,17 @@ class AddQuotationViewModel : ViewModel() {
         totalAmount: Double
     ): LiveData<String> {
         return jeffRepository.getUpdateQuotationMessage(
+            apiKey,
             id,
             jobNo,
             quotationNo,
             vat,
             date,
             customerName,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
             comment,
             itemDes,
             paymentMethod,
@@ -106,8 +126,8 @@ class AddQuotationViewModel : ViewModel() {
     }
 
     //Get list of quotation
-    fun getQuotationList(): LiveData<Quotation> {
-        return jeffRepository.getAllQuotation()
+    fun getQuotationList(apiKey: String): LiveData<Quotation> {
+        return jeffRepository.getAllQuotation(apiKey)
     }
 
     //Add quantity
