@@ -67,9 +67,25 @@ data class TimeSheetPost (
 
     @SerializedName("discount_amount")
     @Expose
-    var discountAmount: String?
+    var discountAmount: String?,
+    @SerializedName("street_address")
+    @Expose
+    var street:String?,
+    @SerializedName("country")
+    @Expose
+    var country:String?,
+    @SerializedName("post_code")
+    @Expose
+    var postCode:String?,
+    @SerializedName("telephone")
+    @Expose
+    var telephone:String?
 ):Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
@@ -102,6 +118,10 @@ data class TimeSheetPost (
         parcel.writeString(date)
         parcel.writeString(paymentMethod)
         parcel.writeString(discountAmount)
+        parcel.writeString(street)
+        parcel.writeString(country)
+        parcel.writeString(postCode)
+        parcel.writeString(telephone)
     }
 
     override fun describeContents(): Int {

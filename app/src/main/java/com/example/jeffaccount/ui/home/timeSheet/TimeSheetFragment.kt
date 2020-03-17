@@ -67,7 +67,7 @@ class TimeSheetFragment : Fragment() {
             }
         })
         //Getting list of time sheet from ViewModel class
-        viewModel.getTimeSheetList().observe(viewLifecycleOwner, Observer {
+        viewModel.getTimeSheetList(getString(R.string.api_key)).observe(viewLifecycleOwner, Observer {
             it?.let {
                 timeSheetAdapter.submitList(it.posts)
                 timeSheetBinding.noTimeSheetTv.visibility = View.GONE

@@ -28,11 +28,16 @@ class TimeSheetViewModel : ViewModel() {
 
     //Add Time sheet
     fun addTimeSheet(
+        apikey: String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         name: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -43,19 +48,24 @@ class TimeSheetViewModel : ViewModel() {
         totalAmount: Double
     ): LiveData<String> {
         return jeffRepository.getAddTimeSheetMessage(
-            jobNo, quotationNo, vat, date, name, comment, itemDes
+            apikey,jobNo, quotationNo, vat, date, name,streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
         )
     }
 
     //Update Time sheet
     fun updateTimeSheet(
+        apikey:String,
         tid: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         name: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -66,14 +76,14 @@ class TimeSheetViewModel : ViewModel() {
         totalAmount: Double
     ): LiveData<String> {
         return jeffRepository.getUpdateTimeSheetMessage(
-            tid, jobNo, quotationNo, vat, date, name, comment, itemDes
+            apikey,tid, jobNo, quotationNo, vat, date, name, streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
         )
     }
 
     //Get list of Time Sheet
-    fun getTimeSheetList(): LiveData<TimeSheet> {
-        return jeffRepository.getAllTimeSheet()
+    fun getTimeSheetList(apikey: String): LiveData<TimeSheet> {
+        return jeffRepository.getAllTimeSheet(apikey)
     }
 
     //Delete Time Sheet

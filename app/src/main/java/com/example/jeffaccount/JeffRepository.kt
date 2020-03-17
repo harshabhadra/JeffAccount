@@ -212,11 +212,16 @@ class JeffRepository() {
 
     //Add time sheet
     fun getAddTimeSheetMessage(
+        apiKey: String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         name: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -227,7 +232,7 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         addTimeSheet(
-            jobNo, quotationNo, vat, date, name, comment, itemDes
+            apiKey,jobNo, quotationNo, vat, date, name,streetAdd,coutry, postCode, telephone, comment, itemDes
             , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
         )
         return timeSheetAddMessage
@@ -323,12 +328,17 @@ class JeffRepository() {
 
     //Update time sheet
     fun getUpdateTimeSheetMessage(
+        apiKey: String,
         tid: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         name: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -339,7 +349,7 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         updateTimeSheet(
-            tid, jobNo, quotationNo, vat, date, name, comment, itemDes
+            apiKey,tid, jobNo, quotationNo, vat, date, name,streetAdd,coutry,postCode,telephone, comment, itemDes
             , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
         )
         return timeSheetUpdateMessage
@@ -412,8 +422,8 @@ class JeffRepository() {
     }
 
     //Get all time sheet
-    fun getAllTimeSheet(): LiveData<TimeSheet> {
-        getTimeSheetList()
+    fun getAllTimeSheet(apiKey: String): LiveData<TimeSheet> {
+        getTimeSheetList(apiKey)
         return timeSheetListMutableLiveData
     }
 
@@ -489,9 +499,9 @@ class JeffRepository() {
     }
 
     //Network call to get Time Sheet list
-    private fun getTimeSheetList() {
+    private fun getTimeSheetList(apiKey: String) {
 
-        apiService.getTimeSheetList().enqueue(object : Callback<TimeSheet> {
+        apiService.getTimeSheetList(apiKey).enqueue(object : Callback<TimeSheet> {
             override fun onFailure(call: Call<TimeSheet>, t: Throwable) {
                 Timber.e("Error getting time sheet list ${t.message}")
             }
@@ -667,11 +677,16 @@ class JeffRepository() {
 
     //Network call to add time sheet
     private fun addTimeSheet(
+        apiKey: String,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         name: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -683,7 +698,7 @@ class JeffRepository() {
     ) {
 
         apiService.addTimeSheet(
-            jobNo, quotationNo, vat, date, name, comment, itemDes
+            apiKey,jobNo, quotationNo, vat, date, name, streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
@@ -874,12 +889,17 @@ class JeffRepository() {
 
     //Network call to update time sheet
     private fun updateTimeSheet(
+        apiKey: String,
         tid: Int,
         jobNo: String,
         quotationNo: String,
         vat: Double,
         date: String,
         name: String,
+        streetAdd: String,
+        coutry: String,
+        postCode: String,
+        telephone: String,
         comment: String,
         itemDes: String,
         paymentMethod: String,
@@ -890,7 +910,7 @@ class JeffRepository() {
         totalAmount: Double
     ) {
         apiService.updateTimeSheet(
-            tid, jobNo, quotationNo, vat, date, name, comment, itemDes
+            apiKey,tid, jobNo, quotationNo, vat, date, name,streetAdd, coutry, postCode, telephone, comment, itemDes
             , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {

@@ -9,12 +9,11 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
-import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.FragmentAddTimeSheetBinding
 import com.example.jeffaccount.model.TimeSheetPost
@@ -34,7 +33,6 @@ import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -53,7 +51,7 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private var _totalAmount: Double = 0.0
     private lateinit var action: String
     private lateinit var timeSheet: TimeSheetPost
-
+    private lateinit var filePath:String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -275,6 +273,9 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
             val date = addTimeSheetBinding.tsDateTv.text.toString()
             val name = addTimeSheetBinding.tsNameTextInput.text.toString()
+            val street = addTimeSheetBinding.tsStreetTextInput.text.toString()
+            val postCode = addTimeSheetBinding.tsPostCodeTextInput.text.toString()
+            val telephone = addTimeSheetBinding.tsTelephoneTextInput.text.toString()
             val comment = addTimeSheetBinding.tsCommentTextInput.text.toString()
             val itemDes = addTimeSheetBinding.tsItemDesTextInput.text.toString()
             val paymentMethod = addTimeSheetBinding.tsPaymentMethodTextInput.text.toString()
@@ -322,13 +323,21 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     getString(R.string.enter_discount_amount)
                 totalAmount.isEmpty() -> addTimeSheetBinding.tsTotalAmountTextInputLayout.error =
                     getString(R.string.enter_total_amount)
+                street.isEmpty()->addTimeSheetBinding.tsStreetTextInputLayout.error = getString(R.string.enter_street_address)
+                postCode.isEmpty()->addTimeSheetBinding.tsPostCodeTextInputLayout.error = getString(R.string.enter_post_code)
+                telephone.isEmpty()->addTimeSheetBinding.tsTelephoneTextInputLayout.error = getString(R.string.telephone_no)
                 else -> {
                     viewModel.addTimeSheet(
+                        "AngE9676#254r5",
                         jobNo,
                         quotationNo,
                         _vat,
                         date,
                         name,
+                        street,
+                        "United Kingdom",
+                        postCode,
+                        telephone,
                         comment,
                         itemDes,
                         paymentMethod,
@@ -359,6 +368,9 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
             val date = addTimeSheetBinding.tsDateTv.text.toString()
             val name = addTimeSheetBinding.tsNameTextInput.text.toString()
+            val street = addTimeSheetBinding.tsStreetTextInput.text.toString()
+            val postCode = addTimeSheetBinding.tsPostCodeTextInput.text.toString()
+            val telephone = addTimeSheetBinding.tsTelephoneTextInput.text.toString()
             val comment = addTimeSheetBinding.tsCommentTextInput.text.toString()
             val itemDes = addTimeSheetBinding.tsItemDesTextInput.text.toString()
             val paymentMethod = addTimeSheetBinding.tsPaymentMethodTextInput.text.toString()
@@ -406,14 +418,22 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     getString(R.string.enter_discount_amount)
                 totalAmount.isEmpty() -> addTimeSheetBinding.tsTotalAmountTextInputLayout.error =
                     getString(R.string.enter_total_amount)
+                street.isEmpty()->addTimeSheetBinding.tsStreetTextInputLayout.error = getString(R.string.enter_street_address)
+                postCode.isEmpty()->addTimeSheetBinding.tsPostCodeTextInputLayout.error = getString(R.string.enter_post_code)
+                telephone.isEmpty()->addTimeSheetBinding.tsTelephoneTextInputLayout.error = getString(R.string.telephone_no)
                 else -> {
                     viewModel.updateTimeSheet(
+                        "AngE9676#254r5",
                         timeSheet.tid!!.toInt(),
                         jobNo,
                         quotationNo,
                         _vat,
                         date,
                         name,
+                        street,
+                        "United Kingdom",
+                        postCode,
+                        telephone,
                         comment,
                         itemDes,
                         paymentMethod,
@@ -480,8 +500,22 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     dialog?.dismiss()
                 }
             }
-            R.id.convert_pdf_item->{
-                createPdf()
+            R.id.convert_pdf_item -> {
+                val mFileName =
+                    "jeff_account_" + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
+                        .format(System.currentTimeMillis())
+                val folder = File(
+                    Environment.getExternalStorageDirectory(),
+                    getString(R.string.app_name)
+                )
+                Timber.e(folder.absolutePath)
+                var success = true
+                if (!folder.exists()) {
+                    success = folder.mkdirs()
+                }
+                filePath = "$folder/$mFileName.pdf"
+                Timber.e("file path: $filePath")
+                savePdf()
             }
         }
         return true
@@ -529,166 +563,234 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             .check()
     }
 
-    //Permission to make pdf
-    private fun createPdf() {
-        val mDoc = Document(PageSize.A4, 8f, 8f, 8f, 8f)
-        val folder = File(Environment.getExternalStorageDirectory(), getString(R.string.app_name))
-        Timber.e(folder.absolutePath)
-        var success = true
-        if (!folder.exists()) {
-            success = folder.mkdirs()
-        }
-        val mFileName = "jeff_account_." + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
-            .format(System.currentTimeMillis())
-        val filePath = folder.absolutePath + "/" + mFileName + ".pdf"
-
+    private fun savePdf() {
+        val doc = Document(PageSize.A4)
         try {
-            PdfWriter.getInstance(mDoc, FileOutputStream(filePath))
-            mDoc.open()
-            val lineSeparator = LineSeparator()
-            lineSeparator.lineColor = BaseColor.WHITE
-            val jeffChunk = Chunk(
-                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN,32.0f)
+            PdfWriter.getInstance(doc, FileOutputStream(filePath))
+            doc.open()
+            val headTable = PdfPTable(2)
+            headTable.setWidths(intArrayOf(4, 2))
+            headTable.widthPercentage = 100f
+            val addressCell = getAddressTable()
+            val dateCell = PdfPCell()
+            dateCell.border = PdfPCell.NO_BORDER
+            dateCell.addElement(Paragraph(timeSheet.date))
+            dateCell.addElement(Paragraph(timeSheet.quotationNo))
+            dateCell.horizontalAlignment = Element.ALIGN_RIGHT
+            headTable.addCell(addressCell)
+            headTable.addCell(dateCell)
+            doc.add(headTable)
+            doc.add(Paragraph(" "))
+            val detailsTable = populateDetailsTable()
+            doc.add(detailsTable)
+            doc.add(Paragraph(" "))
+            doc.add(
+                Paragraph(
+                    "WEBSITE: www.jeffelectrical.com", Font(
+                        Font.FontFamily.COURIER, 10f, Font.BOLD,
+                        BaseColor.RED
+                    )
+                )
             )
-            val heading = Paragraph(jeffChunk)
-            heading.alignment = Element.ALIGN_CENTER
-            val mChunk = Chunk(
-                getString(R.string.time_sheet)
-                , Font(Font.FontFamily.TIMES_ROMAN, 24.0f)
+            doc.add(Paragraph(" "))
+            val invoiceTitle =
+                Paragraph("INVOICE", Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD))
+            invoiceTitle.alignment = Element.ALIGN_CENTER
+            val invoiceTable = createInvoiceTable()
+            doc.add(invoiceTitle)
+            doc.add(Paragraph(" "))
+            doc.add(invoiceTable)
+            doc.add(Paragraph(" "))
+            doc.add(Paragraph("Additional Charges"))
+            doc.add(Paragraph(" "))
+            val totalTable = createTotalTable()
+            doc.add(totalTable)
+            doc.add(Paragraph(" "))
+            doc.add(Paragraph(getString(R.string.jeff_message_to_cus)))
+            doc.add(
+                Paragraph(
+                    getString(R.string.jeff_inquiry_message),
+                    Font(Font.FontFamily.UNDEFINED, 10f, Font.BOLD, BaseColor.RED)
+                )
             )
-            val title = Paragraph(mChunk)
-            title.alignment = Element.ALIGN_CENTER
-            mDoc.add(heading)
-            mDoc.add(title)
-            mDoc.add(lineSeparator)
-            mDoc.add(Paragraph(" "))
-            val quotationBody = Paragraph()
-            createQuotationTable(quotationBody)
-            mDoc.add(quotationBody)
-            mDoc.close().let {
+            doc.close().let {
                 Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Intent.ACTION_VIEW)
                 val data = Uri.parse("file://" + filePath)
                 intent.setDataAndType(data, "application/pdf")
                 startActivity(Intent.createChooser(intent, "Open Pdf"))
             }
-        } catch (e: Exception) {
+        } catch (e: java.lang.Exception) {
 
-            Timber.e(e)
+            Timber.e("Error: ${e.message}")
         }
     }
 
-    //Create Quotation table
-    private fun createQuotationTable(timeSheetBody: Paragraph) {
-
-        val table = PdfPTable(floatArrayOf(5f, 5f))
+    private fun createTotalTable(): PdfPTable {
+        val table = PdfPTable(2)
         table.widthPercentage = 100f
-        table.defaultCell.isUseAscender = true
+        val subTotalCell = PdfPCell()
+        subTotalCell.addElement(Paragraph("SUB TOTAL"))
+        subTotalCell.setPadding(8f)
+        table.addCell(subTotalCell)
+        val subTotalDCell = PdfPCell()
+        subTotalDCell.addElement(Paragraph(" "))
+        subTotalDCell.setPadding(8f)
+        table.addCell(subTotalDCell)
+        val taxCell = PdfPCell()
+        taxCell.addElement(Paragraph("TAX %"))
+        taxCell.setPadding(8f)
+        table.addCell(taxCell)
+        val taxDCell = PdfPCell()
+        taxDCell.addElement(Paragraph(timeSheet.vat))
+        taxDCell.setPadding(8f)
+        table.addCell(taxDCell)
+        val taxAmountCell = PdfPCell()
+        taxAmountCell.addElement(Paragraph("TAX AMOUNT"))
+        taxAmountCell.setPadding(8f)
+        table.addCell(taxAmountCell)
+        val taxAmountDCell = PdfPCell()
+        taxAmountDCell.addElement(Paragraph(" "))
+        taxAmountDCell.setPadding(8f)
+        table.addCell(taxAmountDCell)
+        val disocuntCell = PdfPCell()
+        disocuntCell.addElement(Paragraph("DISCOUNT AMOUNT"))
+        disocuntCell.setPadding(8f)
+        table.addCell(disocuntCell)
+        val discountDCell = PdfPCell()
+        discountDCell.addElement(Paragraph(timeSheet.discountAmount))
+        discountDCell.setPadding(8f)
+        table.addCell(discountDCell)
+        val totalAmountCell = PdfPCell()
+        totalAmountCell.addElement(Paragraph("TOTAL AMOUNT"))
+        totalAmountCell.setPadding(8f)
+        table.addCell(totalAmountCell)
+        val totalAmountDCell = PdfPCell()
+        totalAmountDCell.addElement(Paragraph(timeSheet.totalAmount))
+        totalAmountDCell.setPadding(8f)
+        table.addCell(totalAmountDCell)
+        return table
+    }
 
-        val cell = PdfPCell(Phrase("Job No"))
-        cell.paddingBottom = 8f
-        cell.paddingLeft = 8f
-        val cell1 = PdfPCell(Phrase(timeSheet.jobNo))
-        cell1.paddingBottom = 8f
-        cell1.paddingLeft = 8f
-        val qnoCell = PdfPCell(Phrase("Qutation No"))
-        qnoCell.paddingBottom = 8f
-        qnoCell.paddingLeft = 8f
-        val qnoDCell = PdfPCell(Phrase(timeSheet.quotationNo))
-        qnoDCell.paddingBottom = 8f
-        qnoDCell.paddingLeft = 8f
-        val vatCell = PdfPCell(Phrase("Vat%"))
-        vatCell.paddingBottom = 8f
-        vatCell.paddingLeft = 8f
-        val vatDCell = PdfPCell(Phrase(timeSheet.vat))
-        vatDCell.paddingBottom = 8f
-        vatDCell.paddingLeft = 8f
-        val dateCell = PdfPCell(Phrase("Date"))
-        dateCell.paddingBottom = 8f
-        dateCell.paddingLeft = 8f
-        val dateDCell = PdfPCell(Phrase(timeSheet.date))
-        dateDCell.paddingBottom = 8f
-        dateDCell.paddingLeft = 8f
-        val nameCell = PdfPCell(Phrase("Name"))
-        nameCell.paddingBottom = 8f
-        nameCell.paddingLeft = 8f
-        val nameDCell = PdfPCell(Phrase(timeSheet.name))
-        nameDCell.paddingBottom = 8f
-        nameDCell.paddingLeft = 8f
-        val commentCell = PdfPCell(Phrase("Special Instruction"))
-        commentCell.paddingBottom = 8f
-        commentCell.paddingLeft = 8f
-        val commentDCell = PdfPCell(Phrase(timeSheet.specialInstruction))
-        commentDCell.paddingBottom = 8f
-        commentDCell.paddingLeft = 8f
-        val desCell = PdfPCell(Phrase("Item Description"))
-        desCell.paddingBottom = 8f
-        desCell.paddingLeft = 8f
-        val desDCell = PdfPCell(Phrase(timeSheet.itemDescription))
-        desDCell.paddingBottom = 8f
-        desDCell.paddingLeft = 8f
-        val paymentCell = PdfPCell(Phrase("Payment Method"))
-        paymentCell.paddingBottom = 8f
-        paymentCell.paddingLeft = 8f
-        val paymentDCell = PdfPCell(Phrase(timeSheet.paymentMethod))
-        paymentDCell.paddingBottom = 8f
-        paymentDCell.paddingLeft = 8f
-        val qtyCell = PdfPCell(Phrase("Hours"))
-        qtyCell.paddingBottom = 8f
-        qtyCell.paddingLeft = 8f
-        val qtyDCell = PdfPCell(Phrase(timeSheet.hrs))
-        qtyDCell.paddingBottom = 8f
-        qtyDCell.paddingLeft = 8f
-        val unitCell = PdfPCell(Phrase("Unit Amount"))
-        unitCell.paddingBottom = 8f
-        unitCell.paddingLeft = 8f
-        val unitDCell = PdfPCell(Phrase(timeSheet.amount))
-        unitDCell.paddingBottom = 8f
-        unitDCell.paddingLeft = 8f
-        val advanceCell = PdfPCell(Phrase("Advance Amount"))
-        advanceCell.paddingBottom = 8f
-        advanceCell.paddingLeft = 8f
-        val advanceDCell = PdfPCell(Phrase(timeSheet.advanceAmount))
-        advanceDCell.paddingBottom = 8f
-        advanceDCell.paddingLeft = 8f
-        val discountCell = PdfPCell(Phrase("Discount Amount"))
-        discountCell.paddingBottom = 8f
-        discountCell.paddingLeft = 8f
-        val discountDcell = PdfPCell(Phrase(timeSheet.discountAmount))
-        discountDcell.paddingBottom = 8f
-        discountDcell.paddingLeft = 8f
-        val totalCell = PdfPCell(Phrase("Total Amount"))
-        totalCell.paddingBottom = 8f
-        totalCell.paddingLeft = 8f
-        val totalDCell = PdfPCell(Phrase(timeSheet.totalAmount))
-        totalDCell.paddingBottom = 8f
-        totalDCell.paddingLeft = 8f
-        table.addCell(cell)
-        table.addCell(cell1)
-        table.addCell(qnoCell)
-        table.addCell(qnoDCell)
-        table.addCell(vatCell)
-        table.addCell(vatDCell)
-        table.addCell(dateCell)
-        table.addCell(dateDCell)
-        table.addCell(nameCell)
-        table.addCell(nameDCell)
-        table.addCell(commentCell)
-        table.addCell(commentDCell)
+    private fun createInvoiceTable(): PdfPTable {
+        val table = PdfPTable(5)
+        table.setWidths(intArrayOf(1, 4, 1, 2, 2))
+        val jobNoCell = PdfPCell(Paragraph("Job No."))
+        jobNoCell.setPadding(8f)
+        table.addCell(jobNoCell)
+        val desCell = PdfPCell(Paragraph("Description"))
+        desCell.horizontalAlignment = Element.ALIGN_CENTER
+        desCell.setPadding(8f)
         table.addCell(desCell)
-        table.addCell(desDCell)
-        table.addCell(paymentCell)
-        table.addCell(paymentDCell)
-        table.addCell(qtyCell)
-        table.addCell(qtyDCell)
+        val quantityCell = PdfPCell(Paragraph("Hours"))
+        quantityCell.setPadding(8f)
+        table.addCell(quantityCell)
+        val unitCell = PdfPCell(Paragraph("Unit Amount"))
+        unitCell.setPadding(8f)
         table.addCell(unitCell)
-        table.addCell(unitDCell)
-        table.addCell(advanceCell)
-        table.addCell(advanceDCell)
+        val discountCell = PdfPCell(Paragraph("Discount Amount"))
+        discountCell.setPadding(8f)
         table.addCell(discountCell)
-        table.addCell(discountDcell)
-        table.addCell(totalCell)
-        table.addCell(totalDCell)
-        timeSheetBody.add(table)
+
+        val noCell = PdfPCell(Paragraph("1"))
+        noCell.setPadding(8f)
+        table.addCell(noCell)
+        val itemDesCell = PdfPCell(Paragraph(timeSheet.itemDescription))
+        itemDesCell.setPadding(8f)
+        table.addCell(itemDesCell)
+        val qtyCell = PdfPCell(Paragraph(timeSheet.hrs))
+        qtyCell.setPadding(8f)
+        table.addCell(qtyCell)
+        val unitDCell = PdfPCell(Paragraph(timeSheet.amount))
+        unitDCell.setPadding(8f)
+        table.addCell(unitDCell)
+        val disDCell = PdfPCell(Paragraph(timeSheet.discountAmount))
+        disDCell.setPadding(8f)
+        table.addCell(disDCell)
+        table.widthPercentage = 100f
+        return table
+    }
+
+    private fun populateDetailsTable(): PdfPTable {
+
+        val table = PdfPTable(2)
+        val nameCell = PdfPCell()
+        table.widthPercentage = 100f
+        nameCell.border = PdfPCell.NO_BORDER
+        nameCell.addElement(Paragraph("Name"))
+        val nameDataCell = PdfPCell()
+        nameDataCell.border = PdfPCell.NO_BORDER
+        nameDataCell.addElement(Paragraph(timeSheet.name))
+        nameDataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        val addressCell = PdfPCell()
+        addressCell.border = PdfPCell.NO_BORDER
+        addressCell.addElement(Paragraph("Street Address"))
+        val addressDataCell = PdfPCell()
+        addressDataCell.border = PdfPCell.NO_BORDER
+        addressDataCell.addElement(Paragraph(timeSheet.street))
+        addressDataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        val countryCell = PdfPCell()
+        countryCell.border = PdfPCell.NO_BORDER
+        countryCell.addElement(Paragraph("Country"))
+        val countrydataCell = PdfPCell()
+        countrydataCell.border = PdfPCell.NO_BORDER
+        countrydataCell.addElement(Paragraph(timeSheet.country))
+        countrydataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        val postCell = PdfPCell()
+        postCell.border = PdfPCell.NO_BORDER
+        postCell.addElement(Paragraph("Post Code"))
+        val postDataCell = PdfPCell()
+        postDataCell.border = PdfPCell.NO_BORDER
+        postDataCell.addElement(Paragraph(timeSheet.postCode))
+        postDataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        val teleCell = PdfPCell()
+        teleCell.border = PdfPCell.NO_BORDER
+        teleCell.addElement(Paragraph("Telephone No"))
+        val teleDataCell = PdfPCell()
+        teleDataCell.border = PdfPCell.NO_BORDER
+        teleDataCell.addElement(Paragraph(timeSheet.telephone))
+        teleDataCell.horizontalAlignment = Element.ALIGN_RIGHT
+        table.addCell(nameCell)
+        table.addCell(nameDataCell)
+        table.addCell(addressCell)
+        table.addCell(addressDataCell)
+        table.addCell(countryCell)
+        table.addCell(countrydataCell)
+        table.addCell(postCell)
+        table.addCell(postDataCell)
+        table.addCell(teleCell)
+        table.addCell(teleDataCell)
+        return table
+    }
+
+    private fun getAddressTable(): PdfPCell {
+
+        val cell = PdfPCell()
+        cell.border = PdfPCell.NO_BORDER
+        cell.addElement(
+            Paragraph(
+                "JEFF Electrical installation and testing",
+                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD)
+            )
+        )
+        cell.addElement(
+            Paragraph(
+                "2 Palgrave Road",
+                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+            )
+        )
+        cell.addElement(
+            Paragraph(
+                "Bedform, MK429DH",
+                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+            )
+        )
+        cell.addElement(
+            Paragraph(
+                "Phone: 004-7881871100",
+                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+            )
+        )
+        return cell
     }
 }

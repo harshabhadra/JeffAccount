@@ -262,11 +262,16 @@ interface AppApiService {
     @POST("timesheetadd.php")
     @FormUrlEncoded
     fun addTimeSheet(
+        @Field("apikey")apiKey: String,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("name") supplierName: String,
+        @Field("street_address")streetAddress:String,
+        @Field("country")country: String,
+        @Field("post_code")postCode: String,
+        @Field("telephone")telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -281,12 +286,17 @@ interface AppApiService {
     @POST("timesheetupdate.php")
     @FormUrlEncoded
     fun updateTimeSheet(
+        @Field("apikey")apiKey: String,
         @Field("tid")timesheetId:Int,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("name") supplierName: String,
+        @Field("street_address")streetAddress:String,
+        @Field("country")country: String,
+        @Field("post_code")postCode: String,
+        @Field("telephone")telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -304,7 +314,8 @@ interface AppApiService {
 
     //Get list of time sheet
     @POST("timesheetlist.php")
-    fun getTimeSheetList():Call<TimeSheet>
+    @FormUrlEncoded
+    fun getTimeSheetList(@Field("apikey")apiKey: String):Call<TimeSheet>
 }
 
 object JeffApi {

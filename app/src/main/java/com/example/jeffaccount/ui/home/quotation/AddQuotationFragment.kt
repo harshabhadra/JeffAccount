@@ -636,8 +636,6 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 }
                 filePath = "$folder/$mFileName.pdf"
                 Timber.e("file path: $filePath")
-//                createPdf()
-
                 savePdf()
             }
         }
@@ -775,12 +773,12 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             doc.add(Paragraph(" "))
             val totalTable = createTotalTable()
             doc.add(totalTable)
-            doc.add(Paragraph())
+            doc.add(Paragraph(" "))
             doc.add(Paragraph(getString(R.string.jeff_message_to_cus)))
             doc.add(
                 Paragraph(
                     getString(R.string.jeff_inquiry_message),
-                    Font(Font.FontFamily.COURIER, 16f, Font.BOLD, BaseColor.RED)
+                    Font(Font.FontFamily.UNDEFINED, 10f, Font.BOLD, BaseColor.RED)
                 )
             )
             doc.close().let {
@@ -790,12 +788,6 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 val data = Uri.parse("file://" + filePath)
                 intent.setDataAndType(data, "application/pdf")
                 startActivity(Intent.createChooser(intent, "Open Pdf"))
-//                val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-//                    addCategory(Intent.CATEGORY_OPENABLE)
-//                    type = "application/pdf"
-//                    putExtra(Intent.EXTRA_TITLE,filePath)
-//                }
-//                startActivityForResult(intent,1)
             }
         } catch (e: java.lang.Exception) {
 
@@ -852,19 +844,38 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private fun createInvoiceTable(): PdfPTable {
         val table = PdfPTable(5)
         table.setWidths(intArrayOf(1, 4, 1, 2, 2))
-        table.addCell(PdfPCell(Paragraph("Job No.")))
+        val jobNoCell = PdfPCell(Paragraph("Job No."))
+        jobNoCell.setPadding(8f)
+        table.addCell(jobNoCell)
         val desCell = PdfPCell(Paragraph("Description"))
         desCell.horizontalAlignment = Element.ALIGN_CENTER
+        desCell.setPadding(8f)
         table.addCell(desCell)
-        table.addCell("Quantity")
-        table.addCell("Unit Amount")
-        table.addCell("Discount Amount")
+        val quantityCell = PdfPCell(Paragraph("Quantity"))
+        quantityCell.setPadding(8f)
+        table.addCell(quantityCell)
+        val unitCell = PdfPCell(Paragraph("Unit Amount"))
+        unitCell.setPadding(8f)
+        table.addCell(unitCell)
+        val discountCell = PdfPCell(Paragraph("Discount Amount"))
+        discountCell.setPadding(8f)
+        table.addCell(discountCell)
 
-        table.addCell("1.")
-        table.addCell(Paragraph(quotationItem.itemDescription))
-        table.addCell(Paragraph(quotationItem.quantity))
-        table.addCell(Paragraph(quotationItem.unitAmount))
-        table.addCell(Paragraph(quotationItem.discountAmount))
+        val noCell = PdfPCell(Paragraph("1"))
+        noCell.setPadding(8f)
+        table.addCell(noCell)
+        val itemDesCell = PdfPCell(Paragraph(quotationItem.itemDescription))
+        itemDesCell.setPadding(8f)
+        table.addCell(itemDesCell)
+        val qtyCell = PdfPCell(Paragraph(quotationItem.quantity))
+        qtyCell.setPadding(8f)
+        table.addCell(qtyCell)
+        val unitDCell = PdfPCell(Paragraph(quotationItem.unitAmount))
+        unitDCell.setPadding(8f)
+        table.addCell(unitDCell)
+        val disDCell = PdfPCell(Paragraph(quotationItem.discountAmount))
+        disDCell.setPadding(8f)
+        table.addCell(disDCell)
         table.widthPercentage = 100f
         return table
     }
