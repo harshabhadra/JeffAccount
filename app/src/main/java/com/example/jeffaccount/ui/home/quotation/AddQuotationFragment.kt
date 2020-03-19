@@ -62,6 +62,7 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private lateinit var action: String
     private lateinit var itemAdapter: ItemAdapter
     private var itemList: MutableList<Item> = mutableListOf()
+    private var nameList:MutableList<String> = mutableListOf()
     private var itemNo: Int = 1
 
     override fun onCreateView(
@@ -126,7 +127,7 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 else -> {
                     val quotation = QuotationAdd(
                         "AngE9676#254r5", jobNo, quotationNo, customerName, date, "kolkata",
-                        "United Kingdom", "78536", "89657421", itemList
+                        "United Kingdom", "78536", "89657421",paymentMethod,comment, itemList
                     )
                     viewModel.addQuotaiton(quotation).observe(viewLifecycleOwner,
                         Observer {
@@ -207,6 +208,12 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 //                item
 //            ))
         }
+
+        quotationBinding.quotationCustomerNameTextInput.setOnClickListener {
+            val searchnameFragment = SearchCustomerBottomSheetFragment(nameList)
+            searchnameFragment.show(activity!!.supportFragmentManager,searchnameFragment.tag)
+        }
+
         //Add Text Watcher to job no
         quotationBinding.quotationJobTextInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -304,6 +311,17 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
         })
         viewModel.getDate()
+
+        //Get Company list
+        viewModel.getCustomerList().observe(viewLifecycleOwner, Observer {
+            it?.let {
+                val comList = it.posts
+                for (item in comList){
+                    nameList.add(item.custname!!)
+                }
+                Timber.e("Name list size: ${nameList.size}, Com list size: ${comList.size}")
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -415,46 +433,7 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             .check()
     }
 
-    //Permission to make pdf
-    private fun createPdf() {
-        val mDoc = Document(PageSize.A4, 8f, 8f, 8f, 8f)
-        try {
-            PdfWriter.getInstance(mDoc, FileOutputStream(filePath))
-            mDoc.open()
-            val lineSeparator = LineSeparator()
-            lineSeparator.lineColor = BaseColor.WHITE
-            val jeffChunk = Chunk(
-                getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN, 32.0f)
-            )
-            val heading = Paragraph(jeffChunk)
-            heading.alignment = Element.ALIGN_CENTER
-            val mChunk = Chunk(
-                getString(R.string.quotation)
-                , Font(Font.FontFamily.TIMES_ROMAN, 24.0f)
-            )
-            val title = Paragraph(mChunk)
-            title.alignment = Element.ALIGN_CENTER
-            mDoc.add(heading)
-            mDoc.add(title)
-            mDoc.add(lineSeparator)
-            mDoc.add(Paragraph(" "))
-            val quotationBody = Paragraph()
-            createQuotationTable(quotationBody)
-            mDoc.add(quotationBody)
-            mDoc.close().let {
-                loadingDialog?.dismiss()
-                Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
-                val intent = Intent(Intent.ACTION_VIEW)
-                val data = Uri.parse("file://" + filePath)
-                intent.setDataAndType(data, "application/pdf")
-                startActivity(Intent.createChooser(intent, "Open Pdf"))
-            }
-        } catch (e: Exception) {
-
-            Timber.e(e)
-        }
-    }
-
+    //Save pdf
     private fun savePdf() {
         val doc = Document(PageSize.A4)
         try {

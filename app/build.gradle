@@ -42,7 +42,7 @@ android {
         enabled = true
     }
 
-    androidExtensions{
+    androidExtensions {
         experimental = true
     }
 

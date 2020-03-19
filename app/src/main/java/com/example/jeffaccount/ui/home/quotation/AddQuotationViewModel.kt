@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
+import com.example.jeffaccount.model.Company
+import com.example.jeffaccount.model.Customer
 import com.example.jeffaccount.model.Quotation
 import com.example.jeffaccount.model.QuotationPost
 import com.example.jeffaccount.network.Item
@@ -58,6 +60,11 @@ class AddQuotationViewModel : ViewModel() {
     //Get list of quotation
     fun getQuotationList(apiKey: String): LiveData<Quotation> {
         return jeffRepository.getAllQuotation(apiKey)
+    }
+
+    //Get list of all companies
+    fun getCustomerList(): LiveData<Customer> {
+        return jeffRepository.getAllCustomer()
     }
 
     //Add quantity

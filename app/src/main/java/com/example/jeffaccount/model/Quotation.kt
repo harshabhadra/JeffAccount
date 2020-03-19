@@ -45,6 +45,12 @@ data class QuotationPost (
     @SerializedName("telephone")
     @Expose
     var telephone:String?,
+    @SerializedName("payment_method")
+    @Expose
+    var paymentMethod:String?,
+    @SerializedName("comment")
+    @Expose
+    var comment:String?,
     @SerializedName("item_description")
     @Expose
     var itemDescription: MutableList<Item>
