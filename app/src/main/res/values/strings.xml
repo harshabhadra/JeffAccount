@@ -93,4 +93,6 @@
     <string name="no_of_item">No of Item</string>
     <string name="add_item">Add Item</string>
     <string name="add_items">Add Items</string>
+    <string name="customer_list">Customer List</string>
+    <string name="search_by_name">Search by name</string>
 </resources>
