@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.FragmentQuotationBinding
 import com.example.jeffaccount.model.QuotationPost
+import com.example.jeffaccount.network.QuotationAdd
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 /**
@@ -37,7 +38,8 @@ class QuotationFragment : Fragment() {
                 .navigate(
                     QuotationFragmentDirections.actionQuotationFragmentToAddQuotationFragment(
                         null,
-                        getString(R.string.add)
+                        getString(R.string.add),
+                        null
                     )
                 )
         }
@@ -77,7 +79,8 @@ class QuotationFragment : Fragment() {
                 findNavController().navigate(
                     QuotationFragmentDirections.actionQuotationFragmentToAddQuotationFragment(
                         it,
-                        getString(R.string.update)
+                        getString(R.string.update),
+                        null
                     )
                 )
                 quotationViewModel.doneNavigating()

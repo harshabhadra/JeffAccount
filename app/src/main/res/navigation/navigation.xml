@@ -93,8 +93,15 @@
             app:argType="com.example.jeffaccount.model.QuotationPost"
             app:nullable="true" />
         <argument
-            android:name="update_quotation"
+            android:name="action_quotation"
             app:argType="string" />
+        <action
+            android:id="@+id/action_addQuotationFragment_to_addItemFragment"
+            app:destination="@id/addItemFragment" />
+        <argument
+            android:name="item"
+            app:argType="com.example.jeffaccount.network.ItemList"
+            app:nullable="true" />
     </fragment>
     <fragment
         android:id="@+id/addPurchaseFragment"
@@ -111,6 +118,9 @@
         <argument
             android:name="action"
             app:argType="string" />
+        <action
+            android:id="@+id/action_addPurchaseFragment_to_addItemFragment"
+            app:destination="@id/addItemFragment" />
     </fragment>
     <fragment
         android:id="@+id/customerFragment"
@@ -199,5 +209,23 @@
         <argument
             android:name="action"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/addItemFragment"
+        android:name="com.example.jeffaccount.ui.home.AddItemFragment"
+        android:label=" "
+        tools:layout="@layout/fragment_add_item" >
+        <action
+            android:id="@+id/action_addItemFragment_to_addPurchaseFragment"
+            app:destination="@id/addPurchaseFragment"
+            app:popUpTo="@id/purchaseFragment" />
+        <action
+            android:id="@+id/action_addItemFragment_to_addQuotationFragment"
+            app:destination="@id/addQuotationFragment"
+            app:popUpTo="@id/quotationFragment" />
+        <argument
+            android:name="itemlist"
+            app:argType="com.example.jeffaccount.network.ItemList"
+            app:nullable="true" />
     </fragment>
 </navigation>

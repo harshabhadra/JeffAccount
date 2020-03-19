@@ -8,6 +8,8 @@ import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.dataBase.LogInDao
 import com.example.jeffaccount.model.*
 import com.example.jeffaccount.network.JeffApi
+import com.example.jeffaccount.network.QuotationAdd
+import com.example.jeffaccount.network.QuotationUpdate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -155,30 +157,8 @@ class JeffRepository() {
     }
 
     //Add Quotation
-    fun getAddQuotationMessage(
-        apiKey: String,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        customerName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        addQuotation(
-           apiKey, jobNo, quotationNo, vat, date, customerName,streetAdd,coutry,postCode,telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
-        )
+    fun getAddQuotationMessage(quotationAdd: QuotationAdd): LiveData<String> {
+        addQuotation(quotationAdd)
         return quotationAddMessage
     }
 
@@ -204,8 +184,25 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         addPurchase(
-            apiKey,jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            supplierName,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            quantity,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         )
         return purchaseAddMessage
     }
@@ -232,8 +229,25 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         addTimeSheet(
-            apiKey,jobNo, quotationNo, vat, date, name,streetAdd,coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            name,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            hrs,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         )
         return timeSheetAddMessage
     }
@@ -269,30 +283,9 @@ class JeffRepository() {
     }
 
     //Update Supplier
-    fun getUpdateQuotationMessage(
-        apiKey: String,
-        id: Int,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        customerName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
+    fun getUpdateQuotationMessage(quotationUpdate: QuotationUpdate): LiveData<String> {
         updateQuotation(
-            apiKey,id, jobNo, quotationNo, vat, date, customerName,streetAdd,coutry,postCode,telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+            quotationUpdate
         )
         return quotationUpdateMesage
     }
@@ -320,8 +313,26 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         updatePurchase(
-            apiKey,id, jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            id,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            supplierName,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            quantity,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         )
         return purchaseUpdateMessage
     }
@@ -349,8 +360,26 @@ class JeffRepository() {
         totalAmount: Double
     ): LiveData<String> {
         updateTimeSheet(
-            apiKey,tid, jobNo, quotationNo, vat, date, name,streetAdd,coutry,postCode,telephone, comment, itemDes
-            , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            tid,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            name,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            hrs,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         )
         return timeSheetUpdateMessage
     }
@@ -584,47 +613,8 @@ class JeffRepository() {
     }
 
     //Network call to add quotation
-    private fun addQuotation(
-        apiKey: String,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        customerName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ) {
-        apiService.addQuotation(
-            apiKey,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            customerName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            quantity,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        ).enqueue(object : Callback<String> {
+    private fun addQuotation(quotation: QuotationAdd) {
+        apiService.addQuotation(quotation).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
 
                 Timber.e("Adding quotation failed: ${t.message}")
@@ -660,8 +650,25 @@ class JeffRepository() {
         totalAmount: Double
     ) {
         apiService.addPurchase(
-            apiKey,jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            supplierName,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            quantity,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error adding purchase ${t.message}")
@@ -698,8 +705,25 @@ class JeffRepository() {
     ) {
 
         apiService.addTimeSheet(
-            apiKey,jobNo, quotationNo, vat, date, name, streetAdd, coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            name,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            hrs,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error adding time sheet ${t.message}")
@@ -811,32 +835,9 @@ class JeffRepository() {
     }
 
     //Network call to update
-    private fun updateQuotation(
-        apiKey: String,
-        id: Int,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        customerName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ) {
+    private fun updateQuotation(quotationUpdate: QuotationUpdate) {
 
-        apiService.updateQuotation(
-            apiKey,id, jobNo, quotationNo, vat, date, customerName,streetAdd, coutry,postCode,telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
-        ).enqueue(object : Callback<String> {
+        apiService.updateQuotation(quotationUpdate).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Updating quotation failure: ${t.message}")
             }
@@ -872,8 +873,26 @@ class JeffRepository() {
         totalAmount: Double
     ) {
         apiService.updatePurchase(
-            apiKey,id, jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            id,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            supplierName,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            quantity,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error updating purchase")
@@ -910,8 +929,26 @@ class JeffRepository() {
         totalAmount: Double
     ) {
         apiService.updateTimeSheet(
-            apiKey,tid, jobNo, quotationNo, vat, date, name,streetAdd, coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, hrs, unitAmount, advanceAmount, discountAmount, totalAmount
+            apiKey,
+            tid,
+            jobNo,
+            quotationNo,
+            vat,
+            date,
+            name,
+            streetAdd,
+            coutry,
+            postCode,
+            telephone,
+            comment,
+            itemDes
+            ,
+            paymentMethod,
+            hrs,
+            unitAmount,
+            advanceAmount,
+            discountAmount,
+            totalAmount
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error update time sheet ${t.message}")

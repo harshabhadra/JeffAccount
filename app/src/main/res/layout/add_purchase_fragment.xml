@@ -62,28 +62,6 @@
                     android:hint="@string/quotation_no" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_vat_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_quotation_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_vat_textInput"
-                    android:layout_width="match_parent"
-                    android:textColor="@android:color/white"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="@{purchase.vat}"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/vat" />
-            </com.google.android.material.textfield.TextInputLayout>
-
             <TextView
                 android:id="@+id/purchase_date_textInputLayout"
                 android:layout_width="0dp"
@@ -91,15 +69,15 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:drawableEnd="@drawable/ic_edit_white_24dp"
+                android:hint="@string/date"
                 android:padding="16dp"
                 android:text="@{purchase.date}"
-                android:hint="@string/date"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
-                android:drawableEnd="@drawable/ic_edit_white_24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_vat_textInputLayout"/>
+                app:layout_constraintTop_toBottomOf="@+id/purchase_quotation_textInputLayout" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/purchase_supplier_textInputLayout"
@@ -124,7 +102,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_street_textInputLayout"
+                android:id="@+id/purchase_comment_textInputLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -135,113 +113,13 @@
                 app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_textInputLayout">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_street_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:inputType="text"
-                    android:maxLines="1"
-                    android:text="@{purchase.street}"
-                    android:hint="@string/street_address" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/purchase_country_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:text="@{purchase.country}"
-                android:hint="@string/united_kingdom"
-                android:textColorHint="@android:color/white"
-                android:padding="16dp"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_street_textInputLayout"/>
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_post_code_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_country_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_post_code_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:text="@{purchase.postCode}"
-                    android:textColor="@android:color/white"
-                    android:hint="@string/post_code" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_telephone_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_post_code_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_telephone_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="phone"
-                    android:text="@{purchase.telephone}"
-                    android:textColor="@android:color/white"
-                    android:hint="@string/telephone_no" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_comment_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_telephone_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/purchase_comment_textInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="@string/special_instruction_comment"
                     android:inputType="textMultiLine"
                     android:text="@{purchase.specialInstruction}"
-                    android:textColor="@android:color/white"
-                    android:hint="@string/special_instruction_comment" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_itemdes_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_comment_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_itemdes_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:inputType="textMultiLine"
-                    android:text="@{purchase.itemDescription}"
-                    android:hint="@string/item_description" />
+                    android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -252,169 +130,33 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_itemdes_textInputLayout">
+                app:layout_constraintTop_toBottomOf="@+id/supplier_item_recyclerView">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/purchase_payment_method_textInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="@string/payment_method"
                     android:maxLines="1"
-                    android:textColor="@android:color/white"
                     android:text="@{purchase.paymentMethod}"
-                    android:hint="@string/payment_method" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/textView4"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="16dp"
-                android:text="@string/qty"
-                android:gravity="center"
-                android:textColor="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="@+id/purchase_qty_minus_button"
-                app:layout_constraintEnd_toStartOf="@+id/purchase_qty_minus_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/purchase_qty_minus_button" />
-
-            <ImageView
-                android:id="@+id/purchase_qty_minus_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:padding="8dp"
-                android:background="@android:color/darker_gray"
-                android:src="@drawable/ic_exposure_neg_1_black_24dp"
-                app:layout_constraintEnd_toStartOf="@+id/purchase_qty_tv"
-                app:layout_constraintStart_toEndOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_payment_method_textInputLayout" />
-
-            <TextView
-                android:id="@+id/purchase_qty_tv"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:text="@{String.valueOf(purchase.quantity)}"
-                android:textColor="@android:color/black"
-                android:gravity="center"
-                android:background="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="@+id/purchase_qty_minus_button"
-                app:layout_constraintEnd_toStartOf="@+id/purchase_qty_plus_button"
-                app:layout_constraintStart_toEndOf="@+id/purchase_qty_minus_button"
-                app:layout_constraintTop_toTopOf="@+id/purchase_qty_minus_button" />
-
-            <ImageView
-                android:id="@+id/purchase_qty_plus_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:src="@drawable/ic_exposure_plus_1_black_24dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:padding="8dp"
-                android:background="@android:color/darker_gray"
-                app:layout_constraintStart_toEndOf="@+id/purchase_qty_tv"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_payment_method_textInputLayout" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_unit_amount_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_qty_minus_button">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_unit_amount_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:textColor="@android:color/white"
-                    android:maxLines="1"
-                    android:text="@{purchase.unitAmount}"
-                    android:hint="@string/unit_amount" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_advance_amount_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_unit_amount_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_advance_amount_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="@{purchase.advanceAmount}"
-                    android:hint="@string/advance_amount" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_discount_amount_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_advance_amount_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_discount_amount_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="@{purchase.discountAmount}"
-                    android:hint="@string/discount_amount" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_total_amount_textinputlayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_discount_amount_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_total_amount_textinput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="@{purchase.totalAmount}"
-                    android:hint="@string/total_amount" />
+                    android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/purchase_save_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="32dp"
                 android:text="@string/save"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/purchase_edit_button"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_total_amount_textinputlayout" />
+                app:layout_constraintTop_toBottomOf="@+id/purchase_payment_method_textInputLayout" />
 
             <Button
                 android:id="@+id/purchase_edit_button"
@@ -422,42 +164,45 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/update"
-                android:visibility="gone"
-                app:layout_constraintEnd_toStartOf="@+id/purchase_save_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_total_amount_textinputlayout" />
-
-            <Button
-                android:id="@+id/purchase_delete_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="32dp"
-                android:text="@string/delete"
-                android:visibility="invisible"
+                android:text="@string/update"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/purchase_print_button"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_save_button" />
+                app:layout_constraintEnd_toStartOf="@+id/purchase_save_button"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_payment_method_textInputLayout" />
 
-            <Button
-                android:id="@+id/purchase_print_button"
+            <TextView
+                android:id="@+id/textView4"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="32dp"
-                android:text="@string/print"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/purchase_delete_button"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/add_item"
+                android:padding="8dp"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:drawableEnd="@drawable/ic_add_circle_white_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_save_button" />
+                app:layout_constraintTop_toBottomOf="@+id/purchase_comment_textInputLayout" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/supplier_item_recyclerView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/item_list"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>

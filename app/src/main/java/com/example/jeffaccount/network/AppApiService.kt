@@ -6,6 +6,7 @@ import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
+import retrofit2.http.Body
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.POST
@@ -102,52 +103,11 @@ interface AppApiService {
 
     //Add Quotation
     @POST("quatationadd.php")
-    @FormUrlEncoded
-    fun addQuotation(
-        @Field("apikey")apiKey:String,
-        @Field("job_no") jobNo: String,
-        @Field("quotation_no") quotationNo: String,
-        @Field("vat") vat: Double,
-        @Field("date") date: String,
-        @Field("customer_name") customerName: String,
-        @Field("street_address")streetAddress:String,
-        @Field("country")country: String,
-        @Field("post_code")postCode: String,
-        @Field("telephone")telephoneNo: String,
-        @Field("special_instruction") specialIns: String,
-        @Field("item_description") itemDes: String,
-        @Field("payment_method") paymentMethod: String,
-        @Field("quantity") quantity: Int,
-        @Field("unit_amount") unitAmount: Double,
-        @Field("advance_amount") advanceAmount: Double,
-        @Field("discount_amount") discountAmount: Double,
-        @Field("total_amount") totoalAmount: Double
-    ): Call<String>
+    fun addQuotation(@Body body:QuotationAdd): Call<String>
 
     //Update Quotation
     @POST("quatationupdate.php")
-    @FormUrlEncoded
-    fun updateQuotation(
-        @Field("apikey")apiKey:String,
-        @Field("qid") quotationId: Int,
-        @Field("job_no") jobNo: String,
-        @Field("quotation_no") quotationNo: String,
-        @Field("vat") vat: Double,
-        @Field("date") date: String,
-        @Field("customer_name") customerName: String,
-        @Field("street_address")streetAddress:String,
-        @Field("country")country: String,
-        @Field("post_code")postCode: String,
-        @Field("telephone")telephoneNo: String,
-        @Field("special_instruction") specialIns: String,
-        @Field("item_description") itemDes: String,
-        @Field("payment_method") paymentMethod: String,
-        @Field("quantity") quantity: Int,
-        @Field("unit_amount") unitAmount: Double,
-        @Field("advance_amount") advanceAmount: Double,
-        @Field("discount_amount") discountAmount: Double,
-        @Field("total_amount") totoalAmount: Double
-    ): Call<String>
+    fun updateQuotation(@Body quotation:QuotationUpdate): Call<String>
 
     //Get quotation list
     @POST("quatationlist.php")

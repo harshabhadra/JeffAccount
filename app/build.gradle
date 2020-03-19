@@ -42,6 +42,10 @@ android {
         enabled = true
     }
 
+    androidExtensions{
+        experimental = true
+    }
+
 }
 
 dependencies {
@@ -89,9 +93,6 @@ dependencies {
     // Moshi
     implementation "com.squareup.moshi:moshi:$version_moshi"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
-
-    //LottieAnimation
-    implementation 'com.airbnb.android:lottie:3.3.1'
 
     //Timber
     implementation 'com.jakewharton.timber:timber:4.7.1'

@@ -69,28 +69,6 @@
                         android:textColor="@android:color/white" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_vat_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_quotationo_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_vat_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/vat"
-                        android:inputType="numberDecimal"
-                        android:maxLines="1"
-                        android:text="@{quotation.vat}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
-
                 <TextView
                     android:id="@+id/quotation_date_textInputLayout"
                     android:layout_width="0dp"
@@ -106,7 +84,7 @@
                     android:textColorHint="@android:color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_vat_textInputLayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_quotationo_textInputLayout" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/quotation_customer_name_textInputLayout"
@@ -131,87 +109,6 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_street_address_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_customer_name_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_street_address_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/street_address"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:text="@{quotation.street}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    android:id="@+id/quotation_country_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:hint="@string/united_kingdom"
-                    android:padding="16dp"
-                    android:text="@{quotation.country}"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="@android:color/white"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_street_address_textInputLayout"/>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_post_code_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_country_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_post_code_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/post_code"
-                        android:inputType="textMultiLine"
-                        android:maxLines="1"
-                        android:text="@{quotation.postCode}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_telephone_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_post_code_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_telephone_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/telephone_no"
-                        android:inputType="textMultiLine"
-                        android:maxLines="1"
-                        android:text="@{quotation.telephone}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/quotation_comment_textInputLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -219,8 +116,9 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_telephone_textInputLayout">
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_item_recyclerView">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/quotation_comment_textInput"
@@ -229,28 +127,7 @@
                         android:hint="@string/special_instruction_comment"
                         android:inputType="textMultiLine"
                         android:maxLines="1"
-                        android:text="@{quotation.specialInstruction}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_item_des_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_comment_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_itemdes_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/item_description"
-                        android:inputType="textMultiLine"
-                        android:text="@{quotation.itemDescription}"
                         android:textColor="@android:color/white" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -263,153 +140,14 @@
                     android:layout_marginEnd="16dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_item_des_textInputLayout">
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_comment_textInputLayout">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/quotation_payement_method_textInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/payment_method"
-                        android:text="@{quotation.paymentMethod}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
 
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:layout_marginStart="16dp"
-                    android:gravity="center"
-                    android:text="Qty"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintBottom_toBottomOf="@+id/quotation_minus_button"
-                    app:layout_constraintEnd_toStartOf="@+id/quotation_minus_button"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/quotation_minus_button" />
-
-                <ImageView
-                    android:id="@+id/quotation_minus_button"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:background="@android:color/darker_gray"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_exposure_neg_1_black_24dp"
-                    app:layout_constraintEnd_toStartOf="@+id/quotation_qty_tv"
-                    app:layout_constraintStart_toEndOf="@+id/textView4"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_payement_method_textInputLayout" />
-
-                <TextView
-                    android:id="@+id/quotation_qty_tv"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp"
-                    android:background="@android:color/white"
-                    android:gravity="center"
-                    android:text="@{quotation.quantity}"
-                    android:textColor="@android:color/black"
-                    app:layout_constraintBottom_toBottomOf="@+id/quotation_minus_button"
-                    app:layout_constraintEnd_toStartOf="@+id/quotation_plus_button"
-                    app:layout_constraintStart_toEndOf="@+id/quotation_minus_button"
-                    app:layout_constraintTop_toTopOf="@+id/quotation_minus_button" />
-
-                <ImageView
-                    android:id="@+id/quotation_plus_button"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:background="@android:color/darker_gray"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_exposure_plus_1_black_24dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/quotation_qty_tv"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_payement_method_textInputLayout" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_unit_amount_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_minus_button">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_unit_amount_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/unit_amount"
-                        android:inputType="numberDecimal"
-                        android:maxLines="1"
-                        android:text="@{quotation.unitAmount}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_advance_amount_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_unit_amount_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_advance_amount_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/advance_amount"
-                        android:inputType="numberDecimal"
-                        android:maxLines="1"
-                        android:text="@{quotation.advanceAmount}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_discount_amount_textInputLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_advance_amount_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_discount_amount_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/discount_amount"
-                        android:inputType="numberDecimal"
-                        android:maxLines="1"
-                        android:text="@{quotation.discountAmount}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/quotation_total_amount_textinputlayout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_discount_amount_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_total_amount_textinput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/total_amount"
-                        android:inputType="numberDecimal"
-                        android:maxLines="1"
-                        android:text="@{quotation.totalAmount}"
                         android:textColor="@android:color/white" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -417,7 +155,7 @@
                     android:id="@+id/save_quotation_button"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="32dp"
@@ -425,7 +163,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/supplier_update_button"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_total_amount_textinputlayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_payement_method_textInputLayout" />
 
                 <Button
                     android:id="@+id/supplier_update_button"
@@ -433,14 +171,45 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="16dp"
                     android:layout_marginBottom="32dp"
                     android:text="@string/update"
                     android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/save_quotation_button"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_total_amount_textinputlayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_payement_method_textInputLayout" />
+
+                <TextView
+                    android:id="@+id/quotation_add_item_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:hint="@string/add_item"
+                    android:textColorHint="@android:color/white"
+                    android:textColor="@android:color/white"
+                    android:padding="8dp"
+                    android:drawableEnd="@drawable/ic_add_circle_white_24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_customer_name_textInputLayout" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/quotation_item_recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_add_item_tv"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_list" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </ScrollView>

@@ -76,63 +76,20 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
         setHasOptionsMenu(true)
 
-        //Set on click listener to add quantity button
-        purchaseBinding.purchaseQtyPlusButton.setOnClickListener {
-            if (qty >= 0) {
-                qty++
-                viewModel.changeQuantity(qty)
-            }
-        }
-
-        //Set on click listener to subtract quantity value
-        purchaseBinding.purchaseQtyMinusButton.setOnClickListener {
-            if (qty > 0) {
-                qty--
-                viewModel.changeQuantity(qty)
-            }
-        }
-
         //Set on click listener to save purchase button
         purchaseBinding.purchaseSaveButton.setOnClickListener {
             val jobNo = purchaseBinding.purchaseJobnoTextInput.text.toString()
             val quotationNo = purchaseBinding.purchaseQuotationTextInput.text.toString()
-            val vat = purchaseBinding.purchaseVatTextInput.text.toString()
-            if (vat.isNotEmpty()) {
-                _vat = vat.toDouble()
-            }
             val date = purchaseBinding.purchaseDateTextInputLayout.text.toString()
             val supplierName = purchaseBinding.purchaseSupplierTextInput.text.toString()
-            val street = purchaseBinding.purchaseStreetTextInput.text.toString()
-            val country = purchaseBinding.purchaseCountryTextInputLayout.text.toString()
-            val postCode = purchaseBinding.purchasePostCodeTextInput.text.toString()
-            val telephone = purchaseBinding.purchaseTelephoneTextInput.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
-            val itemDes = purchaseBinding.purchaseItemdesTextInput.text.toString()
             val paymentMethod = purchaseBinding.purchasePaymentMethodTextInput.text.toString()
-            val advanceAmount = purchaseBinding.purchaseAdvanceAmountTextInput.text.toString()
-            if (advanceAmount.isNotEmpty()) {
-                _advanceAmount = advanceAmount.toDouble()
-            }
-            val unitAmount = purchaseBinding.purchaseUnitAmountTextInput.text.toString()
-            if (unitAmount.isNotEmpty()) {
-                _unitAmount = unitAmount.toDouble()
-            }
-            val discountAmount = purchaseBinding.purchaseDiscountAmountTextInput.text.toString()
-            if (discountAmount.isNotEmpty()) {
-                _discountAmount = discountAmount.toDouble()
-            }
-            val totalAmount = purchaseBinding.purchaseTotalAmountTextinput.text.toString()
-            if (totalAmount.isNotEmpty()) {
-                _totalAmount = totalAmount.toDouble()
-            }
 
             when {
                 jobNo.isEmpty() -> purchaseBinding.purchaseJobnoTextInputLayout.error =
                     getString(R.string.enter_job_no)
                 quotationNo.isEmpty() -> purchaseBinding.purchaseQuotationTextInputLayout.error =
                     getString(R.string.enter_quotation_no)
-                vat.isEmpty() -> purchaseBinding.purchaseVatTextInputLayout.error =
-                    getString(R.string.enter_vat)
                 (qty == 0) -> Toast.makeText(context, "Quantity can't be zero", Toast.LENGTH_SHORT)
                     .show()
                 date.isEmpty() -> purchaseBinding.purchaseDateTextInputLayout.error =
@@ -141,34 +98,10 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     getString(R.string.enter_supplier_name)
                 comment.isEmpty() -> purchaseBinding.purchaseCommentTextInputLayout.error =
                     getString(R.string.enter_comment)
-                itemDes.isEmpty() -> purchaseBinding.purchaseItemdesTextInputLayout.error =
-                    getString(R.string.enter_item_des)
                 paymentMethod.isEmpty() -> purchaseBinding.purchasePaymentMethodTextInputLayout.error =
                     getString(
                         R.string.enter_payment_method
                     )
-                unitAmount.isEmpty() -> purchaseBinding.purchaseUnitAmountTextInputLayout.error =
-                    getString(
-                        R.string.enter_unit_amount
-                    )
-                advanceAmount.isEmpty() -> purchaseBinding.purchaseAdvanceAmountTextInputLayout.error =
-                    getString(
-                        R.string.enter_advance_amount
-                    )
-                discountAmount.isEmpty() -> purchaseBinding.purchaseDiscountAmountTextInputLayout.error =
-                    getString(
-                        R.string.enter_discount_amount
-                    )
-                totalAmount.isEmpty() -> purchaseBinding.purchaseTotalAmountTextinputlayout.error =
-                    getString(
-                        R.string.enter_total_amount
-                    )
-                street.isEmpty() -> purchaseBinding.purchaseStreetTextInputLayout.error =
-                    getString(R.string.enter_street_address)
-                postCode.isEmpty() -> purchaseBinding.purchasePostCodeTextInputLayout.error =
-                    getString(R.string.enter_post_code)
-                telephone.isEmpty() -> purchaseBinding.purchaseTelephoneTextInputLayout.error =
-                    getString(R.string.telephone_no)
                 else -> {
                     viewModel.addPurchase(
                         "AngE9676#254r5",
@@ -177,12 +110,12 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                         _vat,
                         date,
                         supplierName,
-                        street,
+                        "",
                         "United Kingdom",
-                        postCode,
-                        telephone,
+                        "",
+                        "",
                         comment,
-                        itemDes,
+                        "",
                         paymentMethod,
                         qty,
                         _unitAmount,
@@ -202,43 +135,16 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         purchaseBinding.purchaseEditButton.setOnClickListener {
             val jobNo = purchaseBinding.purchaseJobnoTextInput.text.toString()
             val quotationNo = purchaseBinding.purchaseQuotationTextInput.text.toString()
-            val vat = purchaseBinding.purchaseVatTextInput.text.toString()
-            if (vat.isNotEmpty()) {
-                _vat = vat.toDouble()
-            }
             val date = purchaseBinding.purchaseDateTextInputLayout.text.toString()
             val supplierName = purchaseBinding.purchaseSupplierTextInput.text.toString()
-            val street = purchaseBinding.purchaseStreetTextInput.text.toString()
-            val country = purchaseBinding.purchaseCountryTextInputLayout.text.toString()
-            val postCode = purchaseBinding.purchasePostCodeTextInput.text.toString()
-            val telephone = purchaseBinding.purchaseTelephoneTextInput.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
-            val itemDes = purchaseBinding.purchaseItemdesTextInput.text.toString()
             val paymentMethod = purchaseBinding.purchasePaymentMethodTextInput.text.toString()
-            val advanceAmount = purchaseBinding.purchaseAdvanceAmountTextInput.text.toString()
-            if (advanceAmount.isNotEmpty()) {
-                _advanceAmount = advanceAmount.toDouble()
-            }
-            val unitAmount = purchaseBinding.purchaseUnitAmountTextInput.text.toString()
-            if (unitAmount.isNotEmpty()) {
-                _unitAmount = unitAmount.toDouble()
-            }
-            val discountAmount = purchaseBinding.purchaseDiscountAmountTextInput.text.toString()
-            if (discountAmount.isNotEmpty()) {
-                _discountAmount = discountAmount.toDouble()
-            }
-            val totalAmount = purchaseBinding.purchaseTotalAmountTextinput.text.toString()
-            if (totalAmount.isNotEmpty()) {
-                _totalAmount = totalAmount.toDouble()
-            }
 
             when {
                 jobNo.isEmpty() -> purchaseBinding.purchaseJobnoTextInputLayout.error =
                     getString(R.string.enter_job_no)
                 quotationNo.isEmpty() -> purchaseBinding.purchaseQuotationTextInputLayout.error =
                     getString(R.string.enter_quotation_no)
-                vat.isEmpty() -> purchaseBinding.purchaseVatTextInputLayout.error =
-                    getString(R.string.enter_vat)
                 (qty == 0) -> Toast.makeText(context, "Quantity can't be zero", Toast.LENGTH_SHORT)
                     .show()
                 date.isEmpty() -> purchaseBinding.purchaseDateTextInputLayout.error =
@@ -247,34 +153,10 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     getString(R.string.enter_supplier_name)
                 comment.isEmpty() -> purchaseBinding.purchaseCommentTextInputLayout.error =
                     getString(R.string.enter_comment)
-                itemDes.isEmpty() -> purchaseBinding.purchaseItemdesTextInputLayout.error =
-                    getString(R.string.enter_item_des)
                 paymentMethod.isEmpty() -> purchaseBinding.purchasePaymentMethodTextInputLayout.error =
                     getString(
                         R.string.enter_payment_method
                     )
-                unitAmount.isEmpty() -> purchaseBinding.purchaseUnitAmountTextInputLayout.error =
-                    getString(
-                        R.string.enter_unit_amount
-                    )
-                advanceAmount.isEmpty() -> purchaseBinding.purchaseAdvanceAmountTextInputLayout.error =
-                    getString(
-                        R.string.enter_advance_amount
-                    )
-                discountAmount.isEmpty() -> purchaseBinding.purchaseDiscountAmountTextInputLayout.error =
-                    getString(
-                        R.string.enter_discount_amount
-                    )
-                totalAmount.isEmpty() -> purchaseBinding.purchaseTotalAmountTextinputlayout.error =
-                    getString(
-                        R.string.enter_total_amount
-                    )
-                street.isEmpty() -> purchaseBinding.purchaseStreetTextInputLayout.error =
-                    getString(R.string.enter_street_address)
-                postCode.isEmpty() -> purchaseBinding.purchasePostCodeTextInputLayout.error =
-                    getString(R.string.enter_post_code)
-                telephone.isEmpty() -> purchaseBinding.purchaseTelephoneTextInputLayout.error =
-                    getString(R.string.telephone_no)
                 else -> {
                     viewModel.updatePurchase(
                         "AngE9676#254r5",
@@ -284,12 +166,12 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                         _vat,
                         date,
                         supplierName,
-                        street,
+                        "",
                         "United Kingdom",
-                        postCode,
-                        telephone,
+                        "",
+                        "",
                         comment,
-                        itemDes,
+                        "",
                         paymentMethod,
                         qty,
                         _unitAmount,
@@ -332,19 +214,6 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
         })
 
-        purchaseBinding.purchaseVatTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseVatTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseVatTextInputLayout.isErrorEnabled = false
-            }
-        })
-
         purchaseBinding.purchaseSupplierTextInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
@@ -372,19 +241,6 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
         })
 
-        purchaseBinding.purchaseItemdesTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseItemdesTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseItemdesTextInputLayout.isErrorEnabled = false
-            }
-        })
-
         purchaseBinding.purchasePaymentMethodTextInput.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 purchaseBinding.purchasePaymentMethodTextInputLayout.isErrorEnabled = true
@@ -398,98 +254,6 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
         })
 
-        purchaseBinding.purchaseUnitAmountTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseUnitAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseUnitAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        purchaseBinding.purchaseAdvanceAmountTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseAdvanceAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseAdvanceAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        purchaseBinding.purchaseDiscountAmountTextInput.addTextChangedListener(object :
-            TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseDiscountAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseDiscountAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        purchaseBinding.purchaseTotalAmountTextinput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseTotalAmountTextinputlayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseTotalAmountTextinputlayout.isErrorEnabled = false
-            }
-        })
-
-        purchaseBinding.purchaseStreetTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseStreetTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseStreetTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        purchaseBinding.purchasePostCodeTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchasePostCodeTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchasePostCodeTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        purchaseBinding.purchaseTelephoneTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseTelephoneTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseTelephoneTextInputLayout.isErrorEnabled = false
-            }
-        })
-
         return purchaseBinding.root
 
     }
@@ -499,13 +263,6 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         viewModel = ViewModelProvider(this).get(AddPurchaseViewModel::class.java)
 
         requestReadPermissions()
-
-        //Observe quantity value from viewModel
-        viewModel.purchaseQuantityValue.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                purchaseBinding.purchaseQtyTv.text = it.toString()
-            }
-        })
 
         //Set on click listener to date tv
         purchaseBinding.purchaseDateTextInputLayout.setOnClickListener {

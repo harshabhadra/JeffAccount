@@ -6,6 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
 import com.example.jeffaccount.model.Quotation
 import com.example.jeffaccount.model.QuotationPost
+import com.example.jeffaccount.network.Item
+import com.example.jeffaccount.network.ItemList
+import com.example.jeffaccount.network.QuotationAdd
+import com.example.jeffaccount.network.QuotationUpdate
 import com.itextpdf.xmp.XMPDateTimeFactory.getCurrentDateTime
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,97 +31,23 @@ class AddQuotationViewModel : ViewModel() {
     val dateString: LiveData<String>
         get() = _dateString
 
+    private var _itemAddedToQuotation = MutableLiveData<MutableList<Item>>()
+    val itemAddedToQuotation:LiveData<MutableList<Item>>
+    get() = _itemAddedToQuotation
+
     init {
         _quotationQuantityValue.value = 0
         _navigateToAddQuotationFragment.value = null
     }
 
     //Add Quotation
-    fun addQuotaiton(
-        apiKey:String,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        customerName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        return jeffRepository.getAddQuotationMessage(
-            apiKey,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            customerName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes,
-            paymentMethod,
-            quantity,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        )
+    fun addQuotaiton(quotationAdd: QuotationAdd): LiveData<String> {
+        return jeffRepository.getAddQuotationMessage(quotationAdd)
     }
 
     //Update Quotation
-    fun updateQuotation(
-        apiKey: String,
-        id: Int,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        customerName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        return jeffRepository.getUpdateQuotationMessage(
-            apiKey,
-            id,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            customerName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes,
-            paymentMethod,
-            quantity,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        )
+    fun updateQuotation(quotationUpdate: QuotationUpdate): LiveData<String> {
+        return jeffRepository.getUpdateQuotationMessage(quotationUpdate)
     }
 
     //Delete Quotation
@@ -173,5 +103,13 @@ class AddQuotationViewModel : ViewModel() {
         val d = calender.time
         _dateString.value = d.toString("E, dd MMM yyyy")
         return d.toString("E, dd MMM yyyy")
+    }
+
+    fun addItemToQuotation(itemList: MutableList<Item>){
+        _itemAddedToQuotation.value = itemList
+    }
+
+    fun doneAddingItem(){
+        _itemAddedToQuotation.value = null
     }
 }

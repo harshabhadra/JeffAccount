@@ -48,7 +48,6 @@
     <string name="currently_you_don_t_have_any_supplier">Currently you don\'t have any supplier</string>
     <string name="currently_you_don_t_have_any_quotation">Currently you don\'t have any quotation</string>
     <string name="currently_you_don_t_have_any_purchase">Currently you don\'t have any purchase</string>
-    <string name="qty">Qty</string>
     <string name="enter_valid_email">Enter Valid Email Address</string>
     <string name="add_name">Add  Name</string>
     <string name="add_address">Add an address</string>
@@ -90,4 +89,8 @@
     <string name="log_out">Log out</string>
     <string name="jeff_message_to_cus"><![CDATA[ALL KIND OF ELECTRICAL WORK SUCH AS REWIRING, REPLACE, CONSUMER UNIT, IN & OUT LIGHT SOCKET, COOKERS, SHOWERS, ELECTRIC HOBS & HOOD, UNDER FLOOR HEATER ETC.]]></string>
     <string name="jeff_inquiry_message">If have nay inquiry drop your work on www.jeffelectrical.com</string>
+    <string name="qty">Qty</string>
+    <string name="no_of_item">No of Item</string>
+    <string name="add_item">Add Item</string>
+    <string name="add_items">Add Items</string>
 </resources>

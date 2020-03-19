@@ -1,22 +1,17 @@
-package com.example.jeffaccount.model
+package com.example.jeffaccount.network
 
 import android.os.Parcelable
-import com.example.jeffaccount.network.Item
+import androidx.room.Entity
 import com.google.gson.annotations.Expose
+
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
-data class Quotation (
-    @SerializedName("posts")
-    @Expose
-    var posts: List<QuotationPost>?
-)
-
 @Parcelize
-data class QuotationPost (
-    @SerializedName("qid")
+data class QuotationAdd (
+    @SerializedName("apikey")
     @Expose
-    var qid: String?,
+    var apikey: String?,
 
     @SerializedName("job_no")
     @Expose
@@ -33,25 +28,30 @@ data class QuotationPost (
     @SerializedName("date")
     @Expose
     var date: String?,
+
     @SerializedName("street_address")
     @Expose
-    var street:String?,
+    var streetAddress: String?,
+
     @SerializedName("country")
     @Expose
-    var country:String?,
+    var country: String?,
+
     @SerializedName("post_code")
     @Expose
-    var postCode:String?,
+    var postCode: String?,
+
     @SerializedName("telephone")
     @Expose
-    var telephone:String?,
-    @SerializedName("item_description")
+    var telephone: String?,
+
+    @SerializedName("items")
     @Expose
-    var itemDescription: MutableList<Item>
+    var items: List<Item>?
 ):Parcelable
 
 @Parcelize
-data class ItemDescription (
+data class Item (
     @SerializedName("no_of_item")
     @Expose
     var noOfItem: Int?,
@@ -66,16 +66,22 @@ data class ItemDescription (
 
     @SerializedName("unit_amount")
     @Expose
-    var unitAmount: Int?,
+    var unitAmount: Double?,
 
     @SerializedName("discount_amount")
     @Expose
-    var discountAmount: Int?,
+    var discountAmount: Double?,
 
     @SerializedName("total_amount")
     @Expose
-    var totalAmount: Int?,
+    var totalAmount: Double?,
 
     @SerializedName("vat")
     @Expose
-    var vat: Int?):Parcelable
+    var vat: Double?
+):Parcelable
+
+@Parcelize
+data class ItemList(
+    var items:MutableList<Item>?
+):Parcelable

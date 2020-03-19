@@ -11,6 +11,8 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -20,6 +22,9 @@ import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddQuotationFragmentBinding
 import com.example.jeffaccount.model.QuotationPost
+import com.example.jeffaccount.network.Item
+import com.example.jeffaccount.network.QuotationAdd
+import com.example.jeffaccount.network.QuotationUpdate
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -53,54 +58,24 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private var loadingDialog: AlertDialog? = null
     private lateinit var viewModel: AddQuotationViewModel
     private lateinit var quotationBinding: AddQuotationFragmentBinding
-    private var vat: Double? = 0.0
-    private var unitAmount: Double? = 0.0
-    private var advanceAmount: Double? = 0.0
-    private var discountAmount: Double? = 0.0
-    private var totalAmount: Double? = 0.0
-    private var qty = 0
     private lateinit var quotationItem: QuotationPost
     private lateinit var action: String
+    private lateinit var itemAdapter: ItemAdapter
+    private var itemList: MutableList<Item> = mutableListOf()
+    private var itemNo: Int = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Timber.e("on create")
         quotationBinding = AddQuotationFragmentBinding.inflate(inflater, container, false)
 
         quotationBinding.saveQuotationButton.setOnClickListener {
             findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
         }
 
-        //Taking arguments from Quotation Fragment
-        val arguments = AddQuotationFragmentArgs.fromBundle(arguments!!)
-        action = arguments.updateQuotation
-
-        if (action.equals(getString(R.string.update))) {
-            quotationItem = arguments.quotationItem!!
-            quotationBinding.quotation = quotationItem
-            quotationBinding.supplierUpdateButton.visibility = View.VISIBLE
-            quotationBinding.saveQuotationButton.visibility = View.GONE
-            qty = quotationItem.quantity!!.toInt()
-        }
-
         setHasOptionsMenu(true)
-
-        //Set on click listener to add button
-        quotationBinding.quotationPlusButton.setOnClickListener {
-
-            if (qty >= 0) {
-                qty++
-                viewModel.addQuantity(qty)
-            }
-        }
-
-        //Set on click listener to minus button
-        quotationBinding.quotationMinusButton.setOnClickListener {
-            if (qty > 0)
-                qty--
-            viewModel.removeQuantity(qty)
-        }
 
         quotationBinding.quotationDateTextInputLayout.setOnClickListener {
             val now = Calendar.getInstance()
@@ -117,37 +92,10 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         quotationBinding.saveQuotationButton.setOnClickListener {
             val jobNo = quotationBinding.quotationJobTextInput.text.toString()
             val quotationNo = quotationBinding.quotationQuotationoTextInput.text.toString()
-
-            if (quotationBinding.quotationVatTextInput.text.toString().isNotEmpty()) {
-                vat = quotationBinding.quotationVatTextInput.text.toString().toDouble()
-            }
             val date = quotationBinding.quotationDateTextInputLayout.text.toString()
             val customerName = quotationBinding.quotationCustomerNameTextInput.text.toString()
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
-            val itemDes = quotationBinding.quotationItemdesTextInput.text.toString()
             val paymentMethod = quotationBinding.quotationPayementMethodTextInput.text.toString()
-            val streetAdd = quotationBinding.quotationStreetAddressTextInput.text.toString()
-            val postCode = quotationBinding.quotationPostCodeTextInput.text.toString()
-            val telephone = quotationBinding.quotationTelephoneTextInput.text.toString()
-
-            if (quotationBinding.quotationUnitAmountTextInput.text.toString().isNotEmpty()) {
-                unitAmount =
-                    quotationBinding.quotationUnitAmountTextInput.text.toString().toDouble()
-            }
-            if (quotationBinding.quotationAdvanceAmountTextInput.text.toString().isNotEmpty()) {
-                advanceAmount =
-                    quotationBinding.quotationAdvanceAmountTextInput.text.toString().toDouble()
-            }
-
-            if (quotationBinding.quotationDiscountAmountTextInput.text.toString().isNotEmpty()) {
-                discountAmount =
-                    quotationBinding.quotationDiscountAmountTextInput.text.toString().toDouble()
-            }
-
-            if (quotationBinding.quotationTotalAmountTextinput.text.toString().isNotEmpty()) {
-                totalAmount =
-                    quotationBinding.quotationTotalAmountTextinput.text.toString().toDouble()
-            }
 
             when {
                 jobNo.isEmpty() -> {
@@ -158,10 +106,6 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 quotationNo.isEmpty() -> {
                     quotationBinding.quotationQuotationoTextInputLayout.error =
                         getString(R.string.enter_quotation_no)
-                }
-                quotationBinding.quotationVatTextInput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationVatTextInputLayout.error =
-                        getString(R.string.enter_vat)
                 }
                 date.isEmpty() -> {
                     quotationBinding.quotationDateTextInputLayout.error =
@@ -175,64 +119,16 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     quotationBinding.quotationCommentTextInputLayout.error =
                         getString(R.string.enter_comment)
                 }
-
-                itemDes.isEmpty() -> {
-                    quotationBinding.quotationItemDesTextInputLayout.error =
-                        getString(R.string.enter_item_des)
-                }
                 paymentMethod.isEmpty() -> {
                     quotationBinding.quotationPayementMethodTextInputLayout.error =
                         "Select a payment method"
                 }
-                qty == 0 -> {
-                    Toast.makeText(context, "Quantity Cannot be 0", Toast.LENGTH_SHORT).show()
-                }
-                quotationBinding.quotationUnitAmountTextInput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationUnitAmountTextInputLayout.error = "Enter Unit Amount"
-                }
-                quotationBinding.quotationAdvanceAmountTextInput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationAdvanceAmountTextInputLayout.error =
-                        "Enter Advance Amount"
-                }
-                quotationBinding.quotationDiscountAmountTextInput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationDiscountAmountTextInputLayout.error =
-                        "Enter Discount Amount"
-                }
-                quotationBinding.quotationTotalAmountTextinput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationTotalAmountTextinputlayout.error =
-                        "Enter Total Amount"
-                }
-                streetAdd.isEmpty() -> {
-                    quotationBinding.quotationStreetAddressTextInputLayout.error =
-                        "Enter street Address"
-                }
-                postCode.isEmpty() -> {
-                    quotationBinding.quotationPostCodeTextInputLayout.error = "Enter Post Code"
-                }
-                telephone.isEmpty() -> {
-                    quotationBinding.quotationTelephoneTextInputLayout.error = "Enter telephone no"
-                }
                 else -> {
-                    viewModel.addQuotaiton(
-                        "AngE9676#254r5",
-                        jobNo,
-                        quotationNo,
-                        vat!!,
-                        date,
-                        customerName,
-                        streetAdd,
-                        "United Kingdom",
-                        postCode,
-                        telephone,
-                        comment,
-                        itemDes,
-                        paymentMethod,
-                        qty,
-                        unitAmount!!,
-                        advanceAmount!!,
-                        discountAmount!!,
-                        totalAmount!!
-                    ).observe(viewLifecycleOwner,
+                    val quotation = QuotationAdd(
+                        "AngE9676#254r5", jobNo, quotationNo, customerName, date, "kolkata",
+                        "United Kingdom", "78536", "89657421", itemList
+                    )
+                    viewModel.addQuotaiton(quotation).observe(viewLifecycleOwner,
                         Observer {
                             it?.let {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -247,36 +143,10 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         quotationBinding.supplierUpdateButton.setOnClickListener {
             val jobNo = quotationBinding.quotationJobTextInput.text.toString()
             val quotationNo = quotationBinding.quotationQuotationoTextInput.text.toString()
-
-            if (quotationBinding.quotationVatTextInput.text.toString().isNotEmpty()) {
-                vat = quotationBinding.quotationVatTextInput.text.toString().toDouble()
-            }
             val date = quotationBinding.quotationDateTextInputLayout.text.toString()
             val customerName = quotationBinding.quotationCustomerNameTextInput.text.toString()
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
-            val itemDes = quotationBinding.quotationItemdesTextInput.text.toString()
             val paymentMethod = quotationBinding.quotationPayementMethodTextInput.text.toString()
-            val streetAdd = quotationBinding.quotationStreetAddressTextInput.text.toString()
-            val postCode = quotationBinding.quotationPostCodeTextInput.text.toString()
-            val telephone = quotationBinding.quotationTelephoneTextInput.text.toString()
-            if (quotationBinding.quotationUnitAmountTextInput.text.toString().isNotEmpty()) {
-                unitAmount =
-                    quotationBinding.quotationUnitAmountTextInput.text.toString().toDouble()
-            }
-            if (quotationBinding.quotationAdvanceAmountTextInput.text.toString().isNotEmpty()) {
-                advanceAmount =
-                    quotationBinding.quotationAdvanceAmountTextInput.text.toString().toDouble()
-            }
-
-            if (quotationBinding.quotationDiscountAmountTextInput.text.toString().isNotEmpty()) {
-                discountAmount =
-                    quotationBinding.quotationDiscountAmountTextInput.text.toString().toDouble()
-            }
-
-            if (quotationBinding.quotationTotalAmountTextinput.text.toString().isNotEmpty()) {
-                totalAmount =
-                    quotationBinding.quotationTotalAmountTextinput.text.toString().toDouble()
-            }
 
             when {
                 jobNo.isEmpty() -> {
@@ -287,10 +157,6 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 quotationNo.isEmpty() -> {
                     quotationBinding.quotationQuotationoTextInputLayout.error =
                         getString(R.string.enter_quotation_no)
-                }
-                quotationBinding.quotationVatTextInput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationVatTextInputLayout.error =
-                        getString(R.string.enter_vat)
                 }
                 date.isEmpty() -> {
                     quotationBinding.quotationDateTextInputLayout.error =
@@ -305,65 +171,25 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                         getString(R.string.enter_comment)
                 }
 
-                itemDes.isEmpty() -> {
-                    quotationBinding.quotationItemDesTextInputLayout.error =
-                        getString(R.string.enter_item_des)
-                }
                 paymentMethod.isEmpty() -> {
                     quotationBinding.quotationPayementMethodTextInputLayout.error =
                         "Select a payment method"
                 }
-                qty == 0 -> {
-                    Toast.makeText(context, "Quantity Cannot be 0", Toast.LENGTH_SHORT).show()
-                }
-                quotationBinding.quotationUnitAmountTextInput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationUnitAmountTextInputLayout.error = "Enter Unit Amount"
-                }
-                quotationBinding.quotationAdvanceAmountTextInput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationAdvanceAmountTextInputLayout.error =
-                        "Enter Advance Amount"
-                }
-                quotationBinding.quotationDiscountAmountTextInput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationDiscountAmountTextInputLayout.error =
-                        "Enter Discount Amount"
-                }
-                quotationBinding.quotationTotalAmountTextinput.text.toString().isEmpty() -> {
-                    quotationBinding.quotationTotalAmountTextinputlayout.error =
-                        "Enter Total Amount"
-                }
-                streetAdd.isEmpty() -> {
-                    quotationBinding.quotationStreetAddressTextInputLayout.error =
-                        "Enter street Address"
-                }
-                postCode.isEmpty() -> {
-                    quotationBinding.quotationPostCodeTextInputLayout.error = "Enter Post Code"
-                }
-                telephone.isEmpty() -> {
-                    quotationBinding.quotationTelephoneTextInputLayout.error = "Enter telephone no"
-                }
                 else -> {
-                    viewModel.updateQuotation(
+                    val quotaionUpdate = QuotationUpdate(
+                        quotationItem.qid,
                         "AngE9676#254r5",
-                        quotationItem.qid!!.toInt(),
                         jobNo,
                         quotationNo,
-                        vat!!,
-                        date,
                         customerName,
-                        streetAdd,
-                        "United Kingdom",
-                        postCode,
-                        telephone,
-                        comment,
-                        itemDes,
-                        paymentMethod
-                        ,
-                        qty,
-                        unitAmount!!,
-                        advanceAmount!!,
-                        discountAmount!!,
-                        totalAmount!!
-                    ).observe(viewLifecycleOwner,
+                        date,
+                        "Kolkata",
+                        "Unied Kingdom",
+                        "735226",
+                        "789657400",
+                        itemList
+                    )
+                    viewModel.updateQuotation(quotaionUpdate).observe(viewLifecycleOwner,
                         Observer {
                             it?.let {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -372,6 +198,14 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                         })
                 }
             }
+        }
+
+        //Set on click listener to add item text view
+        quotationBinding.quotationAddItemTv.setOnClickListener {
+            createItemDialog()
+//            findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToAddItemFragment(
+//                item
+//            ))
         }
         //Add Text Watcher to job no
         quotationBinding.quotationJobTextInput.addTextChangedListener(object : TextWatcher {
@@ -398,20 +232,6 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 quotationBinding.quotationQuotationoTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        //Add Text Watcher to vat
-        quotationBinding.quotationVatTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationVatTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationVatTextInputLayout.isErrorEnabled = false
             }
         })
 
@@ -444,117 +264,10 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
         })
 
-        //Add text watcher to item description
-        quotationBinding.quotationItemdesTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationItemDesTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationItemDesTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        //Add Text Watcher to unit amount
-        quotationBinding.quotationUnitAmountTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationUnitAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationUnitAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        //Add Text watcher to advance amount
-        quotationBinding.quotationAdvanceAmountTextInput.addTextChangedListener(object :
-            TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationAdvanceAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationAdvanceAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        //Add Text Watcher to discount amount
-        quotationBinding.quotationDiscountAmountTextInput.addTextChangedListener(object :
-            TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationDiscountAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationDiscountAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        //Add TExt watcher to total amount
-        quotationBinding.quotationTotalAmountTextinput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationTotalAmountTextinputlayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationTotalAmountTextinputlayout.isErrorEnabled = false
-            }
-        })
-
-        quotationBinding.quotationStreetAddressTextInput.addTextChangedListener(object :
-            TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationStreetAddressTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationStreetAddressTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        quotationBinding.quotationPostCodeTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationPostCodeTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationPostCodeTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        quotationBinding.quotationTelephoneTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationTelephoneTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationTelephoneTextInputLayout.isErrorEnabled = false
-            }
-        })
+        //Setting up item recycler view
+        val itemRecycler = quotationBinding.quotationItemRecyclerView
+        itemAdapter = ItemAdapter()
+        itemRecycler.adapter = itemAdapter
         return quotationBinding.root
     }
 
@@ -563,14 +276,20 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
         requestReadPermissions()
         viewModel = ViewModelProvider(this).get(AddQuotationViewModel::class.java)
+        //Taking arguments from Quotation Fragment
+        val arguments = AddQuotationFragmentArgs.fromBundle(arguments!!)
+        action = arguments.actionQuotation
 
-        //Observe quantity value
-        viewModel.quotationQuantityValue.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                Timber.e("$it")
-                quotationBinding.quotationQtyTv.text = it.toString()
-            }
-        })
+        if (action.equals(getString(R.string.update))) {
+            quotationItem = arguments.quotationItem!!
+            quotationBinding.quotation = quotationItem
+            quotationBinding.supplierUpdateButton.visibility = View.VISIBLE
+            quotationBinding.saveQuotationButton.visibility = View.GONE
+            itemList = quotationItem.itemDescription
+            viewModel.addItemToQuotation(itemList)
+            itemNo = itemList.size.plus(1)
+            quotationBinding.quotationAddItemTv.setText("No. of items: ${itemList.size}")
+        }
 
         viewModel.dateString.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -579,6 +298,11 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
         })
 
+        viewModel.itemAddedToQuotation.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                itemAdapter.submitList(it)
+            }
+        })
         viewModel.getDate()
     }
 
@@ -811,7 +535,7 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         taxCell.setPadding(8f)
         table.addCell(taxCell)
         val taxDCell = PdfPCell()
-        taxDCell.addElement(Paragraph(quotationItem.vat))
+//        taxDCell.addElement(Paragraph(quotationItem.vat))
         taxDCell.setPadding(8f)
         table.addCell(taxDCell)
         val taxAmountCell = PdfPCell()
@@ -827,7 +551,7 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         disocuntCell.setPadding(8f)
         table.addCell(disocuntCell)
         val discountDCell = PdfPCell()
-        discountDCell.addElement(Paragraph(quotationItem.discountAmount))
+//        discountDCell.addElement(Paragraph(quotationItem.discountAmount))
         discountDCell.setPadding(8f)
         table.addCell(discountDCell)
         val totalAmountCell = PdfPCell()
@@ -835,7 +559,7 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         totalAmountCell.setPadding(8f)
         table.addCell(totalAmountCell)
         val totalAmountDCell = PdfPCell()
-        totalAmountDCell.addElement(Paragraph(quotationItem.totalAmount))
+//        totalAmountDCell.addElement(Paragraph(quotationItem.totalAmount))
         totalAmountDCell.setPadding(8f)
         table.addCell(totalAmountDCell)
         return table
@@ -864,18 +588,18 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val noCell = PdfPCell(Paragraph("1"))
         noCell.setPadding(8f)
         table.addCell(noCell)
-        val itemDesCell = PdfPCell(Paragraph(quotationItem.itemDescription))
-        itemDesCell.setPadding(8f)
-        table.addCell(itemDesCell)
-        val qtyCell = PdfPCell(Paragraph(quotationItem.quantity))
-        qtyCell.setPadding(8f)
-        table.addCell(qtyCell)
-        val unitDCell = PdfPCell(Paragraph(quotationItem.unitAmount))
-        unitDCell.setPadding(8f)
-        table.addCell(unitDCell)
-        val disDCell = PdfPCell(Paragraph(quotationItem.discountAmount))
-        disDCell.setPadding(8f)
-        table.addCell(disDCell)
+//        val itemDesCell = PdfPCell(Paragraph(quotationItem.itemDescription))
+//        itemDesCell.setPadding(8f)
+//        table.addCell(itemDesCell)
+//        val qtyCell = PdfPCell(Paragraph(quotationItem.quantity))
+//        qtyCell.setPadding(8f)
+//        table.addCell(qtyCell)
+//        val unitDCell = PdfPCell(Paragraph(quotationItem.unitAmount))
+//        unitDCell.setPadding(8f)
+//        table.addCell(unitDCell)
+//        val disDCell = PdfPCell(Paragraph(quotationItem.discountAmount))
+//        disDCell.setPadding(8f)
+//        table.addCell(disDCell)
         table.widthPercentage = 100f
         return table
     }
@@ -998,9 +722,9 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val vatCell = PdfPCell(Phrase("Vat%"))
         vatCell.paddingBottom = 8f
         vatCell.paddingLeft = 8f
-        val vatDCell = PdfPCell(Phrase(quotationItem.vat))
-        vatDCell.paddingBottom = 8f
-        vatDCell.paddingLeft = 8f
+//        val vatDCell = PdfPCell(Phrase(quotationItem.vat))
+//        vatDCell.paddingBottom = 8f
+//        vatDCell.paddingLeft = 8f
         val dateCell = PdfPCell(Phrase("Date"))
         dateCell.paddingBottom = 8f
         dateCell.paddingLeft = 8f
@@ -1016,77 +740,77 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val commentCell = PdfPCell(Phrase("Special Instruction"))
         commentCell.paddingBottom = 8f
         commentCell.paddingLeft = 8f
-        val commentDCell = PdfPCell(Phrase(quotationItem.specialInstruction))
-        commentDCell.paddingBottom = 8f
-        commentDCell.paddingLeft = 8f
+//        val commentDCell = PdfPCell(Phrase(quotationItem.specialInstruction))
+//        commentDCell.paddingBottom = 8f
+//        commentDCell.paddingLeft = 8f
         val desCell = PdfPCell(Phrase("Item Description"))
         desCell.paddingBottom = 8f
         desCell.paddingLeft = 8f
-        val desDCell = PdfPCell(Phrase(quotationItem.itemDescription))
-        desDCell.paddingBottom = 8f
-        desDCell.paddingLeft = 8f
+//        val desDCell = PdfPCell(Phrase(quotationItem.itemDescription))
+//        desDCell.paddingBottom = 8f
+//        desDCell.paddingLeft = 8f
         val paymentCell = PdfPCell(Phrase("Payment Method"))
         paymentCell.paddingBottom = 8f
         paymentCell.paddingLeft = 8f
-        val paymentDCell = PdfPCell(Phrase(quotationItem.paymentMethod))
-        paymentDCell.paddingBottom = 8f
-        paymentDCell.paddingLeft = 8f
-        val qtyCell = PdfPCell(Phrase("Quantity"))
-        qtyCell.paddingBottom = 8f
-        qtyCell.paddingLeft = 8f
-        val qtyDCell = PdfPCell(Phrase(quotationItem.quantity))
-        qtyDCell.paddingBottom = 8f
-        qtyDCell.paddingLeft = 8f
-        val unitCell = PdfPCell(Phrase("Unit Amount"))
-        unitCell.paddingBottom = 8f
-        unitCell.paddingLeft = 8f
-        val unitDCell = PdfPCell(Phrase(quotationItem.unitAmount))
-        unitDCell.paddingBottom = 8f
-        unitDCell.paddingLeft = 8f
-        val advanceCell = PdfPCell(Phrase("Advance Amount"))
-        advanceCell.paddingBottom = 8f
-        advanceCell.paddingLeft = 8f
-        val advanceDCell = PdfPCell(Phrase(quotationItem.advanceAmount))
-        advanceDCell.paddingBottom = 8f
-        advanceDCell.paddingLeft = 8f
-        val discountCell = PdfPCell(Phrase("Discount Amount"))
-        discountCell.paddingBottom = 8f
-        discountCell.paddingLeft = 8f
-        val discountDcell = PdfPCell(Phrase(quotationItem.discountAmount))
-        discountDcell.paddingBottom = 8f
-        discountDcell.paddingLeft = 8f
-        val totalCell = PdfPCell(Phrase("Total Amount"))
-        totalCell.paddingBottom = 8f
-        totalCell.paddingLeft = 8f
-        val totalDCell = PdfPCell(Phrase(quotationItem.totalAmount))
-        totalDCell.paddingBottom = 8f
-        totalDCell.paddingLeft = 8f
+//        val paymentDCell = PdfPCell(Phrase(quotationItem.paymentMethod))
+//        paymentDCell.paddingBottom = 8f
+//        paymentDCell.paddingLeft = 8f
+//        val qtyCell = PdfPCell(Phrase("Quantity"))
+//        qtyCell.paddingBottom = 8f
+//        qtyCell.paddingLeft = 8f
+//        val qtyDCell = PdfPCell(Phrase(quotationItem.quantity))
+//        qtyDCell.paddingBottom = 8f
+//        qtyDCell.paddingLeft = 8f
+//        val unitCell = PdfPCell(Phrase("Unit Amount"))
+//        unitCell.paddingBottom = 8f
+//        unitCell.paddingLeft = 8f
+//        val unitDCell = PdfPCell(Phrase(quotationItem.unitAmount))
+//        unitDCell.paddingBottom = 8f
+//        unitDCell.paddingLeft = 8f
+//        val advanceCell = PdfPCell(Phrase("Advance Amount"))
+//        advanceCell.paddingBottom = 8f
+//        advanceCell.paddingLeft = 8f
+//        val advanceDCell = PdfPCell(Phrase(quotationItem.advanceAmount))
+//        advanceDCell.paddingBottom = 8f
+//        advanceDCell.paddingLeft = 8f
+//        val discountCell = PdfPCell(Phrase("Discount Amount"))
+//        discountCell.paddingBottom = 8f
+//        discountCell.paddingLeft = 8f
+//        val discountDcell = PdfPCell(Phrase(quotationItem.discountAmount))
+//        discountDcell.paddingBottom = 8f
+//        discountDcell.paddingLeft = 8f
+//        val totalCell = PdfPCell(Phrase("Total Amount"))
+//        totalCell.paddingBottom = 8f
+//        totalCell.paddingLeft = 8f
+//        val totalDCell = PdfPCell(Phrase(quotationItem.totalAmount))
+//        totalDCell.paddingBottom = 8f
+//        totalDCell.paddingLeft = 8f
         table.addCell(cell)
         table.addCell(cell1)
         table.addCell(qnoCell)
         table.addCell(qnoDCell)
         table.addCell(vatCell)
-        table.addCell(vatDCell)
+//        table.addCell(vatDCell)
         table.addCell(dateCell)
         table.addCell(dateDCell)
         table.addCell(nameCell)
         table.addCell(nameDCell)
         table.addCell(commentCell)
-        table.addCell(commentDCell)
+//        table.addCell(commentDCell)
         table.addCell(desCell)
-        table.addCell(desDCell)
+//        table.addCell(desDCell)
         table.addCell(paymentCell)
-        table.addCell(paymentDCell)
-        table.addCell(qtyCell)
-        table.addCell(qtyDCell)
-        table.addCell(unitCell)
-        table.addCell(unitDCell)
-        table.addCell(advanceCell)
-        table.addCell(advanceDCell)
-        table.addCell(discountCell)
-        table.addCell(discountDcell)
-        table.addCell(totalCell)
-        table.addCell(totalDCell)
+//        table.addCell(paymentDCell)
+//        table.addCell(qtyCell)
+//        table.addCell(qtyDCell)
+//        table.addCell(unitCell)
+//        table.addCell(unitDCell)
+//        table.addCell(advanceCell)
+//        table.addCell(advanceDCell)
+//        table.addCell(discountCell)
+//        table.addCell(discountDcell)
+//        table.addCell(totalCell)
+//        table.addCell(totalDCell)
         quotationBody.add(table)
     }
 
@@ -1107,5 +831,102 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 year
             )
         )
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        Timber.e("on save instance State")
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
+
+    private fun createItemDialog() {
+
+        val layout = LayoutInflater.from(context).inflate(R.layout.fragment_add_item, null)
+        val builder = context.let { androidx.appcompat.app.AlertDialog.Builder(it!!) }
+        builder.setView(layout)
+        val dialog = builder.create()
+        dialog.show()
+
+        val itemDestv: TextView = layout.findViewById(R.id.item_des_editText)
+        val qtytv: TextView = layout.findViewById(R.id.item_qty_editText)
+        val unitAmountTv: TextView = layout.findViewById(R.id.item_unitamount_editText)
+        val discountAmountTv: TextView = layout.findViewById(R.id.discount_amount_editText)
+        val totalAmountTv: TextView = layout.findViewById(R.id.total_editText)
+        val vatTv: TextView = layout.findViewById(R.id.vat_editText)
+        val addButton: Button = layout.findViewById(R.id.add_item_button)
+        val negButton: ImageButton = layout.findViewById(R.id.neg_qty_button)
+        val posButton: ImageButton = layout.findViewById(R.id.pos_qty_button)
+
+        var qty = 0
+        posButton.setOnClickListener {
+            if (qty >= 0) {
+                qty++
+                qtytv.setText(qty.toString())
+            }
+        }
+        negButton.setOnClickListener {
+            if (qty > 0) {
+                qty--
+                qtytv.setText(qty.toString())
+            }
+        }
+        addButton.setOnClickListener {
+            val itemDes = itemDestv.text.toString()
+            val qty = qtytv.text.toString()
+            val unitAmount = unitAmountTv.text.toString()
+            val discountAmount = discountAmountTv.text.toString()
+            val totalAmount = totalAmountTv.text.toString()
+            val vat = vatTv.text.toString()
+            when {
+                itemDes.isEmpty() -> Toast.makeText(
+                    context,
+                    "Add item description",
+                    Toast.LENGTH_SHORT
+                ).show()
+                qty.isEmpty() -> Toast.makeText(context, "Add Quantity", Toast.LENGTH_SHORT).show()
+                unitAmount.isEmpty() -> Toast.makeText(
+                    context,
+                    "Enter Unit Amount",
+                    Toast.LENGTH_SHORT
+                ).show()
+                discountAmount.isEmpty() -> Toast.makeText(
+                    context,
+                    "Enter Discount Amount",
+                    Toast.LENGTH_SHORT
+                ).show()
+                totalAmount.isEmpty() -> Toast.makeText(
+                    context,
+                    "Enter Total Amount",
+                    Toast.LENGTH_SHORT
+                ).show()
+                vat.isEmpty() -> Toast.makeText(context, "Enter vat Amount", Toast.LENGTH_SHORT)
+                    .show()
+                else -> {
+                    val item = Item(
+                        itemNo,
+                        itemDes,
+                        qty.toInt(),
+                        unitAmount.toDouble(),
+                        discountAmount.toDouble(),
+                        totalAmount.toDouble(),
+                        vat.toDouble()
+                    )
+                    itemNo++
+                    itemList.add(item)
+                    Timber.e("List size is ${itemList.size}")
+                    quotationBinding.quotationAddItemTv.setText("No. of items: ${itemList.size}")
+                    viewModel.addItemToQuotation(itemList)
+                    dialog.dismiss()
+                }
+            }
+        }
     }
 }
