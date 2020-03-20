@@ -2,9 +2,11 @@ package com.example.jeffaccount.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.example.jeffaccount.network.Item
 import com.google.gson.annotations.Expose
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 data class Purchase(
     @SerializedName("posts")
@@ -12,6 +14,7 @@ data class Purchase(
     var posts: List<PurchasePost>
 )
 
+@Parcelize
 data class PurchasePost(
     @SerializedName("pid")
     @Expose
@@ -25,49 +28,20 @@ data class PurchasePost(
     @Expose
     var quotationNo: String?,
 
-    @SerializedName("customer_name")
+    @SerializedName("sup_name")
     @Expose
     var customerName: String?,
 
-    @SerializedName("item_description")
-    @Expose
-    var itemDescription: String?,
-
-    @SerializedName("quantity")
-    @Expose
-    var quantity: String?,
-
-    @SerializedName("total_amount")
-    @Expose
-    var totalAmount: String?,
-
-    @SerializedName("unit_amount")
-    @Expose
-    var unitAmount: String?,
-
-    @SerializedName("advance_amount")
-    @Expose
-    var advanceAmount: String?,
-
-    @SerializedName("vat")
-    @Expose
-    var vat: String?,
-
-    @SerializedName("special_instruction")
+    @SerializedName("comment")
     @Expose
     var specialInstruction: String?,
 
     @SerializedName("date")
     @Expose
     var date: String?,
-
     @SerializedName("payment_method")
     @Expose
     var paymentMethod: String?,
-
-    @SerializedName("discount_amount")
-    @Expose
-    var discountAmount: String?,
     @SerializedName("street_address")
     @Expose
     var street:String?,
@@ -79,62 +53,8 @@ data class PurchasePost(
     var postCode:String?,
     @SerializedName("telephone")
     @Expose
-    var telephone:String?
-):Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString()
-    ) {
-    }
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(pid)
-        parcel.writeString(jobNo)
-        parcel.writeString(quotationNo)
-        parcel.writeString(customerName)
-        parcel.writeString(itemDescription)
-        parcel.writeString(quantity)
-        parcel.writeString(totalAmount)
-        parcel.writeString(unitAmount)
-        parcel.writeString(advanceAmount)
-        parcel.writeString(vat)
-        parcel.writeString(specialInstruction)
-        parcel.writeString(date)
-        parcel.writeString(paymentMethod)
-        parcel.writeString(discountAmount)
-        parcel.writeString(street)
-        parcel.writeString(country)
-        parcel.writeString(postCode)
-        parcel.writeString(telephone)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<PurchasePost> {
-        override fun createFromParcel(parcel: Parcel): PurchasePost {
-            return PurchasePost(parcel)
-        }
-
-        override fun newArray(size: Int): Array<PurchasePost?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
+    var telephone:String?,
+    @SerializedName("item_description")
+    @Expose
+    var itemDescription: MutableList<Item>
+):Parcelable

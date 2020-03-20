@@ -11,9 +11,9 @@
     </data>
 
     <ScrollView
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/loginpage"
-        android:layout_width="match_parent">
+        android:background="@drawable/loginpage">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -35,10 +35,10 @@
                     android:id="@+id/purchase_jobno_textInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="@string/job_no"
                     android:maxLines="1"
                     android:text="@{purchase.jobNo}"
-                    android:textColor="@android:color/white"
-                    android:hint="@string/job_no" />
+                    android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -56,10 +56,10 @@
                     android:id="@+id/purchase_quotation_textInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:hint="@string/quotation_no"
                     android:maxLines="1"
                     android:text="@{purchase.quotationNo}"
-                    android:textColor="@android:color/white"
-                    android:hint="@string/quotation_no" />
+                    android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
@@ -86,15 +86,15 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:textColor="@android:color/white"
-                android:padding="8dp"
-                android:textColorHint="@android:color/white"
-                android:maxLines="1"
-                android:text="@{purchase.customerName}"
                 android:hint="@string/supplier_name"
+                android:maxLines="1"
+                android:padding="8dp"
+                android:text="@{purchase.customerName}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_date_textInputLayout"/>
+                app:layout_constraintTop_toBottomOf="@+id/purchase_date_textInputLayout" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/purchase_comment_textInputLayout"
@@ -104,8 +104,9 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_textInputLayout">
+                app:layout_constraintTop_toBottomOf="@+id/add_purchase_post_tv">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/purchase_comment_textInput"
@@ -175,11 +176,11 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+                android:drawableEnd="@drawable/ic_add_circle_white_24dp"
                 android:hint="@string/add_item"
                 android:padding="8dp"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
-                android:drawableEnd="@drawable/ic_add_circle_white_24dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/purchase_comment_textInputLayout" />
@@ -192,12 +193,77 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="2"
-                tools:listitem="@layout/item_list"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_add_item_tv" />
+                app:layout_constraintTop_toBottomOf="@+id/purchase_add_item_tv"
+                tools:itemCount="0"
+                tools:listitem="@layout/item_list" />
 
+            <TextView
+                android:id="@+id/add_purchase_street_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:hint="@string/street_address"
+                android:padding="8dp"
+                android:text="@{purchase.street}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_textInputLayout" />
+
+            <TextView
+                android:id="@+id/add_purchase_country_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/country"
+                android:padding="8dp"
+                android:text="@{purchase.country}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/add_purchase_street_tv"
+                app:layout_constraintStart_toStartOf="@+id/add_purchase_street_tv"
+                app:layout_constraintTop_toBottomOf="@+id/add_purchase_street_tv" />
+
+            <TextView
+                android:id="@+id/add_purchase_tele_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/telephone_no"
+                android:padding="8dp"
+                android:text="@{purchase.telephone}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/add_purchase_country_tv"
+                app:layout_constraintStart_toStartOf="@+id/add_purchase_country_tv"
+                app:layout_constraintTop_toBottomOf="@+id/add_purchase_country_tv" />
+
+            <TextView
+                android:id="@+id/add_purchase_post_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="@string/post_code"
+                android:padding="8dp"
+                android:text="@{purchase.postCode}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/add_purchase_tele_tv"
+                app:layout_constraintStart_toStartOf="@+id/add_purchase_tele_tv"
+                app:layout_constraintTop_toBottomOf="@+id/add_purchase_tele_tv" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/purchase_info_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="add_purchase_street_tv,
+                add_purchase_country_tv,add_purchase_tele_tv,add_purchase_post_tv" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>

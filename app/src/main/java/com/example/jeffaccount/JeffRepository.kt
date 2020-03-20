@@ -109,6 +109,9 @@ class JeffRepository() {
     //Store search customer list
     private var searchCustListMutableLiveData = MutableLiveData<SearchCustomerList>()
 
+    //Store search list of suppliers
+    private var searchSupplierListMutableLiveData = MutableLiveData<SearchSupplier>()
+
     //Get LogInCred list
     fun getLogInCred(): LiveData<List<LogInCred>> {
         return userList
@@ -235,6 +238,12 @@ class JeffRepository() {
         return updateSupplierMessage
     }
 
+    //Get search supplier list
+    fun getSearchSupplierList(name: String, apiKey: String):LiveData<SearchSupplier>{
+        getSearchSupplier(name,apiKey)
+        return searchSupplierListMutableLiveData
+    }
+
     //Update Company details
     fun getUpdateCompanyMessage(
         companyId: Int, companyName: String, streetAdd: String, coutry: String,
@@ -259,49 +268,8 @@ class JeffRepository() {
     }
 
     //Update Purchase
-    fun getUpdatePurchaseMessage(
-        apiKey: String,
-        id: Int,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        supplierName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        updatePurchase(
-            apiKey,
-            id,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            supplierName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            quantity,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        )
+    fun getUpdatePurchaseMessage(purchaseUpdate: PurchaseUpdate): LiveData<String> {
+        updatePurchase(purchaseUpdate)
         return purchaseUpdateMessage
     }
 
@@ -734,6 +702,23 @@ class JeffRepository() {
         })
     }
 
+    //Network call to get list of search supplier
+    private fun getSearchSupplier(name: String, apiKey: String) {
+
+        apiService.searchSupplier(name, apiKey).enqueue(object :Callback<SearchSupplier>{
+            override fun onFailure(call: Call<SearchSupplier>, t: Throwable) {
+                Timber.e("Error searching supplier: ${t.message}")
+            }
+
+            override fun onResponse(
+                call: Call<SearchSupplier>,
+                response: Response<SearchSupplier>
+            ) {
+             searchSupplierListMutableLiveData.value = response.body()
+            }
+
+        })
+    }
     //Network call to update company details
     private fun updateCompany(
         companyId: Int,
@@ -799,53 +784,11 @@ class JeffRepository() {
     }
 
     //Network call update purchase
-    private fun updatePurchase(
-        apiKey: String,
-        id: Int,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        supplierName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ) {
-        apiService.updatePurchase(
-            apiKey,
-            id,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            supplierName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            quantity,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        ).enqueue(object : Callback<String> {
+    private fun updatePurchase(purchaseUpdate: PurchaseUpdate) {
+        apiService.updatePurchase(purchaseUpdate).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error updating purchase")
             }
-
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")

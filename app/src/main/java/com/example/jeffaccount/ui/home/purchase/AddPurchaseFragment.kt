@@ -19,11 +19,10 @@ import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddPurchaseFragmentBinding
 import com.example.jeffaccount.model.PurchasePost
-import com.example.jeffaccount.network.Item
-import com.example.jeffaccount.network.PItem
-import com.example.jeffaccount.network.SearchCustomer
+import com.example.jeffaccount.network.*
 import com.example.jeffaccount.ui.home.quotation.ItemAdapter
 import com.example.jeffaccount.ui.home.quotation.OnSearchItemClickListener
+import com.example.jeffaccount.ui.home.quotation.OnSearchSupplierClickListener
 import com.example.jeffaccount.ui.home.quotation.SearchCustomerBottomSheetFragment
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
@@ -45,7 +44,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSearchItemClickListener {
+class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
+    OnSearchItemClickListener, OnSearchSupplierClickListener {
 
     private lateinit var purchaseBinding: AddPurchaseFragmentBinding
     private lateinit var action: String
@@ -56,11 +56,11 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
     private var _advanceAmount: Double = 0.0
     private var _discountAmount: Double = 0.0
     private var _totalAmount: Double = 0.0
-    private lateinit var filePath:String
+    private lateinit var filePath: String
     private lateinit var itemAdapter: ItemAdapter
     private var itemList: MutableList<Item> = mutableListOf()
-    private var nameList:MutableList<String> = mutableListOf()
-    private var addedItemList:MutableList<Item> = mutableListOf()
+    private var nameList: MutableList<String> = mutableListOf()
+    private var addedItemList: MutableList<Item> = mutableListOf()
     private var itemNo: Int = 1
 
     companion object {
@@ -77,16 +77,6 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         //Initializing DataBinding
         purchaseBinding = AddPurchaseFragmentBinding.inflate(inflater, container, false)
 
-        val arguments = AddPurchaseFragmentArgs.fromBundle(arguments!!)
-        action = arguments.action
-        if (action.equals(getString(R.string.update))) {
-            purchaseBinding.purchaseSaveButton.visibility = View.GONE
-            purchaseBinding.purchaseEditButton.visibility = View.VISIBLE
-            purchase = arguments.purchasePost!!
-            qty = purchase.quantity!!.toInt()
-            purchaseBinding.purchase = arguments.purchasePost
-        }
-
         setHasOptionsMenu(true)
 
         //Set on click listener to add item text
@@ -101,6 +91,10 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
             val supplierName = purchaseBinding.purchaseSupplierTextInputLayout.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
             val paymentMethod = purchaseBinding.purchasePaymentMethodTextInput.text.toString()
+            val street = purchaseBinding.addPurchaseStreetTv.text.toString()
+            val country = purchaseBinding.addPurchaseCountryTv.text.toString()
+            val postCode = purchaseBinding.addPurchasePostTv.text.toString()
+            val telephone = purchaseBinding.addPurchaseTeleTv.text.toString()
 
             when {
                 jobNo.isEmpty() -> purchaseBinding.purchaseJobnoTextInputLayout.error =
@@ -120,12 +114,25 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
                         R.string.enter_payment_method
                     )
                 else -> {
-//                    viewModel.addPurchase(
-//                    ).observe(viewLifecycleOwner,
-//                        Observer {
-//                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-//                            findNavController().navigate(AddPurchaseFragmentDirections.actionAddPurchaseFragmentToPurchaseFragment())
-//                        })
+                    val purchaseAdd = PurchaseAdd(
+                        "AngE9676#254r5",
+                        jobNo,
+                        quotationNo,
+                        supplierName,
+                        date,
+                        street,
+                        country,
+                        postCode,
+                        telephone,
+                        paymentMethod,
+                        comment,
+                        addedItemList
+                    )
+                    viewModel.addPurchase(purchaseAdd).observe(viewLifecycleOwner,
+                        Observer {
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            findNavController().navigate(AddPurchaseFragmentDirections.actionAddPurchaseFragmentToPurchaseFragment())
+                        })
                 }
             }
         }
@@ -138,6 +145,10 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
             val supplierName = purchaseBinding.purchaseSupplierTextInputLayout.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
             val paymentMethod = purchaseBinding.purchasePaymentMethodTextInput.text.toString()
+            val street = purchaseBinding.addPurchaseStreetTv.text.toString()
+            val country = purchaseBinding.addPurchaseCountryTv.text.toString()
+            val postCode = purchaseBinding.addPurchasePostTv.text.toString()
+            val telephone = purchaseBinding.addPurchaseTeleTv.text.toString()
 
             when {
                 jobNo.isEmpty() -> purchaseBinding.purchaseJobnoTextInputLayout.error =
@@ -157,27 +168,22 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
                         R.string.enter_payment_method
                     )
                 else -> {
-                    viewModel.updatePurchase(
+                    val purchaseUpdate = PurchaseUpdate(
+                        purchase.pid,
                         "AngE9676#254r5",
-                        purchase.pid!!.toInt(),
                         jobNo,
                         quotationNo,
-                        _vat,
-                        date,
                         supplierName,
-                        "",
-                        "United Kingdom",
-                        "",
-                        "",
-                        comment,
-                        "",
+                        date,
+                        street,
+                        country,
+                        postCode,
+                        telephone,
                         paymentMethod,
-                        qty,
-                        _unitAmount,
-                        _advanceAmount,
-                        _discountAmount,
-                        _totalAmount
-                    ).observe(viewLifecycleOwner,
+                        comment,
+                        addedItemList
+                    )
+                    viewModel.updatePurchase(purchaseUpdate).observe(viewLifecycleOwner,
                         Observer {
                             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                             findNavController().navigate(AddPurchaseFragmentDirections.actionAddPurchaseFragmentToPurchaseFragment())
@@ -242,7 +248,10 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         //Set on click listener to customer name tv
         purchaseBinding.purchaseSupplierTextInputLayout.setOnClickListener {
 
-            val searchnameBottomSheet = SearchCustomerBottomSheetFragment(getString(R.string.purchase),nameList,this)
+            val searchnameBottomSheet = SearchCustomerBottomSheetFragment(
+                getString(R.string.purchase), nameList, this
+                , this
+            )
             searchnameBottomSheet.show(activity!!.supportFragmentManager, searchnameBottomSheet.tag)
         }
 
@@ -260,18 +269,33 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
 
         requestReadPermissions()
 
-        viewModel.itemAddToPurchase.observe(viewLifecycleOwner, Observer {
+        val arguments = AddPurchaseFragmentArgs.fromBundle(arguments!!)
+        action = arguments.action
 
+        if (action.equals(getString(R.string.update))) {
+            purchaseBinding.purchaseSaveButton.visibility = View.GONE
+            purchaseBinding.purchaseEditButton.visibility = View.VISIBLE
+            purchase = arguments.purchasePost!!
+            itemList = purchase.itemDescription
+            viewModel.addItemToPurchase(itemList)
+            itemNo = itemList.size.plus(1)
+            purchaseBinding.purchase = arguments.purchasePost
+            purchaseBinding.purchaseInfoGroup.visibility = View.VISIBLE
+            purchaseBinding.purchaseAddItemTv.text = "No. of Items: ${itemList.size}"
+        }
+
+        viewModel.itemAddToPurchase.observe(viewLifecycleOwner, Observer {
             addedItemList = it
+            qty = addedItemList.size
             itemAdapter.submitList(addedItemList)
         })
 
         //Get list of supplier to get the names
-        viewModel.getPurchaseList("AngE9676#254r5").observe(viewLifecycleOwner, Observer {
+        viewModel.getSuppliers().observe(viewLifecycleOwner, Observer {
             it?.let {
                 val list = it.posts
-                for (item in list){
-                    nameList.add(item.customerName!!)
+                for (item in list) {
+                    nameList.add(item.supname!!)
                 }
             }
         })
@@ -338,7 +362,8 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
                 }
                 filePath = "$folder/$mFileName.pdf"
                 Timber.e("file path: $filePath")
-                savePdf()            }
+                savePdf()
+            }
         }
         return true
     }
@@ -444,9 +469,9 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         val vatCell = PdfPCell(Phrase("Vat%"))
         vatCell.paddingBottom = 8f
         vatCell.paddingLeft = 8f
-        val vatDCell = PdfPCell(Phrase(purchase.vat))
-        vatDCell.paddingBottom = 8f
-        vatDCell.paddingLeft = 8f
+//        val vatDCell = PdfPCell(Phrase(purchase.vat))
+//        vatDCell.paddingBottom = 8f
+//        vatDCell.paddingLeft = 8f
         val dateCell = PdfPCell(Phrase("Date"))
         dateCell.paddingBottom = 8f
         dateCell.paddingLeft = 8f
@@ -468,9 +493,9 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         val desCell = PdfPCell(Phrase("Item Description"))
         desCell.paddingBottom = 8f
         desCell.paddingLeft = 8f
-        val desDCell = PdfPCell(Phrase(purchase.itemDescription))
-        desDCell.paddingBottom = 8f
-        desDCell.paddingLeft = 8f
+//        val desDCell = PdfPCell(Phrase(purchase.itemDescription))
+//        desDCell.paddingBottom = 8f
+//        desDCell.paddingLeft = 8f
         val paymentCell = PdfPCell(Phrase("Payment Method"))
         paymentCell.paddingBottom = 8f
         paymentCell.paddingLeft = 8f
@@ -480,39 +505,39 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         val qtyCell = PdfPCell(Phrase("Quantity"))
         qtyCell.paddingBottom = 8f
         qtyCell.paddingLeft = 8f
-        val qtyDCell = PdfPCell(Phrase(purchase.quantity))
-        qtyDCell.paddingBottom = 8f
-        qtyDCell.paddingLeft = 8f
+//        val qtyDCell = PdfPCell(Phrase(purchase.quantity))
+//        qtyDCell.paddingBottom = 8f
+//        qtyDCell.paddingLeft = 8f
         val unitCell = PdfPCell(Phrase("Unit Amount"))
         unitCell.paddingBottom = 8f
         unitCell.paddingLeft = 8f
-        val unitDCell = PdfPCell(Phrase(purchase.unitAmount))
-        unitDCell.paddingBottom = 8f
-        unitDCell.paddingLeft = 8f
+//        val unitDCell = PdfPCell(Phrase(purchase.unitAmount))
+//        unitDCell.paddingBottom = 8f
+//        unitDCell.paddingLeft = 8f
         val advanceCell = PdfPCell(Phrase("Advance Amount"))
         advanceCell.paddingBottom = 8f
         advanceCell.paddingLeft = 8f
-        val advanceDCell = PdfPCell(Phrase(purchase.advanceAmount))
-        advanceDCell.paddingBottom = 8f
-        advanceDCell.paddingLeft = 8f
+//        val advanceDCell = PdfPCell(Phrase(purchase.advanceAmount))
+//        advanceDCell.paddingBottom = 8f
+//        advanceDCell.paddingLeft = 8f
         val discountCell = PdfPCell(Phrase("Discount Amount"))
         discountCell.paddingBottom = 8f
         discountCell.paddingLeft = 8f
-        val discountDcell = PdfPCell(Phrase(purchase.discountAmount))
-        discountDcell.paddingBottom = 8f
-        discountDcell.paddingLeft = 8f
+//        val discountDcell = PdfPCell(Phrase(purchase.discountAmount))
+//        discountDcell.paddingBottom = 8f
+//        discountDcell.paddingLeft = 8f
         val totalCell = PdfPCell(Phrase("Total Amount"))
         totalCell.paddingBottom = 8f
         totalCell.paddingLeft = 8f
-        val totalDCell = PdfPCell(Phrase(purchase.totalAmount))
-        totalDCell.paddingBottom = 8f
-        totalDCell.paddingLeft = 8f
+//        val totalDCell = PdfPCell(Phrase(purchase.totalAmount))
+//        totalDCell.paddingBottom = 8f
+//        totalDCell.paddingLeft = 8f
         table.addCell(cell)
         table.addCell(cell1)
         table.addCell(qnoCell)
         table.addCell(qnoDCell)
         table.addCell(vatCell)
-        table.addCell(vatDCell)
+//        table.addCell(vatDCell)
         table.addCell(dateCell)
         table.addCell(dateDCell)
         table.addCell(nameCell)
@@ -520,19 +545,19 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         table.addCell(commentCell)
         table.addCell(commentDCell)
         table.addCell(desCell)
-        table.addCell(desDCell)
+//        table.addCell(desDCell)
         table.addCell(paymentCell)
         table.addCell(paymentDCell)
         table.addCell(qtyCell)
-        table.addCell(qtyDCell)
+//        table.addCell(qtyDCell)
         table.addCell(unitCell)
-        table.addCell(unitDCell)
+//        table.addCell(unitDCell)
         table.addCell(advanceCell)
-        table.addCell(advanceDCell)
+//        table.addCell(advanceDCell)
         table.addCell(discountCell)
-        table.addCell(discountDcell)
+//        table.addCell(discountDcell)
         table.addCell(totalCell)
-        table.addCell(totalDCell)
+//        table.addCell(totalDCell)
         purchaseBody.add(table)
     }
 
@@ -615,7 +640,7 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         taxCell.setPadding(8f)
         table.addCell(taxCell)
         val taxDCell = PdfPCell()
-        taxDCell.addElement(Paragraph(purchase.vat))
+//        taxDCell.addElement(Paragraph(purchase.vat))
         taxDCell.setPadding(8f)
         table.addCell(taxDCell)
         val taxAmountCell = PdfPCell()
@@ -631,7 +656,7 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         disocuntCell.setPadding(8f)
         table.addCell(disocuntCell)
         val discountDCell = PdfPCell()
-        discountDCell.addElement(Paragraph(purchase.discountAmount))
+//        discountDCell.addElement(Paragraph(purchase.discountAmount))
         discountDCell.setPadding(8f)
         table.addCell(discountDCell)
         val totalAmountCell = PdfPCell()
@@ -639,8 +664,8 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         totalAmountCell.setPadding(8f)
         table.addCell(totalAmountCell)
         val totalAmountDCell = PdfPCell()
-        totalAmountDCell.addElement(Paragraph(purchase.totalAmount))
-        totalAmountDCell.setPadding(8f)
+//        totalAmountDCell.addElement(Paragraph(purchase.totalAmount))
+//        totalAmountDCell.setPadding(8f)
         table.addCell(totalAmountDCell)
         return table
     }
@@ -668,18 +693,18 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         val noCell = PdfPCell(Paragraph("1"))
         noCell.setPadding(8f)
         table.addCell(noCell)
-        val itemDesCell = PdfPCell(Paragraph(purchase.itemDescription))
-        itemDesCell.setPadding(8f)
-        table.addCell(itemDesCell)
-        val qtyCell = PdfPCell(Paragraph(purchase.quantity))
-        qtyCell.setPadding(8f)
-        table.addCell(qtyCell)
-        val unitDCell = PdfPCell(Paragraph(purchase.unitAmount))
-        unitDCell.setPadding(8f)
-        table.addCell(unitDCell)
-        val disDCell = PdfPCell(Paragraph(purchase.discountAmount))
-        disDCell.setPadding(8f)
-        table.addCell(disDCell)
+//        val itemDesCell = PdfPCell(Paragraph(purchase.itemDescription))
+//        itemDesCell.setPadding(8f)
+//        table.addCell(itemDesCell)
+//        val qtyCell = PdfPCell(Paragraph(purchase.quantity))
+//        qtyCell.setPadding(8f)
+//        table.addCell(qtyCell)
+//        val unitDCell = PdfPCell(Paragraph(purchase.unitAmount))
+//        unitDCell.setPadding(8f)
+//        table.addCell(unitDCell)
+//        val disDCell = PdfPCell(Paragraph(purchase.discountAmount))
+//        disDCell.setPadding(8f)
+//        table.addCell(disDCell)
         table.widthPercentage = 100f
         return table
     }
@@ -766,6 +791,7 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
         )
         return cell
     }
+
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
         purchaseBinding.purchaseDateTextInputLayout.text =
             viewModel.changeDateFormat(dayOfMonth, monthOfYear, year)
@@ -855,6 +881,17 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener, OnSe
     }
 
     override fun onSearchItemClick(searchCustomer: SearchCustomer) {
+
+    }
+
+    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost) {
+
+        purchaseBinding.purchaseInfoGroup.visibility = View.VISIBLE
+        purchaseBinding.purchaseSupplierTextInputLayout.text = serchSupplierPost.supname
+        purchaseBinding.addPurchaseStreetTv.text = serchSupplierPost.street
+        purchaseBinding.addPurchaseCountryTv.text = serchSupplierPost.country
+        purchaseBinding.addPurchasePostTv.text = serchSupplierPost.postcode
+        purchaseBinding.addPurchaseTeleTv.text = serchSupplierPost.telephone
 
     }
 }

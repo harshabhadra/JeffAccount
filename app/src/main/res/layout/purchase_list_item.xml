@@ -17,7 +17,7 @@
         android:id="@+id/p_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@android:color/black"
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="8dp"
         app:cardElevation="6dp"
         android:onClick="@{()->clickListener.purchaseItemClick(purchase)}"

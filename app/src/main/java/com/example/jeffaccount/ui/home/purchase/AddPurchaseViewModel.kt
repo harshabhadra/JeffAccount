@@ -6,9 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
 import com.example.jeffaccount.model.Purchase
 import com.example.jeffaccount.model.PurchasePost
-import com.example.jeffaccount.network.Item
-import com.example.jeffaccount.network.PItem
-import com.example.jeffaccount.network.PurchaseAdd
+import com.example.jeffaccount.model.Supplier
+import com.example.jeffaccount.network.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -48,31 +47,8 @@ class AddPurchaseViewModel : ViewModel() {
     }
 
     //Update purchase
-    fun updatePurchase(
-        apikey:String,
-        purchaseId: Int,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        supplierName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        return jeffRepository.getUpdatePurchaseMessage(
-            apikey,purchaseId, jobNo, quotationNo, vat, date, supplierName,streetAdd, coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
-        )
+    fun updatePurchase(purchaseUpdate: PurchaseUpdate): LiveData<String> {
+        return jeffRepository.getUpdatePurchaseMessage(purchaseUpdate)
     }
 
     //Delete purchase
@@ -110,5 +86,15 @@ class AddPurchaseViewModel : ViewModel() {
 
     fun addItemToPurchase(itemList: MutableList<Item>){
         _itemAddedToPurchase.value = itemList
+    }
+
+    //Get list of supplier
+    fun getSuppliers(): LiveData<Supplier> {
+        return jeffRepository.getAllSuppliers()
+    }
+
+    //Get search supplier list
+    fun getSearchSupplierList(name:String, apikey: String):LiveData<SearchSupplier>{
+        return jeffRepository.getSearchSupplierList(name,apikey)
     }
 }

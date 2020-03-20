@@ -22,10 +22,7 @@ import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddQuotationFragmentBinding
 import com.example.jeffaccount.model.QuotationPost
-import com.example.jeffaccount.network.Item
-import com.example.jeffaccount.network.QuotationAdd
-import com.example.jeffaccount.network.QuotationUpdate
-import com.example.jeffaccount.network.SearchCustomer
+import com.example.jeffaccount.network.*
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -46,7 +43,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener,OnSearchItemClickListener {
+class AddQuotationFragment : Fragment(),
+    DatePickerDialog.OnDateSetListener,OnSearchItemClickListener,OnSearchSupplierClickListener {
 
     private lateinit var filePath: String
 //    private var apiKey = getString(R.string.api_key)
@@ -223,7 +221,7 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener,OnSe
         }
 
         quotationBinding.quotationCustomerNameTextInputLayout.setOnClickListener {
-            val searchnameFragment = SearchCustomerBottomSheetFragment(getString(R.string.quotation),nameList,this)
+            val searchnameFragment = SearchCustomerBottomSheetFragment(getString(R.string.quotation),nameList,this,this)
             searchnameFragment.show(activity!!.supportFragmentManager,searchnameFragment.tag)
         }
 
@@ -919,5 +917,9 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener,OnSe
             quotationBinding.addQuotationTelephoneTv.text = searchCustomer.postcode
 
         }
+    }
+
+    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost) {
+
     }
 }

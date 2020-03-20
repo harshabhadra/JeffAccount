@@ -172,28 +172,7 @@ interface AppApiService {
 
     //Update Purchase
     @POST("purchaseupdate.php")
-    @FormUrlEncoded
-    fun updatePurchase(
-        @Field("apikey") apiKey: String,
-        @Field("pid") purchaseId: Int,
-        @Field("job_no") jobNo: String,
-        @Field("quotation_no") quotationNo: String,
-        @Field("vat") vat: Double,
-        @Field("date") date: String,
-        @Field("customer_name") supplierName: String,
-        @Field("street_address") streetAddress: String,
-        @Field("country") country: String,
-        @Field("post_code") postCode: String,
-        @Field("telephone") telephoneNo: String,
-        @Field("special_instruction") specialIns: String,
-        @Field("item_description") itemDes: String,
-        @Field("payment_method") paymentMethod: String,
-        @Field("quantity") quantity: Int,
-        @Field("unit_amount") unitAmount: Double,
-        @Field("advance_amount") advanceAmount: Double,
-        @Field("discount_amount") discountAmount: Double,
-        @Field("total_amount") totoalAmount: Double
-    ): Call<String>
+    fun updatePurchase(@Body purchaseUpdate: PurchaseUpdate): Call<String>
 
     //Get purchase list
     @POST("purchaselist.php")
@@ -206,6 +185,14 @@ interface AppApiService {
     @POST("purchasedel.php")
     @FormUrlEncoded
     fun deletePurchase(@Field("pid") purchaseId: Int): Call<String>
+
+    //Search supplier for purchase
+    @POST("sup_search.php")
+    @FormUrlEncoded
+    fun searchSupplier(
+        @Field("sup_name") name: String,
+        @Field("apikey") apiKey: String
+    ):Call<SearchSupplier>
 
     //Add TimeSheet
     @POST("timesheetadd.php")

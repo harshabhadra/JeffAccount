@@ -10,10 +10,15 @@ import android.view.View
 import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jeffaccount.R
 import com.example.jeffaccount.network.SearchCustomer
+import com.example.jeffaccount.network.SearchSupplierPost
+import com.example.jeffaccount.ui.home.purchase.AddPurchaseViewModel
+import com.example.jeffaccount.ui.home.purchase.SearchSupplierAdapter
+import com.example.jeffaccount.ui.home.purchase.SearchSupplierClickListener
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -22,12 +27,15 @@ import timber.log.Timber
 /**
  * A simple [Fragment] subclass.
  */
-class SearchCustomerBottomSheetFragment(type:String,val comlist: MutableList<String>, itemClickListener:OnSearchItemClickListener) :
+class SearchCustomerBottomSheetFragment(val type:String,val comlist: MutableList<String>,
+                                        itemClickListener:OnSearchItemClickListener,
+                                        supplierItemClickListenr:OnSearchSupplierClickListener) :
     BottomSheetDialogFragment(),
     TextWatcher, OnItemClickListener {
 
     private lateinit var searchNameAdapter: SearchNameAdapter
     private lateinit var searchItemAdapter: SearchItemAdapter
+    private lateinit var searchSupplierAdater:SearchSupplierAdapter
 
     private lateinit var custList: ArrayList<String>
     private lateinit var searchList: ArrayList<String>
@@ -36,7 +44,9 @@ class SearchCustomerBottomSheetFragment(type:String,val comlist: MutableList<Str
     private lateinit var nameItemRecyclerView: RecyclerView
     private lateinit var searchEditText: EditText
     private lateinit var quotaitonViewModel: AddQuotationViewModel
+    private lateinit var purchaseViewModel: AddPurchaseViewModel
     private var searItemClickListener: OnSearchItemClickListener = itemClickListener
+    private var searchSupplierClickListener:OnSearchSupplierClickListener = supplierItemClickListenr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,8 +63,16 @@ class SearchCustomerBottomSheetFragment(type:String,val comlist: MutableList<Str
             }
         })
 
+        searchSupplierAdater = SearchSupplierAdapter(SearchSupplierClickListener {
+            searchSupplierClickListener.onSearchSupplierClick(it)
+            dismiss()
+        })
+
         //Initializing ViewModel class
         quotaitonViewModel = ViewModelProvider(this).get(AddQuotationViewModel::class.java)
+
+        //Initializing purchase view model class
+        purchaseViewModel = ViewModelProvider(this).get(AddPurchaseViewModel::class.java)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -77,7 +95,11 @@ class SearchCustomerBottomSheetFragment(type:String,val comlist: MutableList<Str
         //Setting up name item recyclerView
         nameItemRecyclerView = view.findViewById(R.id.customer_item_recycler)
         nameItemRecyclerView.setHasFixedSize(true)
-        nameItemRecyclerView.adapter = searchItemAdapter
+        if (type.equals(getString(R.string.quotation))) {
+            nameItemRecyclerView.adapter = searchItemAdapter
+        }else{
+            nameItemRecyclerView.adapter = searchSupplierAdater
+        }
 
         searchEditText = view.findViewById(R.id.editText)
         searchEditText.addTextChangedListener(this)
@@ -129,15 +151,28 @@ class SearchCustomerBottomSheetFragment(type:String,val comlist: MutableList<Str
 
     override fun onItemClick(name: String) {
 
-        quotaitonViewModel.searchCustomer(name, "AngE9676#254r5").observe(this,
-            androidx.lifecycle.Observer {
-                Timber.e("Search list size: ${it.customerList?.size}")
+        if (type.equals(getString(R.string.quotation))) {
+            quotaitonViewModel.searchCustomer(name, "AngE9676#254r5").observe(this,
+                androidx.lifecycle.Observer {
+                    Timber.e("Search list size: ${it.customerList?.size}")
+                    nameRecyclerView.visibility = View.GONE
+                    searchItemAdapter.submitList(it.customerList)
+                })
+        }else{
+            purchaseViewModel.getSearchSupplierList(name,"AngE9676#254r5").observe(this,
+                Observer {
+                Timber.e("Searchlist supplier size: ${it.posts?.size}")
                 nameRecyclerView.visibility = View.GONE
-                searchItemAdapter.submitList(it.customerList)
+                searchSupplierAdater.submitList(it.posts)
             })
+        }
     }
 }
 
 public interface OnSearchItemClickListener {
     fun onSearchItemClick(searchCustomer: SearchCustomer)
+}
+
+interface OnSearchSupplierClickListener{
+    fun onSearchSupplierClick(serchSupplierPost:SearchSupplierPost)
 }
