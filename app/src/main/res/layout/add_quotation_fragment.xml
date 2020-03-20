@@ -86,27 +86,21 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/quotation_quotationo_textInputLayout" />
 
-                <com.google.android.material.textfield.TextInputLayout
+                <TextView
                     android:id="@+id/quotation_customer_name_textInputLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
+                    android:hint="@string/customer_name"
+                    android:padding="16dp"
+                    android:text="@{quotation.customerName}"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_date_textInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/quotation_customer_name_textInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="@string/customer_name"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:text="@{quotation.customerName}"
-                        android:textColor="@android:color/white" />
-                </com.google.android.material.textfield.TextInputLayout>
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_date_textInputLayout" />
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/quotation_comment_textInputLayout"
@@ -127,6 +121,7 @@
                         android:hint="@string/special_instruction_comment"
                         android:inputType="textMultiLine"
                         android:maxLines="1"
+                        android:text="@{quotation.comment}"
 
                         android:textColor="@android:color/white" />
                 </com.google.android.material.textfield.TextInputLayout>
@@ -147,7 +142,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/payment_method"
-
+                        android:text="@{quotation.paymentMethod}"
                         android:textColor="@android:color/white" />
                 </com.google.android.material.textfield.TextInputLayout>
 
@@ -187,14 +182,14 @@
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
-                    android:hint="@string/add_item"
-                    android:textColorHint="@android:color/white"
-                    android:textColor="@android:color/white"
-                    android:padding="8dp"
                     android:drawableEnd="@drawable/ic_add_circle_white_24dp"
+                    android:hint="@string/add_item"
+                    android:padding="8dp"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/quotation_customer_name_textInputLayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/add_quotation_telephone_tv" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/quotation_item_recyclerView"
@@ -208,8 +203,71 @@
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/quotation_add_item_tv"
-                    tools:itemCount="2"
+                    tools:itemCount="0"
                     tools:listitem="@layout/item_list" />
+
+                <TextView
+                    android:id="@+id/add_quotation_street_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/street_address"
+                    android:padding="8dp"
+                    android:text="@{quotation.street}"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/quotation_customer_name_textInputLayout"
+                    app:layout_constraintStart_toStartOf="@+id/quotation_customer_name_textInputLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/quotation_customer_name_textInputLayout" />
+
+                <TextView
+                    android:id="@+id/add_quotaiton_country_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/country"
+                    android:padding="8dp"
+                    android:text="@{quotation.country}"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/add_quotation_street_tv"
+                    app:layout_constraintStart_toStartOf="@+id/add_quotation_street_tv"
+                    app:layout_constraintTop_toBottomOf="@+id/add_quotation_street_tv" />
+
+                <TextView
+                    android:id="@+id/add_quotation_postcode_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/post_code"
+                    android:padding="8dp"
+                    android:text="@{quotation.postCode}"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/add_quotaiton_country_tv"
+                    app:layout_constraintStart_toStartOf="@+id/add_quotaiton_country_tv"
+                    app:layout_constraintTop_toBottomOf="@+id/add_quotaiton_country_tv" />
+
+                <TextView
+                    android:id="@+id/add_quotation_telephone_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:hint="@string/telephone_no"
+                    android:padding="8dp"
+                    android:text="@{quotation.telephone}"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
+                    app:layout_constraintEnd_toEndOf="@+id/add_quotation_postcode_tv"
+                    app:layout_constraintStart_toStartOf="@+id/add_quotation_postcode_tv"
+                    app:layout_constraintTop_toBottomOf="@+id/add_quotation_postcode_tv" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/cust_addtional_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="add_quotation_street_tv,add_quotaiton_country_tv,add_quotation_postcode_tv,add_quotation_telephone_tv" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
     </ScrollView>

@@ -4,6 +4,11 @@ import com.google.gson.annotations.Expose
 
 import com.google.gson.annotations.SerializedName
 
+data class SearchCustomerList(
+    @SerializedName("posts")
+    @Expose
+    var customerList:List<SearchCustomer>?
+)
 
 data class SearchCustomer (
     @SerializedName("comid")
@@ -26,9 +31,9 @@ data class SearchCustomer (
     @Expose
     var telephone: String?,
 
-    @SerializedName("comemail")
+    @SerializedName("customeremail")
     @Expose
-    var comemail: Any?,
+    var customerEmail: String?,
 
     @SerializedName("web")
     @Expose

@@ -1,6 +1,5 @@
 package com.example.jeffaccount.network
 
-import androidx.lifecycle.LiveData
 import com.example.jeffaccount.model.*
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -103,23 +102,31 @@ interface AppApiService {
 
     //Add Quotation
     @POST("quatationadd.php")
-    fun addQuotation(@Body body:QuotationAdd): Call<String>
+    fun addQuotation(@Body body: QuotationAdd): Call<String>
 
     //Update Quotation
     @POST("quatationupdate.php")
-    fun updateQuotation(@Body quotation:QuotationUpdate): Call<String>
+    fun updateQuotation(@Body quotation: QuotationUpdate): Call<String>
 
     //Get quotation list
     @POST("quatationlist.php")
     @FormUrlEncoded
     fun getQuotationList(
-        @Field("apikey")apiKey: String
+        @Field("apikey") apiKey: String
     ): Call<Quotation>
 
     //Delete Quotation
     @POST("quatationdel.php")
     @FormUrlEncoded
     fun deleteQuotation(@Field("qid") quotationId: Int): Call<String>
+
+    //Search customer in quotation
+    @POST("customer_search")
+    @FormUrlEncoded
+    fun searchCustomer(
+        @Field("custname") customerName: String,
+        @Field("apikey") apiKey: String
+    ): Call<SearchCustomerList>
 
     //Add Company
     @POST("companyadd.php")
@@ -150,52 +157,34 @@ interface AppApiService {
 
     //Get list of company
     @POST("companylist.php")
-    fun getCompanyList():Call<Company>
+    fun getCompanyList(): Call<Company>
 
     //Delete company
     @POST("companydel.php")
     @FormUrlEncoded
-    fun deleteCompany(@Field("comid")id:Int):Call<String>
+    fun deleteCompany(@Field("comid") id: Int): Call<String>
 
     //Add Purchase
     @POST("purchaseadd.php")
-    @FormUrlEncoded
     fun addPurchase(
-        @Field("apikey")apiKey: String,
-        @Field("job_no") jobNo: String,
-        @Field("quotation_no") quotationNo: String,
-        @Field("vat") vat: Double,
-        @Field("date") date: String,
-        @Field("customer_name") supplierName: String,
-        @Field("street_address")streetAddress:String,
-        @Field("country")country: String,
-        @Field("post_code")postCode: String,
-        @Field("telephone")telephoneNo: String,
-        @Field("special_instruction") specialIns: String,
-        @Field("item_description") itemDes: String,
-        @Field("payment_method") paymentMethod: String,
-        @Field("quantity") quantity: Int,
-        @Field("unit_amount") unitAmount: Double,
-        @Field("advance_amount") advanceAmount: Double,
-        @Field("discount_amount") discountAmount: Double,
-        @Field("total_amount") totoalAmount: Double
-    ):Call<String>
+        @Body body: PurchaseAdd
+    ): Call<String>
 
     //Update Purchase
     @POST("purchaseupdate.php")
     @FormUrlEncoded
     fun updatePurchase(
-        @Field("apikey")apiKey: String,
-        @Field("pid")purchaseId:Int,
+        @Field("apikey") apiKey: String,
+        @Field("pid") purchaseId: Int,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("customer_name") supplierName: String,
-        @Field("street_address")streetAddress:String,
-        @Field("country")country: String,
-        @Field("post_code")postCode: String,
-        @Field("telephone")telephoneNo: String,
+        @Field("street_address") streetAddress: String,
+        @Field("country") country: String,
+        @Field("post_code") postCode: String,
+        @Field("telephone") telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -204,34 +193,34 @@ interface AppApiService {
         @Field("advance_amount") advanceAmount: Double,
         @Field("discount_amount") discountAmount: Double,
         @Field("total_amount") totoalAmount: Double
-    ):Call<String>
+    ): Call<String>
 
     //Get purchase list
     @POST("purchaselist.php")
     @FormUrlEncoded
     fun getPurchaseList(
-        @Field("apikey")apiKey: String
-    ):Call<Purchase>
+        @Field("apikey") apiKey: String
+    ): Call<Purchase>
 
     //Delete Purchase
     @POST("purchasedel.php")
     @FormUrlEncoded
-    fun deletePurchase(@Field("pid")purchaseId:Int):Call<String>
+    fun deletePurchase(@Field("pid") purchaseId: Int): Call<String>
 
     //Add TimeSheet
     @POST("timesheetadd.php")
     @FormUrlEncoded
     fun addTimeSheet(
-        @Field("apikey")apiKey: String,
+        @Field("apikey") apiKey: String,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("name") supplierName: String,
-        @Field("street_address")streetAddress:String,
-        @Field("country")country: String,
-        @Field("post_code")postCode: String,
-        @Field("telephone")telephoneNo: String,
+        @Field("street_address") streetAddress: String,
+        @Field("country") country: String,
+        @Field("post_code") postCode: String,
+        @Field("telephone") telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -240,23 +229,23 @@ interface AppApiService {
         @Field("advance_amount") advanceAmount: Double,
         @Field("discount_amount") discountAmount: Double,
         @Field("total_amount") totoalAmount: Double
-    ):Call<String>
+    ): Call<String>
 
     //Update time sheet
     @POST("timesheetupdate.php")
     @FormUrlEncoded
     fun updateTimeSheet(
-        @Field("apikey")apiKey: String,
-        @Field("tid")timesheetId:Int,
+        @Field("apikey") apiKey: String,
+        @Field("tid") timesheetId: Int,
         @Field("job_no") jobNo: String,
         @Field("quotation_no") quotationNo: String,
         @Field("vat") vat: Double,
         @Field("date") date: String,
         @Field("name") supplierName: String,
-        @Field("street_address")streetAddress:String,
-        @Field("country")country: String,
-        @Field("post_code")postCode: String,
-        @Field("telephone")telephoneNo: String,
+        @Field("street_address") streetAddress: String,
+        @Field("country") country: String,
+        @Field("post_code") postCode: String,
+        @Field("telephone") telephoneNo: String,
         @Field("special_instruction") specialIns: String,
         @Field("item_description") itemDes: String,
         @Field("payment_method") paymentMethod: String,
@@ -265,17 +254,17 @@ interface AppApiService {
         @Field("advance_amount") advanceAmount: Double,
         @Field("discount_amount") discountAmount: Double,
         @Field("total_amount") totoalAmount: Double
-    ):Call<String>
+    ): Call<String>
 
     //Delete time sheet
     @POST("timesheetdel.php")
     @FormUrlEncoded
-    fun deleteTimeSheet(@Field("tid")timeSheetId:Int):Call<String>
+    fun deleteTimeSheet(@Field("tid") timeSheetId: Int): Call<String>
 
     //Get list of time sheet
     @POST("timesheetlist.php")
     @FormUrlEncoded
-    fun getTimeSheetList(@Field("apikey")apiKey: String):Call<TimeSheet>
+    fun getTimeSheetList(@Field("apikey") apiKey: String): Call<TimeSheet>
 }
 
 object JeffApi {

@@ -7,9 +7,7 @@ import com.example.jeffaccount.dataBase.JeffDataBase
 import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.dataBase.LogInDao
 import com.example.jeffaccount.model.*
-import com.example.jeffaccount.network.JeffApi
-import com.example.jeffaccount.network.QuotationAdd
-import com.example.jeffaccount.network.QuotationUpdate
+import com.example.jeffaccount.network.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -108,6 +106,9 @@ class JeffRepository() {
     //Store list of time sheet list
     private var timeSheetListMutableLiveData = MutableLiveData<TimeSheet>()
 
+    //Store search customer list
+    private var searchCustListMutableLiveData = MutableLiveData<SearchCustomerList>()
+
     //Get LogInCred list
     fun getLogInCred(): LiveData<List<LogInCred>> {
         return userList
@@ -163,47 +164,8 @@ class JeffRepository() {
     }
 
     //Add Purchase
-    fun getAddPurchaseMessage(
-        apiKey: String,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        supplierName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        addPurchase(
-            apiKey,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            supplierName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            quantity,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        )
+    fun getAddPurchaseMessage(purchaseAdd: PurchaseAdd): LiveData<String> {
+        addPurchase(purchaseAdd)
         return purchaseAddMessage
     }
 
@@ -288,6 +250,12 @@ class JeffRepository() {
             quotationUpdate
         )
         return quotationUpdateMesage
+    }
+
+    //Search customer for quotation
+    fun searchCustomerList(apiKey: String,name: String):LiveData<SearchCustomerList>{
+        searchCustomer(apiKey,name)
+        return searchCustListMutableLiveData
     }
 
     //Update Purchase
@@ -630,46 +598,9 @@ class JeffRepository() {
 
     //Network call to add purchase
     private fun addPurchase(
-        apiKey: String,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        supplierName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
+        purchaseAdd: PurchaseAdd
     ) {
-        apiService.addPurchase(
-            apiKey,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            supplierName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            quantity,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        ).enqueue(object : Callback<String> {
+        apiService.addPurchase(purchaseAdd).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error adding purchase ${t.message}")
             }
@@ -846,6 +777,23 @@ class JeffRepository() {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")
                 quotationUpdateMesage.value = message
+            }
+        })
+    }
+
+    //Network call search customer for quotation
+    private fun searchCustomer(apiKey: String, name: String) {
+
+        apiService.searchCustomer(name,apiKey).enqueue(object :Callback<SearchCustomerList>{
+            override fun onFailure(call: Call<SearchCustomerList>, t: Throwable) {
+                Timber.e("Search customer failed: ${t.message}")
+            }
+
+            override fun onResponse(
+                call: Call<SearchCustomerList>,
+                response: Response<SearchCustomerList>
+            ) {
+                searchCustListMutableLiveData.value = response.body()
             }
         })
     }

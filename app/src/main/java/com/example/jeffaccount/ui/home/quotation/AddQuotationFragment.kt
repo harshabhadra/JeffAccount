@@ -25,6 +25,7 @@ import com.example.jeffaccount.model.QuotationPost
 import com.example.jeffaccount.network.Item
 import com.example.jeffaccount.network.QuotationAdd
 import com.example.jeffaccount.network.QuotationUpdate
+import com.example.jeffaccount.network.SearchCustomer
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -45,7 +46,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
+class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener,OnSearchItemClickListener {
 
     private lateinit var filePath: String
 //    private var apiKey = getString(R.string.api_key)
@@ -63,6 +64,11 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private lateinit var itemAdapter: ItemAdapter
     private var itemList: MutableList<Item> = mutableListOf()
     private var nameList:MutableList<String> = mutableListOf()
+    private var addedItemList:MutableList<Item> = mutableListOf()
+    private lateinit var street:String
+    private lateinit var country:String
+    private lateinit var telephone:String
+    private lateinit var postCode:String
     private var itemNo: Int = 1
 
     override fun onCreateView(
@@ -94,9 +100,13 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             val jobNo = quotationBinding.quotationJobTextInput.text.toString()
             val quotationNo = quotationBinding.quotationQuotationoTextInput.text.toString()
             val date = quotationBinding.quotationDateTextInputLayout.text.toString()
-            val customerName = quotationBinding.quotationCustomerNameTextInput.text.toString()
+            val customerName = quotationBinding.quotationCustomerNameTextInputLayout.text.toString()
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
             val paymentMethod = quotationBinding.quotationPayementMethodTextInput.text.toString()
+            street = quotationBinding.addQuotationStreetTv.text.toString()
+            country = quotationBinding.addQuotaitonCountryTv.text.toString()
+            postCode = quotationBinding.addQuotationPostcodeTv.text.toString()
+            telephone = quotationBinding.addQuotationTelephoneTv.text.toString()
 
             when {
                 jobNo.isEmpty() -> {
@@ -126,8 +136,8 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 }
                 else -> {
                     val quotation = QuotationAdd(
-                        "AngE9676#254r5", jobNo, quotationNo, customerName, date, "kolkata",
-                        "United Kingdom", "78536", "89657421",paymentMethod,comment, itemList
+                        "AngE9676#254r5", jobNo, quotationNo, customerName, date, street,
+                        country, postCode, telephone,paymentMethod,comment, itemList
                     )
                     viewModel.addQuotaiton(quotation).observe(viewLifecycleOwner,
                         Observer {
@@ -145,9 +155,13 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             val jobNo = quotationBinding.quotationJobTextInput.text.toString()
             val quotationNo = quotationBinding.quotationQuotationoTextInput.text.toString()
             val date = quotationBinding.quotationDateTextInputLayout.text.toString()
-            val customerName = quotationBinding.quotationCustomerNameTextInput.text.toString()
+            val customerName = quotationBinding.quotationCustomerNameTextInputLayout.text.toString()
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
             val paymentMethod = quotationBinding.quotationPayementMethodTextInput.text.toString()
+            street = quotationBinding.addQuotationStreetTv.text.toString()
+            country = quotationBinding.addQuotaitonCountryTv.text.toString()
+            postCode = quotationBinding.addQuotationPostcodeTv.text.toString()
+            telephone = quotationBinding.addQuotationTelephoneTv.text.toString()
 
             when {
                 jobNo.isEmpty() -> {
@@ -184,10 +198,12 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                         quotationNo,
                         customerName,
                         date,
-                        "Kolkata",
-                        "Unied Kingdom",
-                        "735226",
-                        "789657400",
+                        street,
+                        country,
+                        postCode,
+                        telephone,
+                        comment,
+                        paymentMethod,
                         itemList
                     )
                     viewModel.updateQuotation(quotaionUpdate).observe(viewLifecycleOwner,
@@ -204,13 +220,10 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         //Set on click listener to add item text view
         quotationBinding.quotationAddItemTv.setOnClickListener {
             createItemDialog()
-//            findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToAddItemFragment(
-//                item
-//            ))
         }
 
-        quotationBinding.quotationCustomerNameTextInput.setOnClickListener {
-            val searchnameFragment = SearchCustomerBottomSheetFragment(nameList)
+        quotationBinding.quotationCustomerNameTextInputLayout.setOnClickListener {
+            val searchnameFragment = SearchCustomerBottomSheetFragment(getString(R.string.quotation),nameList,this)
             searchnameFragment.show(activity!!.supportFragmentManager,searchnameFragment.tag)
         }
 
@@ -239,21 +252,6 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 quotationBinding.quotationQuotationoTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        //Add Text Watcher to name
-        quotationBinding.quotationCustomerNameTextInput.addTextChangedListener(object :
-            TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                quotationBinding.quotationCustomerNameTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                quotationBinding.quotationCustomerNameTextInputLayout.isErrorEnabled = false
             }
         })
 
@@ -295,6 +293,7 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             itemList = quotationItem.itemDescription
             viewModel.addItemToQuotation(itemList)
             itemNo = itemList.size.plus(1)
+            quotationBinding.custAddtionalGroup.visibility = View.VISIBLE
             quotationBinding.quotationAddItemTv.setText("No. of items: ${itemList.size}")
         }
 
@@ -307,7 +306,8 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
         viewModel.itemAddedToQuotation.observe(viewLifecycleOwner, Observer {
             it?.let {
-                itemAdapter.submitList(it)
+                addedItemList = it
+                itemAdapter.submitList(addedItemList)
             }
         })
         viewModel.getDate()
@@ -906,6 +906,18 @@ class AddQuotationFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     dialog.dismiss()
                 }
             }
+        }
+    }
+
+    override fun onSearchItemClick(searchCustomer: SearchCustomer) {
+        searchCustomer?.let {
+            quotationBinding.custAddtionalGroup.visibility = View.VISIBLE
+            quotationBinding.quotationCustomerNameTextInputLayout.text = searchCustomer.custname
+            quotationBinding.addQuotaitonCountryTv.text = searchCustomer.country
+            quotationBinding.addQuotationStreetTv.text = searchCustomer.street
+            quotationBinding.addQuotationPostcodeTv.text = searchCustomer.telephone
+            quotationBinding.addQuotationTelephoneTv.text = searchCustomer.postcode
+
         }
     }
 }

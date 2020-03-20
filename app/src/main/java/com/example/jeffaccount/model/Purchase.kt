@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 data class Purchase(
     @SerializedName("posts")
     @Expose
-    var posts: List<PurchasePost>?
+    var posts: List<PurchasePost>
 )
 
 data class PurchasePost(

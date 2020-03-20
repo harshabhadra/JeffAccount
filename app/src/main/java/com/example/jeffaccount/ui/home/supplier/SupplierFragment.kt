@@ -50,7 +50,6 @@ class SupplierFragment : Fragment() {
             it?.let {
                 supplierListAdapter.submitList(it.posts)
                 noSupplierTv.visibility = View.GONE
-                Timber.e("supplier: ${it.posts.get(0).supname}")
             }?:let {
                 Timber.e("No supplier")
                 noSupplierTv.visibility = View.VISIBLE

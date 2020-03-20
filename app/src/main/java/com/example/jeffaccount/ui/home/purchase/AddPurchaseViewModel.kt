@@ -6,6 +6,9 @@ import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
 import com.example.jeffaccount.model.Purchase
 import com.example.jeffaccount.model.PurchasePost
+import com.example.jeffaccount.network.Item
+import com.example.jeffaccount.network.PItem
+import com.example.jeffaccount.network.PurchaseAdd
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,35 +29,17 @@ class AddPurchaseViewModel : ViewModel() {
     val dateString: LiveData<String>
         get() = _dateString
 
+    private var _itemAddedToPurchase = MutableLiveData<MutableList<Item>>()
+    val itemAddToPurchase:LiveData<MutableList<Item>>
+    get() = _itemAddedToPurchase
+
     init {
         _navigateToAddPurchaseFragment.value = null
     }
 
     //Add purchase
-    fun addPurchase(
-        apikey: String,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        supplierName: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        quantity: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        return jeffRepository.getAddPurchaseMessage(
-            apikey,jobNo, quotationNo, vat, date, supplierName, streetAdd, coutry, postCode, telephone, comment, itemDes
-            , paymentMethod, quantity, unitAmount, advanceAmount, discountAmount, totalAmount
-        )
+    fun addPurchase(purchaseAdd: PurchaseAdd): LiveData<String> {
+        return jeffRepository.getAddPurchaseMessage(purchaseAdd)
     }
 
     //Get List of purchase
@@ -121,5 +106,9 @@ class AddPurchaseViewModel : ViewModel() {
     private fun Date.toString(format: String, locale: Locale = Locale.getDefault()): String {
         val formatter = SimpleDateFormat(format, locale)
         return formatter.format(this)
+    }
+
+    fun addItemToPurchase(itemList: MutableList<Item>){
+        _itemAddedToPurchase.value = itemList
     }
 }

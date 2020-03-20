@@ -42,7 +42,12 @@ data class QuotationUpdate(
     @SerializedName("telephone")
     @Expose
     var telephone: String?,
-
+    @SerializedName("payment_method")
+    @Expose
+    var paymentMethod:String?,
+    @SerializedName("comment")
+    @Expose
+    var comment:String?,
     @SerializedName("items")
     @Expose
     var items: List<Item>?

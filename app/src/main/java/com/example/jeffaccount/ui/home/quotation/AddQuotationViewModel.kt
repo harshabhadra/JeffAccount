@@ -8,10 +8,7 @@ import com.example.jeffaccount.model.Company
 import com.example.jeffaccount.model.Customer
 import com.example.jeffaccount.model.Quotation
 import com.example.jeffaccount.model.QuotationPost
-import com.example.jeffaccount.network.Item
-import com.example.jeffaccount.network.ItemList
-import com.example.jeffaccount.network.QuotationAdd
-import com.example.jeffaccount.network.QuotationUpdate
+import com.example.jeffaccount.network.*
 import com.itextpdf.xmp.XMPDateTimeFactory.getCurrentDateTime
 import java.text.SimpleDateFormat
 import java.util.*
@@ -65,6 +62,11 @@ class AddQuotationViewModel : ViewModel() {
     //Get list of all companies
     fun getCustomerList(): LiveData<Customer> {
         return jeffRepository.getAllCustomer()
+    }
+
+    //Get search list of customer for quotation
+    fun searchCustomer(name:String,apiKey: String):LiveData<SearchCustomerList>{
+        return jeffRepository.searchCustomerList(apiKey, name)
     }
 
     //Add quantity

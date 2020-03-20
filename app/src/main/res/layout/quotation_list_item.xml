@@ -92,7 +92,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-
                 android:text="Special Instruction"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="parent"
@@ -165,7 +164,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-
+                android:text="@{quotation.comment}"
                 android:textColor="@android:color/white"
                 app:layout_constraintEnd_toEndOf="@+id/textView46"
                 app:layout_constraintHorizontal_bias="0.0"
@@ -176,7 +175,7 @@
                 android:id="@+id/textView49"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-
+                android:text="@{quotation.paymentMethod}"
                 android:layout_marginTop="8dp"
                 android:textColor="@android:color/white"
                 app:layout_constraintEnd_toEndOf="@+id/textView48"
