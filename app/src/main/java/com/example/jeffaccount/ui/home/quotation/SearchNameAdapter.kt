@@ -7,13 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jeffaccount.R
 
-class SearchNameAdapter : RecyclerView.Adapter<SearchNameAdapter.ViewHolder>() {
+class SearchNameAdapter(private val nameList:ArrayList<String>) : RecyclerView.Adapter<SearchNameAdapter.ViewHolder>() {
 
-    var data = listOf<String>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
 
     class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
@@ -37,11 +32,11 @@ class SearchNameAdapter : RecyclerView.Adapter<SearchNameAdapter.ViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-       return data.size
+       return nameList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = data[position]
+        val item = nameList.get(position)
         holder.bind(item)
     }
 }
