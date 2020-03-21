@@ -28,7 +28,6 @@ import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
-import com.itextpdf.text.pdf.draw.LineSeparator
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -42,6 +41,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToLong
 
 
 class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
@@ -380,10 +380,10 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
                     // check if all permissions are granted
                     if (report.areAllPermissionsGranted()) {
                         Toast.makeText(
-                                context,
-                                "All permissions are granted by user!",
-                                Toast.LENGTH_SHORT
-                            )
+                            context,
+                            "All permissions are granted by user!",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
 
@@ -409,158 +409,6 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             .check()
     }
 
-    //Permission to make pdf
-    private fun createPdf() {
-        val mDoc = Document(PageSize.A4, 8f, 8f, 8f, 8f)
-        val folder = File(Environment.getExternalStorageDirectory(), getString(R.string.app_name))
-        Timber.e(folder.absolutePath)
-        var success = true
-        if (!folder.exists()) {
-            success = folder.mkdirs()
-        }
-        val mFileName =
-            "jeff_account_." + SimpleDateFormat("yyyy_MM_dd_HHmmss", Locale.getDefault())
-                .format(System.currentTimeMillis())
-        val filePath = folder.absolutePath + "/" + mFileName + ".pdf"
-
-        try {
-            PdfWriter.getInstance(mDoc, FileOutputStream(filePath))
-            mDoc.open()
-            val lineSeparator = LineSeparator()
-            lineSeparator.lineColor = BaseColor.WHITE
-
-
-            mDoc.add(Paragraph(" "))
-            val quotationBody = Paragraph()
-            createQuotationTable(quotationBody)
-            mDoc.add(quotationBody)
-            mDoc.close().let {
-                Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
-                val intent = Intent(Intent.ACTION_VIEW)
-                val data = Uri.parse("file://" + filePath)
-                intent.setDataAndType(data, "application/pdf")
-                startActivity(Intent.createChooser(intent, "Open Pdf"))
-            }
-        } catch (e: Exception) {
-
-            Timber.e(e)
-        }
-    }
-
-    //Create Quotation table
-    private fun createQuotationTable(purchaseBody: Paragraph) {
-
-        val table = PdfPTable(floatArrayOf(5f, 5f))
-        table.widthPercentage = 100f
-        table.defaultCell.isUseAscender = true
-
-        val cell = PdfPCell(Phrase("Job No"))
-        cell.paddingBottom = 8f
-        cell.paddingLeft = 8f
-        val cell1 = PdfPCell(Phrase(purchase.jobNo))
-        cell1.paddingBottom = 8f
-        cell1.paddingLeft = 8f
-        val qnoCell = PdfPCell(Phrase("Qutation No"))
-        qnoCell.paddingBottom = 8f
-        qnoCell.paddingLeft = 8f
-        val qnoDCell = PdfPCell(Phrase(purchase.quotationNo))
-        qnoDCell.paddingBottom = 8f
-        qnoDCell.paddingLeft = 8f
-        val vatCell = PdfPCell(Phrase("Vat%"))
-        vatCell.paddingBottom = 8f
-        vatCell.paddingLeft = 8f
-//        val vatDCell = PdfPCell(Phrase(purchase.vat))
-//        vatDCell.paddingBottom = 8f
-//        vatDCell.paddingLeft = 8f
-        val dateCell = PdfPCell(Phrase("Date"))
-        dateCell.paddingBottom = 8f
-        dateCell.paddingLeft = 8f
-        val dateDCell = PdfPCell(Phrase(purchase.date))
-        dateDCell.paddingBottom = 8f
-        dateDCell.paddingLeft = 8f
-        val nameCell = PdfPCell(Phrase("Customer Name"))
-        nameCell.paddingBottom = 8f
-        nameCell.paddingLeft = 8f
-        val nameDCell = PdfPCell(Phrase(purchase.customerName))
-        nameDCell.paddingBottom = 8f
-        nameDCell.paddingLeft = 8f
-        val commentCell = PdfPCell(Phrase("Special Instruction"))
-        commentCell.paddingBottom = 8f
-        commentCell.paddingLeft = 8f
-        val commentDCell = PdfPCell(Phrase(purchase.specialInstruction))
-        commentDCell.paddingBottom = 8f
-        commentDCell.paddingLeft = 8f
-        val desCell = PdfPCell(Phrase("Item Description"))
-        desCell.paddingBottom = 8f
-        desCell.paddingLeft = 8f
-//        val desDCell = PdfPCell(Phrase(purchase.itemDescription))
-//        desDCell.paddingBottom = 8f
-//        desDCell.paddingLeft = 8f
-        val paymentCell = PdfPCell(Phrase("Payment Method"))
-        paymentCell.paddingBottom = 8f
-        paymentCell.paddingLeft = 8f
-        val paymentDCell = PdfPCell(Phrase(purchase.paymentMethod))
-        paymentDCell.paddingBottom = 8f
-        paymentDCell.paddingLeft = 8f
-        val qtyCell = PdfPCell(Phrase("Quantity"))
-        qtyCell.paddingBottom = 8f
-        qtyCell.paddingLeft = 8f
-//        val qtyDCell = PdfPCell(Phrase(purchase.quantity))
-//        qtyDCell.paddingBottom = 8f
-//        qtyDCell.paddingLeft = 8f
-        val unitCell = PdfPCell(Phrase("Unit Amount"))
-        unitCell.paddingBottom = 8f
-        unitCell.paddingLeft = 8f
-//        val unitDCell = PdfPCell(Phrase(purchase.unitAmount))
-//        unitDCell.paddingBottom = 8f
-//        unitDCell.paddingLeft = 8f
-        val advanceCell = PdfPCell(Phrase("Advance Amount"))
-        advanceCell.paddingBottom = 8f
-        advanceCell.paddingLeft = 8f
-//        val advanceDCell = PdfPCell(Phrase(purchase.advanceAmount))
-//        advanceDCell.paddingBottom = 8f
-//        advanceDCell.paddingLeft = 8f
-        val discountCell = PdfPCell(Phrase("Discount Amount"))
-        discountCell.paddingBottom = 8f
-        discountCell.paddingLeft = 8f
-//        val discountDcell = PdfPCell(Phrase(purchase.discountAmount))
-//        discountDcell.paddingBottom = 8f
-//        discountDcell.paddingLeft = 8f
-        val totalCell = PdfPCell(Phrase("Total Amount"))
-        totalCell.paddingBottom = 8f
-        totalCell.paddingLeft = 8f
-//        val totalDCell = PdfPCell(Phrase(purchase.totalAmount))
-//        totalDCell.paddingBottom = 8f
-//        totalDCell.paddingLeft = 8f
-        table.addCell(cell)
-        table.addCell(cell1)
-        table.addCell(qnoCell)
-        table.addCell(qnoDCell)
-        table.addCell(vatCell)
-//        table.addCell(vatDCell)
-        table.addCell(dateCell)
-        table.addCell(dateDCell)
-        table.addCell(nameCell)
-        table.addCell(nameDCell)
-        table.addCell(commentCell)
-        table.addCell(commentDCell)
-        table.addCell(desCell)
-//        table.addCell(desDCell)
-        table.addCell(paymentCell)
-        table.addCell(paymentDCell)
-        table.addCell(qtyCell)
-//        table.addCell(qtyDCell)
-        table.addCell(unitCell)
-//        table.addCell(unitDCell)
-        table.addCell(advanceCell)
-//        table.addCell(advanceDCell)
-        table.addCell(discountCell)
-//        table.addCell(discountDcell)
-        table.addCell(totalCell)
-//        table.addCell(totalDCell)
-        purchaseBody.add(table)
-    }
-
     private fun savePdf() {
         val doc = Document(PageSize.A4)
         try {
@@ -572,8 +420,8 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             val addressCell = getAddressTable()
             val dateCell = PdfPCell()
             dateCell.border = PdfPCell.NO_BORDER
-            dateCell.addElement(Paragraph(purchase.date))
-            dateCell.addElement(Paragraph(purchase.quotationNo))
+            dateCell.addElement(Paragraph("Date: $purchase.date"))
+            dateCell.addElement(Paragraph("Quotation No. : $purchase.quotationNo"))
             dateCell.horizontalAlignment = Element.ALIGN_RIGHT
             headTable.addCell(addressCell)
             headTable.addCell(dateCell)
@@ -632,7 +480,11 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         subTotalCell.setPadding(8f)
         table.addCell(subTotalCell)
         val subTotalDCell = PdfPCell()
-        subTotalDCell.addElement(Paragraph(" "))
+        var subTotal = 0.0
+        for (item in addedItemList) {
+            subTotal += item.unitAmount!!
+        }
+        subTotalDCell.addElement(Paragraph(subTotal.toString()))
         subTotalDCell.setPadding(8f)
         table.addCell(subTotalDCell)
         val taxCell = PdfPCell()
@@ -640,7 +492,7 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         taxCell.setPadding(8f)
         table.addCell(taxCell)
         val taxDCell = PdfPCell()
-//        taxDCell.addElement(Paragraph(purchase.vat))
+        taxDCell.addElement(Paragraph(""))
         taxDCell.setPadding(8f)
         table.addCell(taxDCell)
         val taxAmountCell = PdfPCell()
@@ -656,7 +508,11 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         disocuntCell.setPadding(8f)
         table.addCell(disocuntCell)
         val discountDCell = PdfPCell()
-//        discountDCell.addElement(Paragraph(purchase.discountAmount))
+        var totalDiscount = 0.0
+        for (item in addedItemList) {
+            totalDiscount += item.discountAmount!!
+        }
+        discountDCell.addElement(Paragraph(totalDiscount.toString()))
         discountDCell.setPadding(8f)
         table.addCell(discountDCell)
         val totalAmountCell = PdfPCell()
@@ -664,8 +520,9 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         totalAmountCell.setPadding(8f)
         table.addCell(totalAmountCell)
         val totalAmountDCell = PdfPCell()
-//        totalAmountDCell.addElement(Paragraph(purchase.totalAmount))
-//        totalAmountDCell.setPadding(8f)
+        val totalAmount = subTotal.minus(totalDiscount).roundToLong()
+        totalAmountDCell.addElement(Paragraph(totalAmount.toString()))
+        totalAmountDCell.setPadding(8f)
         table.addCell(totalAmountDCell)
         return table
     }
@@ -673,7 +530,7 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
     private fun createInvoiceTable(): PdfPTable {
         val table = PdfPTable(5)
         table.setWidths(intArrayOf(1, 4, 1, 2, 2))
-        val jobNoCell = PdfPCell(Paragraph("Job No."))
+        val jobNoCell = PdfPCell(Paragraph("No."))
         jobNoCell.setPadding(8f)
         table.addCell(jobNoCell)
         val desCell = PdfPCell(Paragraph("Description"))
@@ -689,22 +546,23 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         val discountCell = PdfPCell(Paragraph("Discount Amount"))
         discountCell.setPadding(8f)
         table.addCell(discountCell)
-
-        val noCell = PdfPCell(Paragraph("1"))
-        noCell.setPadding(8f)
-        table.addCell(noCell)
-//        val itemDesCell = PdfPCell(Paragraph(purchase.itemDescription))
-//        itemDesCell.setPadding(8f)
-//        table.addCell(itemDesCell)
-//        val qtyCell = PdfPCell(Paragraph(purchase.quantity))
-//        qtyCell.setPadding(8f)
-//        table.addCell(qtyCell)
-//        val unitDCell = PdfPCell(Paragraph(purchase.unitAmount))
-//        unitDCell.setPadding(8f)
-//        table.addCell(unitDCell)
-//        val disDCell = PdfPCell(Paragraph(purchase.discountAmount))
-//        disDCell.setPadding(8f)
-//        table.addCell(disDCell)
+        for (item in addedItemList) {
+            val itemNoCell = PdfPCell(Paragraph(item.noOfItem.toString()))
+            itemNoCell.setPadding(8f)
+            val itemDesCell = PdfPCell(Paragraph(item.itemDes))
+            itemDesCell.setPadding(8f)
+            val qtyCell = PdfPCell(Paragraph(item.qty.toString()))
+            qtyCell.setPadding(8f)
+            val unitDCell = PdfPCell(Paragraph(item.unitAmount.toString()))
+            unitDCell.setPadding(8f)
+            val disDCell = PdfPCell(Paragraph(item.discountAmount.toString()))
+            disDCell.setPadding(8f)
+            table.addCell(itemNoCell)
+            table.addCell(itemDesCell)
+            table.addCell(qtyCell)
+            table.addCell(unitDCell)
+            table.addCell(disDCell)
+        }
         table.widthPercentage = 100f
         return table
     }

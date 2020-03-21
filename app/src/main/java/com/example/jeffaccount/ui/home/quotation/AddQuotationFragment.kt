@@ -41,6 +41,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToLong
 
 
 class AddQuotationFragment : Fragment(),
@@ -68,6 +69,7 @@ class AddQuotationFragment : Fragment(),
     private lateinit var telephone:String
     private lateinit var postCode:String
     private var itemNo: Int = 1
+    private var singleItemQty = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -443,8 +445,8 @@ class AddQuotationFragment : Fragment(),
             val addressCell = getAddressTable()
             val dateCell = PdfPCell()
             dateCell.border = PdfPCell.NO_BORDER
-            dateCell.addElement(Paragraph(quotationItem.date))
-            dateCell.addElement(Paragraph(quotationItem.quotationNo))
+            dateCell.addElement(Paragraph("Date: $quotationItem.date"))
+            dateCell.addElement(Paragraph("Quotation No. : $quotationItem.quotationNo"))
             dateCell.horizontalAlignment = Element.ALIGN_RIGHT
             headTable.addCell(addressCell)
             headTable.addCell(dateCell)
@@ -504,7 +506,11 @@ class AddQuotationFragment : Fragment(),
         subTotalCell.setPadding(8f)
         table.addCell(subTotalCell)
         val subTotalDCell = PdfPCell()
-        subTotalDCell.addElement(Paragraph(" "))
+        var subTotal = 0.0
+        for (item in addedItemList){
+            subTotal += item.unitAmount!!
+        }
+        subTotalDCell.addElement(Paragraph(subTotal.toString()))
         subTotalDCell.setPadding(8f)
         table.addCell(subTotalDCell)
         val taxCell = PdfPCell()
@@ -528,7 +534,11 @@ class AddQuotationFragment : Fragment(),
         disocuntCell.setPadding(8f)
         table.addCell(disocuntCell)
         val discountDCell = PdfPCell()
-//        discountDCell.addElement(Paragraph(quotationItem.discountAmount))
+        var totalDiscount = 0.0
+        for (item in addedItemList){
+            totalDiscount += item.discountAmount!!
+        }
+        discountDCell.addElement(Paragraph(totalDiscount.toString()))
         discountDCell.setPadding(8f)
         table.addCell(discountDCell)
         val totalAmountCell = PdfPCell()
@@ -536,7 +546,8 @@ class AddQuotationFragment : Fragment(),
         totalAmountCell.setPadding(8f)
         table.addCell(totalAmountCell)
         val totalAmountDCell = PdfPCell()
-//        totalAmountDCell.addElement(Paragraph(quotationItem.totalAmount))
+        val totalAmount = subTotal.minus(totalDiscount).roundToLong()
+        totalAmountDCell.addElement(Paragraph(totalAmount.toString()))
         totalAmountDCell.setPadding(8f)
         table.addCell(totalAmountDCell)
         return table
@@ -545,7 +556,7 @@ class AddQuotationFragment : Fragment(),
     private fun createInvoiceTable(): PdfPTable {
         val table = PdfPTable(5)
         table.setWidths(intArrayOf(1, 4, 1, 2, 2))
-        val jobNoCell = PdfPCell(Paragraph("Job No."))
+        val jobNoCell = PdfPCell(Paragraph("No."))
         jobNoCell.setPadding(8f)
         table.addCell(jobNoCell)
         val desCell = PdfPCell(Paragraph("Description"))
@@ -562,21 +573,23 @@ class AddQuotationFragment : Fragment(),
         discountCell.setPadding(8f)
         table.addCell(discountCell)
 
-        val noCell = PdfPCell(Paragraph("1"))
-        noCell.setPadding(8f)
-        table.addCell(noCell)
-//        val itemDesCell = PdfPCell(Paragraph(quotationItem.itemDescription))
-//        itemDesCell.setPadding(8f)
-//        table.addCell(itemDesCell)
-//        val qtyCell = PdfPCell(Paragraph(quotationItem.quantity))
-//        qtyCell.setPadding(8f)
-//        table.addCell(qtyCell)
-//        val unitDCell = PdfPCell(Paragraph(quotationItem.unitAmount))
-//        unitDCell.setPadding(8f)
-//        table.addCell(unitDCell)
-//        val disDCell = PdfPCell(Paragraph(quotationItem.discountAmount))
-//        disDCell.setPadding(8f)
-//        table.addCell(disDCell)
+        for(item in addedItemList){
+            val itemNoCell = PdfPCell(Paragraph(item.noOfItem.toString()))
+            itemNoCell.setPadding(8f)
+            val itemDesCell = PdfPCell(Paragraph(item.itemDes))
+            itemDesCell.setPadding(8f)
+            val qtyCell = PdfPCell(Paragraph(item.qty.toString()))
+            qtyCell.setPadding(8f)
+            val unitDCell = PdfPCell(Paragraph(item.unitAmount.toString()))
+            unitDCell.setPadding(8f)
+            val disDCell = PdfPCell(Paragraph(item.discountAmount.toString()))
+            disDCell.setPadding(8f)
+            table.addCell(itemNoCell)
+            table.addCell(itemDesCell)
+            table.addCell(qtyCell)
+            table.addCell(unitDCell)
+            table.addCell(disDCell)
+        }
         table.widthPercentage = 100f
         return table
     }
@@ -677,120 +690,6 @@ class AddQuotationFragment : Fragment(),
         startActivityForResult(intent, 2)
     }
 
-    //Create Quotation table
-    private fun createQuotationTable(quotationBody: Paragraph) {
-
-        val table = PdfPTable(floatArrayOf(5f, 5f))
-        table.widthPercentage = 100f
-        table.defaultCell.isUseAscender = true
-
-        val cell = PdfPCell(Phrase("Job No"))
-        cell.paddingBottom = 8f
-        cell.paddingLeft = 8f
-        val cell1 = PdfPCell(Phrase(quotationItem.jobNo))
-        cell1.paddingBottom = 8f
-        cell1.paddingLeft = 8f
-        val qnoCell = PdfPCell(Phrase("Qutation No"))
-        qnoCell.paddingBottom = 8f
-        qnoCell.paddingLeft = 8f
-        val qnoDCell = PdfPCell(Phrase(quotationItem.quotationNo))
-        qnoDCell.paddingBottom = 8f
-        qnoDCell.paddingLeft = 8f
-        val vatCell = PdfPCell(Phrase("Vat%"))
-        vatCell.paddingBottom = 8f
-        vatCell.paddingLeft = 8f
-//        val vatDCell = PdfPCell(Phrase(quotationItem.vat))
-//        vatDCell.paddingBottom = 8f
-//        vatDCell.paddingLeft = 8f
-        val dateCell = PdfPCell(Phrase("Date"))
-        dateCell.paddingBottom = 8f
-        dateCell.paddingLeft = 8f
-        val dateDCell = PdfPCell(Phrase(quotationItem.date))
-        dateDCell.paddingBottom = 8f
-        dateDCell.paddingLeft = 8f
-        val nameCell = PdfPCell(Phrase("Customer Name"))
-        nameCell.paddingBottom = 8f
-        nameCell.paddingLeft = 8f
-        val nameDCell = PdfPCell(Phrase(quotationItem.customerName))
-        nameDCell.paddingBottom = 8f
-        nameDCell.paddingLeft = 8f
-        val commentCell = PdfPCell(Phrase("Special Instruction"))
-        commentCell.paddingBottom = 8f
-        commentCell.paddingLeft = 8f
-//        val commentDCell = PdfPCell(Phrase(quotationItem.specialInstruction))
-//        commentDCell.paddingBottom = 8f
-//        commentDCell.paddingLeft = 8f
-        val desCell = PdfPCell(Phrase("Item Description"))
-        desCell.paddingBottom = 8f
-        desCell.paddingLeft = 8f
-//        val desDCell = PdfPCell(Phrase(quotationItem.itemDescription))
-//        desDCell.paddingBottom = 8f
-//        desDCell.paddingLeft = 8f
-        val paymentCell = PdfPCell(Phrase("Payment Method"))
-        paymentCell.paddingBottom = 8f
-        paymentCell.paddingLeft = 8f
-//        val paymentDCell = PdfPCell(Phrase(quotationItem.paymentMethod))
-//        paymentDCell.paddingBottom = 8f
-//        paymentDCell.paddingLeft = 8f
-//        val qtyCell = PdfPCell(Phrase("Quantity"))
-//        qtyCell.paddingBottom = 8f
-//        qtyCell.paddingLeft = 8f
-//        val qtyDCell = PdfPCell(Phrase(quotationItem.quantity))
-//        qtyDCell.paddingBottom = 8f
-//        qtyDCell.paddingLeft = 8f
-//        val unitCell = PdfPCell(Phrase("Unit Amount"))
-//        unitCell.paddingBottom = 8f
-//        unitCell.paddingLeft = 8f
-//        val unitDCell = PdfPCell(Phrase(quotationItem.unitAmount))
-//        unitDCell.paddingBottom = 8f
-//        unitDCell.paddingLeft = 8f
-//        val advanceCell = PdfPCell(Phrase("Advance Amount"))
-//        advanceCell.paddingBottom = 8f
-//        advanceCell.paddingLeft = 8f
-//        val advanceDCell = PdfPCell(Phrase(quotationItem.advanceAmount))
-//        advanceDCell.paddingBottom = 8f
-//        advanceDCell.paddingLeft = 8f
-//        val discountCell = PdfPCell(Phrase("Discount Amount"))
-//        discountCell.paddingBottom = 8f
-//        discountCell.paddingLeft = 8f
-//        val discountDcell = PdfPCell(Phrase(quotationItem.discountAmount))
-//        discountDcell.paddingBottom = 8f
-//        discountDcell.paddingLeft = 8f
-//        val totalCell = PdfPCell(Phrase("Total Amount"))
-//        totalCell.paddingBottom = 8f
-//        totalCell.paddingLeft = 8f
-//        val totalDCell = PdfPCell(Phrase(quotationItem.totalAmount))
-//        totalDCell.paddingBottom = 8f
-//        totalDCell.paddingLeft = 8f
-        table.addCell(cell)
-        table.addCell(cell1)
-        table.addCell(qnoCell)
-        table.addCell(qnoDCell)
-        table.addCell(vatCell)
-//        table.addCell(vatDCell)
-        table.addCell(dateCell)
-        table.addCell(dateDCell)
-        table.addCell(nameCell)
-        table.addCell(nameDCell)
-        table.addCell(commentCell)
-//        table.addCell(commentDCell)
-        table.addCell(desCell)
-//        table.addCell(desDCell)
-        table.addCell(paymentCell)
-//        table.addCell(paymentDCell)
-//        table.addCell(qtyCell)
-//        table.addCell(qtyDCell)
-//        table.addCell(unitCell)
-//        table.addCell(unitDCell)
-//        table.addCell(advanceCell)
-//        table.addCell(advanceDCell)
-//        table.addCell(discountCell)
-//        table.addCell(discountDcell)
-//        table.addCell(totalCell)
-//        table.addCell(totalDCell)
-        quotationBody.add(table)
-    }
-
     //Create a loading Dialog
     private fun createLoadingDialog(): AlertDialog? {
         val layout = LayoutInflater.from(context).inflate(R.layout.loading_layout, null)
@@ -842,17 +741,24 @@ class AddQuotationFragment : Fragment(),
         val negButton: ImageButton = layout.findViewById(R.id.neg_qty_button)
         val posButton: ImageButton = layout.findViewById(R.id.pos_qty_button)
 
-        var qty = 0
+        singleItemQty = when {
+            qtytv.text.isEmpty() -> {
+                0
+            }
+            else -> {
+                qtytv.text.toString().toInt()
+            }
+        }
         posButton.setOnClickListener {
-            if (qty >= 0) {
-                qty++
-                qtytv.setText(qty.toString())
+            if (singleItemQty >= 0) {
+                singleItemQty++
+                qtytv.setText(singleItemQty.toString())
             }
         }
         negButton.setOnClickListener {
-            if (qty > 0) {
-                qty--
-                qtytv.setText(qty.toString())
+            if (singleItemQty > 0) {
+                singleItemQty--
+                qtytv.setText(singleItemQty.toString())
             }
         }
         addButton.setOnClickListener {
