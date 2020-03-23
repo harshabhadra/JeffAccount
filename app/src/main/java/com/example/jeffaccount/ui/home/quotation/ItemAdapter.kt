@@ -9,13 +9,14 @@ import com.example.jeffaccount.databinding.ItemListBinding
 import com.example.jeffaccount.network.Item
 import timber.log.Timber
 
-class ItemAdapter : ListAdapter<Item, ItemAdapter.ItemViewHolder>(ItemDiffUtilCallBack()) {
+class ItemAdapter(val clickListener: OnAddedItemClickListener) : ListAdapter<Item, ItemAdapter.ItemViewHolder>(ItemDiffUtilCallBack()) {
 
     class ItemViewHolder private constructor(val binding: ItemListBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Item) {
+        fun bind(item: Item,clickListener: OnAddedItemClickListener) {
             binding.item = item
+            binding.clicklistner = clickListener
         }
 
         companion object {
@@ -34,10 +35,13 @@ class ItemAdapter : ListAdapter<Item, ItemAdapter.ItemViewHolder>(ItemDiffUtilCa
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = getItem(position)
         Timber.e("item is ${item.itemDes}")
-        holder.bind(item)
+        holder.bind(item,clickListener)
     }
 }
 
+class OnAddedItemClickListener(val clickListener:(item:Item)->Unit){
+    fun itemClick(item: Item) = clickListener(item)
+}
 class ItemDiffUtilCallBack : DiffUtil.ItemCallback<Item>() {
     override fun areItemsTheSame(oldItem: Item, newItem: Item): Boolean {
         return oldItem.noOfItem == newItem.noOfItem

@@ -4,12 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
-import com.example.jeffaccount.model.Company
 import com.example.jeffaccount.model.Customer
 import com.example.jeffaccount.model.Quotation
 import com.example.jeffaccount.model.QuotationPost
 import com.example.jeffaccount.network.*
-import com.itextpdf.xmp.XMPDateTimeFactory.getCurrentDateTime
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -30,9 +28,9 @@ class AddQuotationViewModel : ViewModel() {
     val dateString: LiveData<String>
         get() = _dateString
 
-    private var _itemAddedToQuotation = MutableLiveData<MutableList<Item>>()
-    val itemAddedToQuotation:LiveData<MutableList<Item>>
-    get() = _itemAddedToQuotation
+    private var _itemChangedToQuotation = MutableLiveData<MutableList<Item>>()
+    val itemChangedToQuotation:LiveData<MutableList<Item>>
+    get() = _itemChangedToQuotation
 
     init {
         _quotationQuantityValue.value = 0
@@ -115,10 +113,14 @@ class AddQuotationViewModel : ViewModel() {
     }
 
     fun addItemToQuotation(itemList: MutableList<Item>){
-        _itemAddedToQuotation.value = itemList
+        _itemChangedToQuotation.value = itemList
+    }
+
+    fun removeItem(itemList: MutableList<Item>){
+        _itemChangedToQuotation.value = itemList
     }
 
     fun doneAddingItem(){
-        _itemAddedToQuotation.value = null
+        _itemChangedToQuotation.value = null
     }
 }

@@ -268,14 +268,14 @@ class AddCustomerFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (action.equals(getString(R.string.edit))) {
-            inflater.inflate(R.menu.main_menu, menu)
+            inflater.inflate(R.menu.customer_menu, menu)
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         val id = item.itemId
-        if (id == R.id.delete_item) {
+        if (id == R.id.customer_delete) {
             val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
             val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
             builder?.setCancelable(false)

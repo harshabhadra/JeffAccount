@@ -23,7 +23,6 @@ class SearchNameAdapter(private val nameList:ArrayList<String>,val itemClickList
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
-
                 val layoutInflater = LayoutInflater.from(parent.context)
                 val view = layoutInflater.inflate(R.layout.name_layout, parent, false)
                 return ViewHolder(view)

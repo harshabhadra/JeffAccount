@@ -63,6 +63,15 @@
         <argument
             android:name="add"
             app:argType="string" />
+        <action
+            android:id="@+id/action_addCustomer_to_addQuotationFragment"
+            app:destination="@id/addQuotationFragment" />
+        <action
+            android:id="@+id/action_addCustomer_to_addPurchaseFragment"
+            app:destination="@id/addPurchaseFragment" />
+        <action
+            android:id="@+id/action_addCustomer_to_addTimeSheetFragment"
+            app:destination="@id/addTimeSheetFragment" />
     </fragment>
     <fragment
         android:id="@+id/addSupplierFragment"

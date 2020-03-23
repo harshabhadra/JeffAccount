@@ -27,7 +27,6 @@ import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
-import com.itextpdf.text.pdf.draw.LineSeparator
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -271,7 +270,27 @@ class AddQuotationFragment : Fragment(),
 
         //Setting up item recycler view
         val itemRecycler = quotationBinding.quotationItemRecyclerView
-        itemAdapter = ItemAdapter()
+        itemAdapter = ItemAdapter(OnAddedItemClickListener {
+            val item = it
+            val layout =
+                LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
+            val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+            builder?.setCancelable(false)
+            builder?.setView(layout)
+            val dialog = builder?.create()
+            dialog?.show()
+
+            val delButton = layout.findViewById<Button>(R.id.delete_button)
+            val canButton: Button = layout.findViewById(R.id.cancel_del_button)
+            delButton.setOnClickListener {
+                addedItemList.remove(item)
+                viewModel.removeItem(addedItemList)
+                dialog?.dismiss()
+            }
+            canButton.setOnClickListener {
+                dialog?.dismiss()
+            }
+        })
         itemRecycler.adapter = itemAdapter
         return quotationBinding.root
     }
@@ -304,10 +323,11 @@ class AddQuotationFragment : Fragment(),
             }
         })
 
-        viewModel.itemAddedToQuotation.observe(viewLifecycleOwner, Observer {
+        viewModel.itemChangedToQuotation.observe(viewLifecycleOwner, Observer {
             it?.let {
                 addedItemList = it
                 itemAdapter.submitList(addedItemList)
+                itemAdapter.notifyDataSetChanged()
             }
         })
         viewModel.getDate()

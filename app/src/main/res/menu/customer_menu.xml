@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/customer_quotation"
+        android:title="@string/quotation"
+        app:showAsAction="never"/>
+    <item android:title="@string/purchase"
+        android:id="@+id/customer_purchase"
+        app:showAsAction="never"/>
+    <item android:id="@+id/customer_timesheet"
+        android:title="@string/time_sheet"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/customer_delete"
+        android:title="@string/delete"
+        app:showAsAction="never"/>
+</menu>

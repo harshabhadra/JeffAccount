@@ -28,9 +28,9 @@ class AddPurchaseViewModel : ViewModel() {
     val dateString: LiveData<String>
         get() = _dateString
 
-    private var _itemAddedToPurchase = MutableLiveData<MutableList<Item>>()
-    val itemAddToPurchase:LiveData<MutableList<Item>>
-    get() = _itemAddedToPurchase
+    private var _itemChangedToPurchase = MutableLiveData<MutableList<Item>>()
+    val itemChangedToPurchase:LiveData<MutableList<Item>>
+    get() = _itemChangedToPurchase
 
     init {
         _navigateToAddPurchaseFragment.value = null
@@ -85,12 +85,16 @@ class AddPurchaseViewModel : ViewModel() {
     }
 
     fun addItemToPurchase(itemList: MutableList<Item>){
-        _itemAddedToPurchase.value = itemList
+        _itemChangedToPurchase.value = itemList
     }
 
     //Get list of supplier
     fun getSuppliers(): LiveData<Supplier> {
         return jeffRepository.getAllSuppliers()
+    }
+
+    fun removeItem(itemList: MutableList<Item>){
+        _itemChangedToPurchase.value = itemList
     }
 
     //Get search supplier list

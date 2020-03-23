@@ -20,10 +20,7 @@ import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddPurchaseFragmentBinding
 import com.example.jeffaccount.model.PurchasePost
 import com.example.jeffaccount.network.*
-import com.example.jeffaccount.ui.home.quotation.ItemAdapter
-import com.example.jeffaccount.ui.home.quotation.OnSearchItemClickListener
-import com.example.jeffaccount.ui.home.quotation.OnSearchSupplierClickListener
-import com.example.jeffaccount.ui.home.quotation.SearchCustomerBottomSheetFragment
+import com.example.jeffaccount.ui.home.quotation.*
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -256,7 +253,28 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         }
 
         val itemRecyclerView = purchaseBinding.supplierItemRecyclerView
-        itemAdapter = ItemAdapter()
+        itemAdapter = ItemAdapter(OnAddedItemClickListener {
+            val item = it
+            val layout =
+                LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
+            val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+            builder?.setCancelable(false)
+            builder?.setView(layout)
+            val dialog = builder?.create()
+            dialog?.show()
+
+            val delButton = layout.findViewById<Button>(R.id.delete_button)
+            val canButton: Button = layout.findViewById(R.id.cancel_del_button)
+            delButton.setOnClickListener {
+                addedItemList.remove(item)
+                viewModel.removeItem(addedItemList)
+                dialog?.dismiss()
+            }
+            canButton.setOnClickListener {
+                dialog?.dismiss()
+            }
+
+        })
         itemRecyclerView.adapter = itemAdapter
 
         return purchaseBinding.root
@@ -284,10 +302,11 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             purchaseBinding.purchaseAddItemTv.text = "No. of Items: ${itemList.size}"
         }
 
-        viewModel.itemAddToPurchase.observe(viewLifecycleOwner, Observer {
+        viewModel.itemChangedToPurchase.observe(viewLifecycleOwner, Observer {
             addedItemList = it
             qty = addedItemList.size
             itemAdapter.submitList(addedItemList)
+            itemAdapter.notifyDataSetChanged()
         })
 
         //Get list of supplier to get the names
