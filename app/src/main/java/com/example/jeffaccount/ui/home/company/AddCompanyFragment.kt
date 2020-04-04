@@ -1,6 +1,7 @@
 package com.example.jeffaccount.ui.home.company
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,13 +12,16 @@ import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 
 import com.example.jeffaccount.R
+import com.example.jeffaccount.createPreviewDialog
 import com.example.jeffaccount.databinding.FragmentAddCompanyBinding
 import com.example.jeffaccount.model.ComPost
+import com.example.jeffaccount.ui.MainActivity
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -61,6 +65,9 @@ class AddCompanyFragment : Fragment() {
 
         requestReadPermissions()
 
+        val activity = activity as MainActivity
+        activity.setToolbarText("Add Company")
+
         val arguments = AddCompanyFragmentArgs.fromBundle(arguments!!)
         action = arguments.action
         if (action.equals(getString(R.string.update))) {
@@ -83,18 +90,11 @@ class AddCompanyFragment : Fragment() {
             when {
                 name.isEmpty() -> addCompanyBinding.companyNameTextInputLayout.error =
                     getString(R.string.enter_company_name)
-                street.isEmpty() -> addCompanyBinding.companyStreetTextInputLayout.error =
-                    getString(R.string.enter_street_address)
-                postCode.isEmpty() -> addCompanyBinding.companyPostCodeTextInputLayout.error =
-                    getString(R.string.enter_post_code)
-                telephone.isEmpty() -> addCompanyBinding.companyTelephoneTextInputLayout.error =
-                    getString(R.string.add_phone_no)
-                email.isEmpty() -> addCompanyBinding.companyEmailTextInputLayout.error =
-                    getString(R.string.enter_valid_email)
-                web.isEmpty() -> addCompanyBinding.companyWebTextInputLayout.error =
-                    getString(R.string.add_web_address)
                 else -> {
-                    addCompanyViewModel.addCompany(
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Save this item?")
+                    builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
+                        addCompanyViewModel.addCompany(
                             name,
                             street,
                             country,
@@ -103,13 +103,20 @@ class AddCompanyFragment : Fragment() {
                             email,
                             web
                         )
-                        .observe(viewLifecycleOwner,
-                            Observer {
-                                it?.let {
-                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                    findNavController().navigate(AddCompanyFragmentDirections.actionAddCompanyFragmentToCompanyFragment())
-                                }
-                            })
+                            .observe(viewLifecycleOwner,
+                                Observer {
+                                    it?.let {
+                                        Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                        findNavController().navigate(AddCompanyFragmentDirections.actionAddCompanyFragmentToCompanyFragment())
+                                    }
+                                })
+                        dialog.dismiss()
+                    })
+                   builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                       dialog.dismiss()
+                   })
+                    val dialog = builder.create()
+                    dialog.show()
                 }
             }
         }
@@ -127,16 +134,6 @@ class AddCompanyFragment : Fragment() {
             when {
                 name.isEmpty() -> addCompanyBinding.companyNameTextInputLayout.error =
                     getString(R.string.enter_company_name)
-                street.isEmpty() -> addCompanyBinding.companyStreetTextInputLayout.error =
-                    getString(R.string.enter_street_address)
-                postCode.isEmpty() -> addCompanyBinding.companyPostCodeTextInputLayout.error =
-                    getString(R.string.enter_post_code)
-                telephone.isEmpty() -> addCompanyBinding.companyTelephoneTextInputLayout.error =
-                    getString(R.string.add_phone_no)
-                email.isEmpty() -> addCompanyBinding.companyEmailTextInputLayout.error =
-                    getString(R.string.enter_valid_email)
-                web.isEmpty() -> addCompanyBinding.companyWebTextInputLayout.error =
-                    getString(R.string.add_web_address)
                 else -> {
                     addCompanyViewModel.updateCompany(
                             companyItem.comid!!.toInt(),
@@ -243,7 +240,7 @@ class AddCompanyFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (action.equals(getString(R.string.update))) {
-            inflater.inflate(R.menu.main_menu, menu)
+            inflater.inflate(R.menu.company_menu, menu)
         }
     }
 
@@ -251,7 +248,7 @@ class AddCompanyFragment : Fragment() {
 
         val itemId = item.itemId
         when (itemId) {
-            R.id.delete_item -> {
+            R.id.company_delete -> {
                 val layout =
                     LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
                 val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
@@ -280,6 +277,11 @@ class AddCompanyFragment : Fragment() {
             R.id.convert_pdf_item->{
                 createPdf()
             }
+//            R.id.company_purchase->{
+//                findNavController().navigate(AddCompanyFragmentDirections.actionAddCompanyFragmentToAddPurchaseFragment(
+//                    null,getString(R.string.company_details),companyItem,null
+//                ))
+//            }
         }
         return true
     }
@@ -322,11 +324,7 @@ class AddCompanyFragment : Fragment() {
             createCustomerTable(customerBody)
             mDoc.add(customerBody)
             mDoc.close().let {
-                Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
-                val intent = Intent(Intent.ACTION_VIEW)
-                val data = Uri.parse("file://" + filePath)
-                intent.setDataAndType(data, "application/pdf")
-                startActivity(Intent.createChooser(intent, "Open Pdf"))
+             createPreviewDialog(filePath,context!!, activity!!)
             }
         } catch (e: Exception) {
 

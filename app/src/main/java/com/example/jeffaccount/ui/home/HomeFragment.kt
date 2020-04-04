@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.jeffaccount.JeffApplication
 import com.example.jeffaccount.LogInActivity
 import com.example.jeffaccount.R
+import com.example.jeffaccount.createPreviewDialog
 import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.databinding.HomeFragmentBinding
 import com.example.jeffaccount.ui.MainActivity
@@ -39,6 +41,16 @@ class HomeFragment : Fragment() {
         homeBinding.homeRecycler.layoutManager =
             GridLayoutManager(context, 2) as RecyclerView.LayoutManager?
         homeBinding.homeRecycler.adapter = homeRecyclerAdapter
+
+        val arguments = arguments?.let { HomeFragmentArgs.fromBundle(it) }
+        val filePath = arguments?.filepath
+        filePath?.let {
+            if(!filePath.equals("welcome")) {
+                createPreviewDialog(filePath, context!!, activity!!)
+            }
+        }?:let {
+            Toast.makeText(context,"Please try again",Toast.LENGTH_SHORT).show()
+        }
 
         setHasOptionsMenu(true)
 
@@ -67,6 +79,14 @@ class HomeFragment : Fragment() {
             Home(
                 R.drawable.com,
                 getString(R.string.company)
+            ),
+            Home(
+                R.drawable.invoice,
+                getString(R.string.invoice)
+            ),
+            Home(
+                R.drawable.worksheet,
+                getString(R.string.worksheet)
             )
         )
         homeRecyclerAdapter.submitList(homeList)
@@ -82,7 +102,6 @@ class HomeFragment : Fragment() {
         val application = requireNotNull(this.activity).application as JeffApplication
         val viewModelFactory = HomeViewModelFactory(application)
         viewModel = ViewModelProvider(this, viewModelFactory).get(HomeViewModel::class.java)
-        // TODO: Use the ViewModel
 
         viewModel.logInCredDeleted.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -119,6 +138,12 @@ class HomeFragment : Fragment() {
             }
             getString(R.string.time_sheet) -> {
                 findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToTimeSheetFragment())
+            }
+            getString(R.string.invoice)->{
+                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToInvoiceFragment())
+            }
+            getString(R.string.worksheet)->{
+                findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToCreateWorkSheetFragment())
             }
         }
     }

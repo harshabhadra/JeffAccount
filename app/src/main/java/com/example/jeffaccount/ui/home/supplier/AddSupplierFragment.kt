@@ -1,6 +1,7 @@
 package com.example.jeffaccount.ui.home.supplier
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -11,12 +12,14 @@ import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.AddSupplierFragmentBinding
 import com.example.jeffaccount.model.SupPost
+import com.example.jeffaccount.ui.MainActivity
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -45,7 +48,7 @@ class AddSupplierFragment : Fragment() {
     }
 
     private lateinit var viewModel: AddSupplierViewModel
-    private lateinit var supplier:SupPost
+    private lateinit var supplier: SupPost
     private lateinit var action:String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,10 +60,12 @@ class AddSupplierFragment : Fragment() {
         val arguments= AddSupplierFragmentArgs.fromBundle(arguments!!)
         supplier = arguments.supplier
         action = arguments.update
-
+        val activity = activity as MainActivity
+        activity.setToolbarText("Add Supplier")
         setHasOptionsMenu(true)
 
         if (action.equals(getString(R.string.edit))){
+            activity.setToolbarText("Update Supplier")
             addsupplierBinding.supplier = supplier
             addsupplierBinding.saveSupplierButton.visibility = View.GONE
             addsupplierBinding.supplierUpdateButton.visibility = View.VISIBLE
@@ -165,23 +170,20 @@ class AddSupplierFragment : Fragment() {
                 name.isEmpty()->{
                     addsupplierBinding.supplierNameTextInputLayout.error = getString(R.string.add_name)
                 }
-                street.isEmpty()->{
-                    addsupplierBinding.supplierAddressTextInputLayout.error = getString(R.string.add_address)
-                }
-                postCode.isEmpty()->{
-                    addsupplierBinding.supplierPostCodeTextInputLayout.error = getString(R.string.enter_post_code)
-                }
-                telephone.isEmpty()->{
-                    addsupplierBinding.supplierTelephoneTextInputLayout.error = getString(R.string.add_phone_no)
-                }
-                email.isEmpty()->{
-                    addsupplierBinding.supplierEmailTextInputLayout.error = getString(R.string.add_email)
-                }
-                web.isEmpty()->{
-                    addsupplierBinding.supplierWebTextInputLayout.error = getString(R.string.add_web_address)
-                }
                 else ->{
-                    addSupplier(name, street, country, postCode, telephone, email, web)
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Save Supplier?")
+                    builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
+                        addSupplier(name, street, country, postCode, telephone, email, web)
+                        dialog.dismiss()
+                    })
+                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                        dialog.dismiss()
+
+                    })
+                    val dialog = builder.create()
+                    dialog.show()
+
                 }
             }
 
@@ -201,23 +203,19 @@ class AddSupplierFragment : Fragment() {
                 name.isEmpty()->{
                     addsupplierBinding.supplierNameTextInputLayout.error = getString(R.string.add_name)
                 }
-                street.isEmpty()->{
-                    addsupplierBinding.supplierAddressTextInputLayout.error = getString(R.string.add_address)
-                }
-                postCode.isEmpty()->{
-                    addsupplierBinding.supplierPostCodeTextInputLayout.error = getString(R.string.enter_post_code)
-                }
-                telephone.isEmpty()->{
-                    addsupplierBinding.supplierTelephoneTextInputLayout.error = getString(R.string.add_phone_no)
-                }
-                email.isEmpty()->{
-                    addsupplierBinding.supplierEmailTextInputLayout.error = getString(R.string.add_email)
-                }
-                web.isEmpty()->{
-                    addsupplierBinding.supplierWebTextInputLayout.error = getString(R.string.add_web_address)
-                }
                 else ->{
-                    updateSupplier(supplier.supid!!,name, street, country, postCode, telephone, email, web)
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Update Supplier?")
+                    builder.setPositiveButton("Save", DialogInterface.OnClickListener{ dialog, which ->
+                        updateSupplier(supplier.supid!!,name, street, country, postCode, telephone, email, web)
+                        dialog.dismiss()
+                    })
+                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                        dialog.dismiss()
+
+                    })
+                    val dialog = builder.create()
+                    dialog.show()
                 }
             }
         }
@@ -234,41 +232,49 @@ class AddSupplierFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (action.equals(getString(R.string.edit))) {
-            inflater.inflate(R.menu.main_menu, menu)
+            inflater.inflate(R.menu.supplier_menu, menu)
         }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         val id = item.itemId
-        if (id == R.id.delete_item){
+        when (id) {
+            R.id.supplier_delete -> {
 
-            val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation,null)
-            val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
-            builder?.setCancelable(false)
-            builder?.setView(layout)
-            val dialog = builder?.create()
-            dialog?.show()
+                val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation,null)
+                val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+                builder?.setCancelable(false)
+                builder?.setView(layout)
+                val dialog = builder?.create()
+                dialog?.show()
 
-            val delButton = layout.findViewById<Button>(R.id.delete_button)
-            val canButton: Button = layout.findViewById(R.id.cancel_del_button)
+                val delButton = layout.findViewById<Button>(R.id.delete_button)
+                val canButton: Button = layout.findViewById(R.id.cancel_del_button)
 
-            delButton.setOnClickListener {
-                dialog?.dismiss()
-                supplier.supid?.let {
-                    viewModel.deleteSupplier(supplier.supid!!).observe(viewLifecycleOwner, Observer {
-                        Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(AddSupplierFragmentDirections.actionAddSupplierFragmentToSupplierFragment())
-                    })
+                delButton.setOnClickListener {
+                    dialog?.dismiss()
+                    supplier.supid?.let {
+                        viewModel.deleteSupplier(supplier.supid!!).observe(viewLifecycleOwner, Observer {
+                            Toast.makeText(context,it,Toast.LENGTH_SHORT).show()
+                            findNavController().navigate(AddSupplierFragmentDirections.actionAddSupplierFragmentToSupplierFragment())
+                        })
+                    }
                 }
-            }
 
-            canButton.setOnClickListener {
-                dialog?.dismiss()
-            }
+                canButton.setOnClickListener {
+                    dialog?.dismiss()
+                }
 
-        }else if(id == R.id.convert_pdf_item){
-            createPdf()
+            }
+            R.id.supplier_pdf_convert -> {
+                createPdf()
+            }
+            R.id.supplier_purchase->{
+                findNavController().navigate(AddSupplierFragmentDirections.actionAddSupplierFragmentToAddPurchaseFragment(
+                    null,getString(R.string.supplier_details),null,supplier
+                ))
+            }
         }
         return true
     }

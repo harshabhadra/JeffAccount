@@ -21,6 +21,10 @@ class AddSupplierViewModel : ViewModel() {
     val navigateToAddSupplierFragment: LiveData<SupPost>
         get() = _navigateToAddSupplierFragment
 
+    private var _nameList = MutableLiveData<List<String>>()
+    val nameList:LiveData<List<String>>
+        get() = _nameList
+
     //Add Supplier
     fun addSupplier(
         supplierName: String,
@@ -83,5 +87,14 @@ class AddSupplierViewModel : ViewModel() {
     //Get list of supplier
     fun getSuppliers(): LiveData<Supplier> {
         return jeffRepository.getAllSuppliers()
+    }
+
+    //Crate CustomerName list
+    fun createSupplierNameList(custList:List<SupPost>){
+        val custNameList = mutableListOf<String>()
+        for (item in custList){
+            custNameList.add(item.supname!!)
+        }
+        _nameList.value = custNameList.toList()
     }
 }

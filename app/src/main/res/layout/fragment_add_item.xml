@@ -123,23 +123,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/discount_amount_editText" />
 
-        <EditText
-            android:id="@+id/vat_editText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:ems="10"
-            android:hint="@string/vat"
-            android:text="@{String.valueOf(item.vat)}"
-            android:textColorHint="@android:color/white"
-            android:textColor="@android:color/white"
-            android:inputType="numberDecimal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/total_editText" />
-
         <Button
             android:id="@+id/add_item_button"
             android:layout_width="0dp"
@@ -152,6 +135,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vat_editText" />
+            app:layout_constraintTop_toBottomOf="@+id/total_editText" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

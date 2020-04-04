@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
+import com.example.jeffaccount.model.Company
 import com.example.jeffaccount.model.Purchase
 import com.example.jeffaccount.model.PurchasePost
 import com.example.jeffaccount.model.Supplier
@@ -28,9 +29,17 @@ class AddPurchaseViewModel : ViewModel() {
     val dateString: LiveData<String>
         get() = _dateString
 
+    private var _jobNoList = MutableLiveData<Set<String>>()
+    val jobNoList:LiveData<Set<String>>
+    get() = _jobNoList
+
     private var _itemChangedToPurchase = MutableLiveData<MutableList<Item>>()
     val itemChangedToPurchase:LiveData<MutableList<Item>>
     get() = _itemChangedToPurchase
+
+    private var _totalAmuont = MutableLiveData<Double>()
+    val totalAmount: LiveData<Double>
+        get() = _totalAmuont
 
     init {
         _navigateToAddPurchaseFragment.value = null
@@ -61,7 +70,7 @@ class AddPurchaseViewModel : ViewModel() {
         _purchaseQuantityValue.value = qty
     }
 
-    fun navigateToAddPurchaseFragment(purchase:PurchasePost){
+    fun navigateToAddPurchaseFragment(purchase: PurchasePost){
         _navigateToAddPurchaseFragment.value = purchase
     }
 
@@ -100,5 +109,28 @@ class AddPurchaseViewModel : ViewModel() {
     //Get search supplier list
     fun getSearchSupplierList(name:String, apikey: String):LiveData<SearchSupplier>{
         return jeffRepository.getSearchSupplierList(name,apikey)
+    }
+
+    //Get list of all companies
+    fun getCompanyList(): LiveData<Company> {
+        return jeffRepository.getAllCompany()
+    }
+
+    fun createJobNoList(purchaseList:List<PurchasePost>){
+        val nolist = mutableSetOf<String>()
+        for (items in purchaseList){
+            nolist.add(items.jobNo!!.toString())
+        }
+        _jobNoList.value = nolist
+    }
+
+    fun calculateAmount(qty: Int,unitA: Double, dAmount: Double) {
+        if (qty>0 && unitA > dAmount) {
+            _totalAmuont.value = unitA.times(qty).minus(dAmount)
+        }
+    }
+
+    fun setDefaultAmount(){
+        _totalAmuont.value = null
     }
 }

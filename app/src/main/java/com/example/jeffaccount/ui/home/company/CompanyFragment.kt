@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.CompanyFragmentBinding
+import com.example.jeffaccount.ui.MainActivity
 
 class CompanyFragment : Fragment() {
 
@@ -49,8 +50,11 @@ class CompanyFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
         viewModel = ViewModelProvider(this).get(CompanyViewModel::class.java)
 
+        val activity = activity as MainActivity
+        activity.setToolbarText(getString(R.string.company))
         //Getting list of companies
         viewModel.getCompanyList().observe(viewLifecycleOwner, Observer {
             it?.let {

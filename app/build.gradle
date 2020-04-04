@@ -5,6 +5,14 @@ apply plugin: 'androidx.navigation.safeargs'
 apply plugin: 'kotlin-kapt'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('E:\\KotlinAndroid\\jeffaccount.jks')
+            storePassword '123456'
+            keyAlias = 'jeffkey'
+            keyPassword '123456'
+        }
+    }
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
@@ -16,10 +24,12 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        signingConfig signingConfigs.release
     }
 
     buildTypes {
         release {
+            debuggable false
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -112,4 +122,6 @@ dependencies {
 
     //Date and Time Picker
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
+
+    implementation 'com.github.manishkummar21:AndroidPdfViewer:1.0'
 }

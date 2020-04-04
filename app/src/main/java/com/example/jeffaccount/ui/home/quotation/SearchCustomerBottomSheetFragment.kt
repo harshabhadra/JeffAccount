@@ -29,7 +29,10 @@ import timber.log.Timber
  */
 class SearchCustomerBottomSheetFragment(val type:String,val comlist: MutableList<String>,
                                         itemClickListener:OnSearchItemClickListener,
-                                        supplierItemClickListenr:OnSearchSupplierClickListener) :
+                                        supplierItemClickListenr:OnSearchSupplierClickListener,
+customerNameClickListener: OnCustomerNameClickListener,supplierNameClickListener: OnSupplierNameClickListener,
+quotationJobNoClickListener: OnQuotationJobNoClickListener,purchaseJobNoClickListener: OnPurchaseJobNoClickListener,
+invoiceNameClickListener: OnInvoiceJobNoClickListener, timeSheetJobNoClickListener: OnTimeSheetJobNoClickListener) :
     BottomSheetDialogFragment(),
     TextWatcher, OnItemClickListener {
 
@@ -47,6 +50,12 @@ class SearchCustomerBottomSheetFragment(val type:String,val comlist: MutableList
     private lateinit var purchaseViewModel: AddPurchaseViewModel
     private var searItemClickListener: OnSearchItemClickListener = itemClickListener
     private var searchSupplierClickListener:OnSearchSupplierClickListener = supplierItemClickListenr
+    private var customerNameClickListener:OnCustomerNameClickListener = customerNameClickListener
+    private var supplierNameClickListener:OnSupplierNameClickListener = supplierNameClickListener
+    private var quotationJobNoClickListener:OnQuotationJobNoClickListener = quotationJobNoClickListener
+    private var invoiceJobNoClickListener:OnInvoiceJobNoClickListener = invoiceNameClickListener
+    private var purchaseJobNoClickListener:OnQuotationJobNoClickListener = quotationJobNoClickListener
+    private var timeSheetJobNoClickListener:OnTimeSheetJobNoClickListener = timeSheetJobNoClickListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +104,7 @@ class SearchCustomerBottomSheetFragment(val type:String,val comlist: MutableList
         //Setting up name item recyclerView
         nameItemRecyclerView = view.findViewById(R.id.customer_item_recycler)
         nameItemRecyclerView.setHasFixedSize(true)
-        if (type.equals(getString(R.string.quotation))) {
+        if (type.equals(getString(R.string.quotation)) || type.equals(getString(R.string.invoice))) {
             nameItemRecyclerView.adapter = searchItemAdapter
         }else{
             nameItemRecyclerView.adapter = searchSupplierAdater
@@ -111,11 +120,6 @@ class SearchCustomerBottomSheetFragment(val type:String,val comlist: MutableList
     override fun onStart() {
         super.onStart()
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-//        searItemClickListener = context as OnSearchItemClickListener
     }
 
     private fun searchList(search: String) {
@@ -151,28 +155,55 @@ class SearchCustomerBottomSheetFragment(val type:String,val comlist: MutableList
 
     override fun onItemClick(name: String) {
 
-        if (type.equals(getString(R.string.quotation))) {
-            quotaitonViewModel.searchCustomer(name, "AngE9676#254r5").observe(this,
-                androidx.lifecycle.Observer {
-                    Timber.e("Search list size: ${it.customerList?.size}")
-                    nameRecyclerView.visibility = View.GONE
-                    searchItemAdapter.submitList(it.customerList)
-                })
-        }else{
-            purchaseViewModel.getSearchSupplierList(name,"AngE9676#254r5").observe(this,
-                Observer {
-                Timber.e("Searchlist supplier size: ${it.posts?.size}")
-                nameRecyclerView.visibility = View.GONE
-                searchSupplierAdater.submitList(it.posts)
-            })
+        when {
+            type.equals(getString(R.string.quotation)) || type.equals(getString(R.string.invoice)) -> {
+                quotaitonViewModel.searchCustomer(name, "AngE9676#254r5").observe(this,
+                    androidx.lifecycle.Observer {
+                        Timber.e("Search list size: ${it.customerList?.size}")
+                        nameRecyclerView.visibility = View.GONE
+                        searchItemAdapter.submitList(it.customerList)
+                    })
+            }
+            type.equals(getString(R.string.customer))->{
+                customerNameClickListener.onCustomerNameClick(name)
+                dismiss()
+            }
+            else -> {
+                purchaseViewModel.getSearchSupplierList(name,"AngE9676#254r5").observe(this,
+                    Observer {
+                        Timber.e("Searchlist supplier size: ${it.posts?.size}")
+                        nameRecyclerView.visibility = View.GONE
+                        searchSupplierAdater.submitList(it.posts)
+                    })
+            }
         }
     }
 }
-
-public interface OnSearchItemClickListener {
+interface OnSearchItemClickListener {
     fun onSearchItemClick(searchCustomer: SearchCustomer)
 }
 
 interface OnSearchSupplierClickListener{
     fun onSearchSupplierClick(serchSupplierPost:SearchSupplierPost)
+}
+
+interface OnCustomerNameClickListener{
+    fun onCustomerNameClick(name:String)
+}
+
+interface OnSupplierNameClickListener{
+    fun onSupplierNameClick(name: String)
+}
+
+interface OnQuotationJobNoClickListener{
+    fun onQuotationNameClick(name: String)
+}
+interface OnPurchaseJobNoClickListener{
+    fun onPurchaseNameClick(name: String)
+}
+interface OnInvoiceJobNoClickListener{
+    fun onInvoiceJobNoClick(name: String)
+}
+interface OnTimeSheetJobNoClickListener{
+    fun onTimeSheetJobClick(name: String)
 }

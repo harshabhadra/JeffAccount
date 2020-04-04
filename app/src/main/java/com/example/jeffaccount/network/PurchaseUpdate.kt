@@ -48,6 +48,9 @@ data class PurchaseUpdate(
     @SerializedName("comment")
     @Expose
     var comment:String?,
+    @SerializedName("vat")
+    @Expose
+    var vat: Double?,
     @SerializedName("items")
     @Expose
     var items: List<Item>?

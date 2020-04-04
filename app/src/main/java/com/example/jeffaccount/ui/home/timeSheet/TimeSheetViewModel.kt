@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
+import com.example.jeffaccount.model.Invoice
 import com.example.jeffaccount.model.TimeSheet
 import com.example.jeffaccount.model.TimeSheetPost
 import timber.log.Timber
@@ -21,6 +22,10 @@ class TimeSheetViewModel : ViewModel() {
     private var _navigateToAddTimeSheet = MutableLiveData<TimeSheetPost>()
     val navigateToAddTimeSheetFragment: LiveData<TimeSheetPost>
         get() = _navigateToAddTimeSheet
+
+    private var _jobNoList = MutableLiveData<Set<String>>()
+    val jobNoList:LiveData<Set<String>>
+        get() = _jobNoList
 
     init {
         _navigateToAddTimeSheet.value = null
@@ -116,5 +121,13 @@ class TimeSheetViewModel : ViewModel() {
 
     fun doneNavigatingToAddTimeSheet() {
         _navigateToAddTimeSheet.value = null
+    }
+
+    fun createJobNoList(invoiceList:List<TimeSheetPost>){
+        val noSet = mutableSetOf<String>()
+        for (item in invoiceList){
+            noSet.add(item.jobNo!!.toString())
+        }
+        _jobNoList.value = noSet
     }
 }

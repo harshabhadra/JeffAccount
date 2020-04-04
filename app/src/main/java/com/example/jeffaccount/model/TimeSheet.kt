@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 data class TimeSheet(
     @SerializedName("posts")
     @Expose
-    var posts: List<TimeSheetPost>?
+    var posts: List<TimeSheetPost>
 )
 
 data class TimeSheetPost (

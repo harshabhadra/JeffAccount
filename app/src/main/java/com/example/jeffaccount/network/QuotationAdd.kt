@@ -50,6 +50,9 @@ data class QuotationAdd (
     @SerializedName("comment")
     @Expose
     var comment:String?,
+    @SerializedName("vat")
+    @Expose
+    var vat: Double?,
     @SerializedName("items")
     @Expose
     var items: List<Item>?
@@ -79,11 +82,7 @@ data class Item (
 
     @SerializedName("total_amount")
     @Expose
-    var totalAmount: Double?,
-
-    @SerializedName("vat")
-    @Expose
-    var vat: Double?
+    var totalAmount: Double?
 ):Parcelable
 
 @Parcelize

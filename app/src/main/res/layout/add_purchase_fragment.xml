@@ -37,6 +37,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/job_no"
                     android:maxLines="1"
+                    android:inputType="text"
                     android:text="@{purchase.jobNo}"
                     android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -58,6 +59,7 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/quotation_no"
                     android:maxLines="1"
+                    android:inputType="text"
                     android:text="@{purchase.quotationNo}"
                     android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -89,7 +91,6 @@
                 android:hint="@string/supplier_name"
                 android:maxLines="1"
                 android:padding="8dp"
-                android:text="@{purchase.customerName}"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -128,7 +129,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/supplier_item_recyclerView">
+                app:layout_constraintTop_toBottomOf="@+id/purchase_vat_textinputlayout">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/purchase_payment_method_textInput"
@@ -208,7 +209,6 @@
                 android:layout_marginEnd="16dp"
                 android:hint="@string/street_address"
                 android:padding="8dp"
-                android:text="@{purchase.street}"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -222,7 +222,6 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/country"
                 android:padding="8dp"
-                android:text="@{purchase.country}"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="@+id/add_purchase_street_tv"
@@ -236,7 +235,6 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/telephone_no"
                 android:padding="8dp"
-                android:text="@{purchase.telephone}"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="@+id/add_purchase_country_tv"
@@ -250,7 +248,6 @@
                 android:layout_marginTop="16dp"
                 android:hint="@string/post_code"
                 android:padding="8dp"
-                android:text="@{purchase.postCode}"
                 android:textColor="@android:color/white"
                 android:textColorHint="@android:color/white"
                 app:layout_constraintEnd_toEndOf="@+id/add_purchase_tele_tv"
@@ -264,6 +261,29 @@
                 android:visibility="gone"
                 app:constraint_referenced_ids="add_purchase_street_tv,
                 add_purchase_country_tv,add_purchase_tele_tv,add_purchase_post_tv" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/purchase_vat_textinputlayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/supplier_item_recyclerView">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/purchase_vat_textinput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:text="@{purchase.vat}"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white"
+                    android:hint="@string/vat" />
+            </com.google.android.material.textfield.TextInputLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>

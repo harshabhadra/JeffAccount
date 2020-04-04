@@ -24,7 +24,6 @@
     <string name="web_address">Web Address</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
-    <string name="edit">Edit</string>
     <string name="add_customer">Add Customer</string>
     <string name="add_supplier">Add Supplier</string>
     <string name="quotation">Quotation</string>
@@ -95,4 +94,17 @@
     <string name="add_items">Add Items</string>
     <string name="customer_list">Customer List</string>
     <string name="search_by_name">Search by name</string>
+    <string name="customer_data">Customer data</string>
+    <string name="supplier_details">Supplier details</string>
+    <string name="create_quotation">Create Quotation</string>
+    <string name="create_invoice">Create Invoice</string>
+    <string name="add_to_invoice">Add To Invoice</string>
+    <string name="worksheet">Worksheet</string>
+    <string name="select_a_job_no">Select a Job no</string>
+    <string name="edit">Edit</string>
+    <string name="add_company">Add Company</string>
+    <string name="search">Search</string>
+    <string name="quotation_List">Quotation List</string>
+    <string name="invoice_list">invoice list</string>
+    <string name="cancel">Cancel</string>
 </resources>

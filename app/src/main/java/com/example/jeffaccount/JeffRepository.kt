@@ -112,6 +112,27 @@ class JeffRepository() {
     //Store search list of suppliers
     private var searchSupplierListMutableLiveData = MutableLiveData<SearchSupplier>()
 
+    //Store invoice list
+    private var invoiceListMutableLiveData = MutableLiveData<InvoiceList>()
+
+    //Store message of invoice save
+    private var invoiceSaveMutableLiveData = MutableLiveData<String>()
+
+    //Store message of invoice update
+    private var invoiceUpdateMutableLiveData = MutableLiveData<String>()
+
+    //Store delete invoice message
+    private var invoiceDeleteMutableLiveData = MutableLiveData<String>()
+
+    //Store search purchase value
+    private var purchaseSearchMutableLiveData = MutableLiveData<Purchase>()
+
+    //Store search invoice value
+    private var invoiceSearchMutableLiveData = MutableLiveData<InvoiceList>()
+
+    //Store search time sheet value
+    private var timeSheetSearchMutableLiveData = MutableLiveData<TimeSheet>()
+
     //Get LogInCred list
     fun getLogInCred(): LiveData<List<LogInCred>> {
         return userList
@@ -164,6 +185,12 @@ class JeffRepository() {
     fun getAddQuotationMessage(quotationAdd: QuotationAdd): LiveData<String> {
         addQuotation(quotationAdd)
         return quotationAddMessage
+    }
+
+    //Add Invoice
+    fun getAddInvoiceMessage(invoiceAdd:QuotationAdd):LiveData<String>{
+        addInvoice(invoiceAdd)
+        return invoiceSaveMutableLiveData
     }
 
     //Add Purchase
@@ -261,6 +288,12 @@ class JeffRepository() {
         return quotationUpdateMesage
     }
 
+    //Update Invoice
+    fun getUpdateInvoiceMessage(invoiceUpdate: InvoiceUpdate):LiveData<String>{
+        updateInvoice(invoiceUpdate)
+        return invoiceUpdateMutableLiveData
+    }
+
     //Search customer for quotation
     fun searchCustomerList(apiKey: String,name: String):LiveData<SearchCustomerList>{
         searchCustomer(apiKey,name)
@@ -350,6 +383,12 @@ class JeffRepository() {
         return purchaseDeleteMessage
     }
 
+    //Delete Invoice
+    fun getDeleteInvoiceMessage(apiKey: String,invoiceId:Int):LiveData<String>{
+        deleteInvoice(apiKey,invoiceId)
+        return invoiceDeleteMutableLiveData
+    }
+
     //Delete TimeSheet
     fun getDeleteTimeSheetMessage(timeSheetId: Int): LiveData<String> {
         deleteTimeSheet(timeSheetId)
@@ -386,10 +425,34 @@ class JeffRepository() {
         return quotationList
     }
 
+    //Get all invoices
+    fun getAllInvoices(apiKey: String):LiveData<InvoiceList>{
+        getInvoiceList(apiKey)
+        return invoiceListMutableLiveData
+    }
+
     //Get all time sheet
     fun getAllTimeSheet(apiKey: String): LiveData<TimeSheet> {
         getTimeSheetList(apiKey)
         return timeSheetListMutableLiveData
+    }
+
+    //search purchase
+    fun searchPurchase(jobNo: String,apiKey: String):LiveData<Purchase>{
+        searchPurchaseList(jobNo,apiKey)
+        return purchaseSearchMutableLiveData
+    }
+
+    //Search invoice
+    fun searchInvoice(jobNo: String, apiKey: String):LiveData<InvoiceList>{
+        searchInvoiceList(jobNo,apiKey)
+        return invoiceSearchMutableLiveData
+    }
+
+    //Search Timesheet
+    fun searchTimeSheet(jobNo: String,apiKey: String):LiveData<TimeSheet>{
+        searchTimeSheetList(jobNo,apiKey)
+        return timeSheetSearchMutableLiveData
     }
 
     //Network call to get all customer list
@@ -446,6 +509,19 @@ class JeffRepository() {
 
             override fun onResponse(call: Call<Quotation>, response: Response<Quotation>) {
                 quotationList.value = response.body()
+            }
+        })
+    }
+
+    //Network call to get all invoices
+    private fun getInvoiceList(apiKey: String) {
+        apiService.getInvoiceList(apiKey).enqueue(object :Callback<InvoiceList>{
+            override fun onFailure(call: Call<InvoiceList>, t: Throwable) {
+                Timber.e("Failed getting invoices")
+            }
+
+            override fun onResponse(call: Call<InvoiceList>, response: Response<InvoiceList>) {
+                invoiceListMutableLiveData.value = response.body()
             }
         })
     }
@@ -564,6 +640,20 @@ class JeffRepository() {
         })
     }
 
+    //Network call to save invoice
+    private fun addInvoice(invoiceAdd: QuotationAdd) {
+
+        apiService.addInvoice(invoiceAdd).enqueue(object :Callback<String>{
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("failed saving invoice: ${t.message}")
+            }
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                invoiceSaveMutableLiveData.value = message
+            }
+        })
+    }
     //Network call to add purchase
     private fun addPurchase(
         purchaseAdd: PurchaseAdd
@@ -766,6 +856,21 @@ class JeffRepository() {
         })
     }
 
+    //Network call to update invoice
+    private fun updateInvoice(invoiceUpdate: InvoiceUpdate) {
+
+        apiService.updateInvoice(invoiceUpdate).enqueue(object :Callback<String>{
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Failed updating invoice")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                invoiceUpdateMutableLiveData.value = message
+            }
+        })
+    }
     //Network call search customer for quotation
     private fun searchCustomer(apiKey: String, name: String) {
 
@@ -917,6 +1022,22 @@ class JeffRepository() {
         })
     }
 
+    //Network call to delete invoice
+    private fun deleteInvoice(apiKey: String,invoiceId: Int) {
+
+        apiService.deleteInvoice(apiKey,invoiceId).enqueue(object :Callback<String>{
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("failed to delete invoice data: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                invoiceDeleteMutableLiveData.value = message
+            }
+        })
+    }
+
     //Network call to delete purchase
     private fun deletePurchase(purchaseId: Int) {
 
@@ -945,6 +1066,63 @@ class JeffRepository() {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")
                 timeSheetDeleteMessage.value = message
+            }
+        })
+    }
+
+    //Network call to search purchase list
+    private fun searchPurchaseList(jobNo: String, apiKey: String) {
+
+        apiService.searchPurchase(jobNo, apiKey).enqueue(object :Callback<Purchase>{
+            override fun onFailure(call: Call<Purchase>, t: Throwable) {
+                Timber.e("Failed to get purchase by search: ${t.message}")
+                purchaseSearchMutableLiveData.value = null
+            }
+
+            override fun onResponse(call: Call<Purchase>, response: Response<Purchase>) {
+                if (response.isSuccessful && response.body() != null) {
+                    purchaseSearchMutableLiveData.value = response.body()
+                }else{
+                    purchaseSearchMutableLiveData.value = null
+                }
+            }
+
+        })
+    }
+
+    //Network call to search invoice
+    private fun searchInvoiceList(jobNo: String, apiKey: String) {
+        apiService.searchInvoice(jobNo, apiKey).enqueue(object:Callback<InvoiceList>{
+            override fun onFailure(call: Call<InvoiceList>, t: Throwable) {
+                Timber.e("Failed to search invoice: ${t.message}")
+                invoiceSearchMutableLiveData.value = null
+            }
+
+            override fun onResponse(call: Call<InvoiceList>, response: Response<InvoiceList>) {
+                if (response.isSuccessful && response.body()!=null) {
+                    Timber.e("Success in search invoice: ${response.body().toString()}")
+                    invoiceSearchMutableLiveData.value = response.body()
+                }else{
+                    invoiceSearchMutableLiveData.value = null
+                }
+            }
+        })
+    }
+
+    //Network call to search time sheet
+    private fun searchTimeSheetList(jobNo: String, apiKey: String) {
+        apiService.searchTimeSheet(jobNo, apiKey).enqueue(object :Callback<TimeSheet>{
+            override fun onFailure(call: Call<TimeSheet>, t: Throwable) {
+                Timber.e("Failed to search time sheet: ${t.message}")
+                timeSheetSearchMutableLiveData.value = null
+            }
+
+            override fun onResponse(call: Call<TimeSheet>, response: Response<TimeSheet>) {
+                if (response.isSuccessful && response.body() != null) {
+                    timeSheetSearchMutableLiveData.value = response.body()
+                }else{
+                    timeSheetSearchMutableLiveData.value = null
+                }
             }
         })
     }

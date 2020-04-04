@@ -63,7 +63,7 @@ class CompanyViewModel : ViewModel() {
         return jeffRepository.getDeleteCompanyMessage(companyId)
     }
 
-    fun navigateToAddCompany(company:ComPost){
+    fun navigateToAddCompany(company: ComPost){
         _navigateToAddComFragment.value = company
     }
 

@@ -1,6 +1,7 @@
 package com.example.jeffaccount.ui.home.timeSheet
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -17,11 +19,11 @@ import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.FragmentAddTimeSheetBinding
 import com.example.jeffaccount.model.TimeSheetPost
+import com.example.jeffaccount.ui.MainActivity
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
 import com.itextpdf.text.pdf.PdfWriter
-import com.itextpdf.text.pdf.draw.LineSeparator
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
@@ -60,10 +62,13 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         addTimeSheetBinding = FragmentAddTimeSheetBinding.inflate(inflater, container, false)
 
         requestReadPermissions()
-
+        val activity = activity as MainActivity
+        activity.setToolbarText("Add Time sheet")
         val arguments = AddTimeSheetFragmentArgs.fromBundle(arguments!!)
         action = arguments.action
         if (action.equals(getString(R.string.update))) {
+            val activity = activity as MainActivity
+            activity.setToolbarText("Update Time sheet")
             addTimeSheetBinding.tsUpdateButton.visibility = View.VISIBLE
             addTimeSheetBinding.tsSaveButton.visibility = View.GONE
             timeSheet = arguments.timeSheetItem!!
@@ -307,53 +312,55 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 date.isEmpty() -> Toast.makeText(context, "Enter date", Toast.LENGTH_SHORT).show()
                 name.isEmpty() -> addTimeSheetBinding.tsNameTextInputLayout.error =
                     getString(R.string.enter_name)
-                comment.isEmpty() -> addTimeSheetBinding.tsCommentTextInputLayout.error =
-                    getString(R.string.enter_comment)
                 itemDes.isEmpty() -> addTimeSheetBinding.tsItemDesTextInputLayout.error =
                     getString(R.string.enter_item_des)
-                paymentMethod.isEmpty() -> addTimeSheetBinding.tsPaymentMethodTextInputLayout.error =
-                    getString(R.string.enter_payment_method)
+
                 (_hours == 0) -> Toast.makeText(context, "Hours can't be zero", Toast.LENGTH_SHORT)
                     .show()
                 amount.isEmpty() -> addTimeSheetBinding.tsAmountTextInputLayout.error =
                     getString(R.string.enter_amount)
-                advanceAmount.isEmpty() -> addTimeSheetBinding.tsAdvanceAmountTextInputLayout.error =
-                    getString(R.string.enter_advance_amount)
-                discountAmount.isEmpty() -> addTimeSheetBinding.tsDiscountAmountTextInputLayout.error =
-                    getString(R.string.enter_discount_amount)
                 totalAmount.isEmpty() -> addTimeSheetBinding.tsTotalAmountTextInputLayout.error =
                     getString(R.string.enter_total_amount)
-                street.isEmpty()->addTimeSheetBinding.tsStreetTextInputLayout.error = getString(R.string.enter_street_address)
-                postCode.isEmpty()->addTimeSheetBinding.tsPostCodeTextInputLayout.error = getString(R.string.enter_post_code)
-                telephone.isEmpty()->addTimeSheetBinding.tsTelephoneTextInputLayout.error = getString(R.string.telephone_no)
                 else -> {
-                    viewModel.addTimeSheet(
-                        "AngE9676#254r5",
-                        jobNo,
-                        quotationNo,
-                        _vat,
-                        date,
-                        name,
-                        street,
-                        "United Kingdom",
-                        postCode,
-                        telephone,
-                        comment,
-                        itemDes,
-                        paymentMethod,
-                        _hours,
-                        _amount,
-                        _advanceAmount,
-                        _discountAmount,
-                        _totalAmount
-                    ).observe(
-                        viewLifecycleOwner, Observer {
-                            it?.let {
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                findNavController().navigate(AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToTimeSheetFragment())
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Save TimeSheet?")
+                    builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
+                        viewModel.addTimeSheet(
+                            "AngE9676#254r5",
+                            jobNo,
+                            quotationNo,
+                            _vat,
+                            date,
+                            name,
+                            street,
+                            "United Kingdom",
+                            postCode,
+                            telephone,
+                            comment,
+                            itemDes,
+                            paymentMethod,
+                            _hours,
+                            _amount,
+                            _advanceAmount,
+                            _discountAmount,
+                            _totalAmount
+                        ).observe(
+                            viewLifecycleOwner, Observer {
+                                it?.let {
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToTimeSheetFragment())
+                                }
                             }
-                        }
-                    )
+                        )
+                        dialog.dismiss()
+                    })
+                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                        dialog.dismiss()
+
+                    })
+                    val dialog = builder.create()
+                    dialog.show()
+
                 }
             }
         }
@@ -402,54 +409,52 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 date.isEmpty() -> Toast.makeText(context, "Enter date", Toast.LENGTH_SHORT).show()
                 name.isEmpty() -> addTimeSheetBinding.tsNameTextInputLayout.error =
                     getString(R.string.enter_name)
-                comment.isEmpty() -> addTimeSheetBinding.tsCommentTextInputLayout.error =
-                    getString(R.string.enter_comment)
-                itemDes.isEmpty() -> addTimeSheetBinding.tsItemDesTextInputLayout.error =
-                    getString(R.string.enter_item_des)
-                paymentMethod.isEmpty() -> addTimeSheetBinding.tsPaymentMethodTextInputLayout.error =
-                    getString(R.string.enter_payment_method)
                 (_hours == 0) -> Toast.makeText(context, "Hours can't be zero", Toast.LENGTH_SHORT)
                     .show()
                 amount.isEmpty() -> addTimeSheetBinding.tsAmountTextInputLayout.error =
                     getString(R.string.enter_amount)
-                advanceAmount.isEmpty() -> addTimeSheetBinding.tsAdvanceAmountTextInputLayout.error =
-                    getString(R.string.enter_advance_amount)
-                discountAmount.isEmpty() -> addTimeSheetBinding.tsDiscountAmountTextInputLayout.error =
-                    getString(R.string.enter_discount_amount)
                 totalAmount.isEmpty() -> addTimeSheetBinding.tsTotalAmountTextInputLayout.error =
                     getString(R.string.enter_total_amount)
-                street.isEmpty()->addTimeSheetBinding.tsStreetTextInputLayout.error = getString(R.string.enter_street_address)
-                postCode.isEmpty()->addTimeSheetBinding.tsPostCodeTextInputLayout.error = getString(R.string.enter_post_code)
-                telephone.isEmpty()->addTimeSheetBinding.tsTelephoneTextInputLayout.error = getString(R.string.telephone_no)
                 else -> {
-                    viewModel.updateTimeSheet(
-                        "AngE9676#254r5",
-                        timeSheet.tid!!.toInt(),
-                        jobNo,
-                        quotationNo,
-                        _vat,
-                        date,
-                        name,
-                        street,
-                        "United Kingdom",
-                        postCode,
-                        telephone,
-                        comment,
-                        itemDes,
-                        paymentMethod,
-                        _hours,
-                        _amount,
-                        _advanceAmount,
-                        _discountAmount,
-                        _totalAmount
-                    ).observe(
-                        viewLifecycleOwner, Observer {
-                            it?.let {
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                findNavController().navigate(AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToTimeSheetFragment())
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Update TimeSheet?")
+                    builder.setPositiveButton("Save", DialogInterface.OnClickListener{ dialog, which ->
+                        viewModel.updateTimeSheet(
+                            "AngE9676#254r5",
+                            timeSheet.tid!!.toInt(),
+                            jobNo,
+                            quotationNo,
+                            _vat,
+                            date,
+                            name,
+                            street,
+                            "United Kingdom",
+                            postCode,
+                            telephone,
+                            comment,
+                            itemDes,
+                            paymentMethod,
+                            _hours,
+                            _amount,
+                            _advanceAmount,
+                            _discountAmount,
+                            _totalAmount
+                        ).observe(
+                            viewLifecycleOwner, Observer {
+                                it?.let {
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToTimeSheetFragment())
+                                }
                             }
-                        }
-                    )
+                        )
+                        dialog.dismiss()
+                    })
+                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                        dialog.dismiss()
+
+                    })
+                    val dialog = builder.create()
+                    dialog.show()
                 }
             }
         }

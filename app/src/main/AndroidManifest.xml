@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:name=".JeffApplication"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/AppTheme">
         <activity android:name=".LogInActivity"
             android:theme="@style/AppTheme.NoActionBar"
@@ -29,7 +30,7 @@
             android:name=".ui.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
-
+        <activity android:name="com.github.pdfviewer.PDFViewActivity" />
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

@@ -1,6 +1,5 @@
 package com.example.jeffaccount.network
 
-import com.example.jeffaccount.model.Post
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 

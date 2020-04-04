@@ -2,16 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <item android:id="@+id/customer_pdf_convert"
+        android:title="@string/create_pdf"
+        android:icon="@drawable/ic_picture_as_pdf_white_24dp"
+        app:showAsAction="ifRoom"/>
     <item android:id="@+id/customer_quotation"
-        android:title="@string/quotation"
+        android:title="@string/create_quotation"
         app:showAsAction="never"/>
-    <item android:title="@string/purchase"
-        android:id="@+id/customer_purchase"
+    <item android:id="@+id/customer_invoice"
+        android:title="@string/create_invoice"
         app:showAsAction="never"/>
-    <item android:id="@+id/customer_timesheet"
-        android:title="@string/time_sheet"
-        app:showAsAction="never"
-        />
     <item android:id="@+id/customer_delete"
         android:title="@string/delete"
         app:showAsAction="never"/>

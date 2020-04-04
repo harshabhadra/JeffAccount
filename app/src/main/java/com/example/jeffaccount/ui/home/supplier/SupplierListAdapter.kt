@@ -2,7 +2,6 @@ package com.example.jeffaccount.ui.home.supplier
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.ViewParent
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -16,7 +15,7 @@ class SupplierListAdapter(val clickListener:SupplierItemListener)
     class SupplierViewHolder private constructor(val binding:SupplierListItemBinding):
             RecyclerView.ViewHolder(binding.root){
 
-        fun bind(clickListener: SupplierItemListener, item:SupPost){
+        fun bind(clickListener: SupplierItemListener, item: SupPost){
             binding.clicklistener = clickListener
             binding.supPost = item
         }
@@ -40,7 +39,7 @@ class SupplierListAdapter(val clickListener:SupplierItemListener)
     }
 }
 
-class SupplierItemListener(val clickListener:(supplier:SupPost)->Unit){
+class SupplierItemListener(val clickListener:(supplier: SupPost)->Unit){
     fun onSupplierClick(supplier: SupPost) = clickListener(supplier)
 }
 

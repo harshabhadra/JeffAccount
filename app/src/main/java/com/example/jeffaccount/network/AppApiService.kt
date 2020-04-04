@@ -120,6 +120,27 @@ interface AppApiService {
     @FormUrlEncoded
     fun deleteQuotation(@Field("qid") quotationId: Int): Call<String>
 
+    //Add invoice
+    @POST("invoiceadd.php")
+    fun addInvoice(@Body invoice: QuotationAdd): Call<String>
+
+    //Update invoice
+    @POST("invoiveupdate.php")
+    fun updateInvoice(@Body invoice: InvoiceUpdate): Call<String>
+
+    //Delete invoice
+    @POST("invoicedel.php")
+    @FormUrlEncoded
+    fun deleteInvoice(
+        @Field("apikey") apiKey: String,
+        @Field("inid") inid: Int
+    ): Call<String>
+
+    //Get invoice list
+    @POST("invoicelist.php")
+    @FormUrlEncoded
+    fun getInvoiceList(@Field("apikey") apiKey: String): Call<InvoiceList>
+
     //Search customer in quotation
     @POST("customer_search")
     @FormUrlEncoded
@@ -192,7 +213,7 @@ interface AppApiService {
     fun searchSupplier(
         @Field("sup_name") name: String,
         @Field("apikey") apiKey: String
-    ):Call<SearchSupplier>
+    ): Call<SearchSupplier>
 
     //Add TimeSheet
     @POST("timesheetadd.php")
@@ -252,6 +273,30 @@ interface AppApiService {
     @POST("timesheetlist.php")
     @FormUrlEncoded
     fun getTimeSheetList(@Field("apikey") apiKey: String): Call<TimeSheet>
+
+    //Search purchase by job no
+    @POST("purchase_search.php")
+    @FormUrlEncoded
+    fun searchPurchase(
+        @Field("job_no") jobNo: String,
+        @Field("apikey") apiKey: String
+    ):Call<Purchase>
+
+    //Search Invoice
+    @POST("invoice_search.php")
+    @FormUrlEncoded
+    fun searchInvoice(
+        @Field("job_no") jobNo: String,
+        @Field("apikey") apiKey: String
+    ):Call<InvoiceList>
+
+    //Search TimeSheet
+    @POST("timesheet_search.php")
+    @FormUrlEncoded
+    fun searchTimeSheet(
+        @Field("job_no") jobNo: String,
+        @Field("apikey") apiKey: String
+    ):Call<TimeSheet>
 }
 
 object JeffApi {

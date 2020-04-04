@@ -2,7 +2,6 @@ package com.example.jeffaccount.ui.home.purchase
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.view.ViewParent
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -43,7 +42,7 @@ class PurchaseListAdapter(val clickListener: PurchaseClickListener) :ListAdapter
     }
 }
 
-class PurchaseClickListener(val clickListener:(purchase:PurchasePost)->Unit){
+class PurchaseClickListener(val clickListener:(purchase: PurchasePost)->Unit){
     fun purchaseItemClick(purchase: PurchasePost) = clickListener(purchase)
 }
 class PurchaseListDiffUtilCallBack : DiffUtil.ItemCallback<PurchasePost>() {

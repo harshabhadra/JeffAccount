@@ -9,6 +9,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
@@ -16,18 +17,20 @@ import com.example.jeffaccount.R
 import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.databinding.ActivityMainBinding
 import com.infideap.drawerbehavior.Advance3DDrawerLayout
+import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout:Advance3DDrawerLayout
     private lateinit var appBarConfigaration: AppBarConfiguration
+    private lateinit var mainBinding: ActivityMainBinding
     var loginCred:LogInCred? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val mainBinding = DataBindingUtil.
+        mainBinding = DataBindingUtil.
             setContentView<ActivityMainBinding>(this,
                 R.layout.activity_main
             )
@@ -36,8 +39,13 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
         drawerLayout = mainBinding.drawerLayout
-
+        val navHostFragment = nav_host_fragment as NavHostFragment
+        val inflater = navHostFragment.navController.navInflater
+        val graph = inflater.inflate(R.navigation.navigation)
         val navController = this.findNavController(R.id.nav_host_fragment)
+        val bundle = Bundle()
+        bundle.putString("filepath","welcome")
+        navHostFragment.navController.setGraph(graph,bundle)
         appBarConfigaration = AppBarConfiguration(navController.graph,drawerLayout)
         toolbar.setupWithNavController(navController, drawerLayout)
         NavigationUI.setupActionBarWithNavController(this,
@@ -48,6 +56,7 @@ class MainActivity : AppCompatActivity() {
             if (nd.id == nc.graph.startDestination){
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
                 mainBinding.mainCoordinatorLayout.background = ContextCompat.getDrawable(this,R.drawable.home)
+                setToolbarText(getString(R.string.app_name))
             }else{
                 drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
                 mainBinding.mainCoordinatorLayout.background = ContextCompat.getDrawable(this,R.drawable.loginpage)
@@ -66,5 +75,9 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navcontroller = this.findNavController(R.id.nav_host_fragment)
         return NavigationUI.navigateUp(navcontroller,appBarConfigaration)
+    }
+
+    fun setToolbarText(title:String){
+        mainBinding.appHeadingTv.text = title
     }
 }

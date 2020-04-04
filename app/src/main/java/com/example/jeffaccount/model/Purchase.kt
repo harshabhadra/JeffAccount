@@ -1,6 +1,5 @@
 package com.example.jeffaccount.model
 
-import android.os.Parcel
 import android.os.Parcelable
 import com.example.jeffaccount.network.Item
 import com.google.gson.annotations.Expose
@@ -54,6 +53,9 @@ data class PurchasePost(
     @SerializedName("telephone")
     @Expose
     var telephone:String?,
+    @SerializedName("vat")
+    @Expose
+    var vat:String?,
     @SerializedName("item_description")
     @Expose
     var itemDescription: MutableList<Item>

@@ -51,6 +51,9 @@ data class QuotationPost (
     @SerializedName("comment")
     @Expose
     var comment:String?,
+    @SerializedName("vat")
+    @Expose
+    var vat:String?,
     @SerializedName("item_description")
     @Expose
     var itemDescription: MutableList<Item>

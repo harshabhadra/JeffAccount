@@ -1,20 +1,21 @@
 package com.example.jeffaccount.ui.home.supplier
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.example.jeffaccount.LogInViewModel
 
 import com.example.jeffaccount.R
 import com.example.jeffaccount.model.SupPost
+import com.example.jeffaccount.network.SearchCustomer
+import com.example.jeffaccount.network.SearchSupplierPost
+import com.example.jeffaccount.ui.MainActivity
+import com.example.jeffaccount.ui.home.quotation.*
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import timber.log.Timber
 
@@ -24,7 +25,10 @@ import timber.log.Timber
 
 private lateinit var supplierListAdapter: SupplierListAdapter
 private lateinit var addSupplierViewModel: AddSupplierViewModel
-class SupplierFragment : Fragment() {
+private var supNameList:MutableSet<String> = mutableSetOf()
+class SupplierFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplierClickListener,
+    OnCustomerNameClickListener, OnSupplierNameClickListener, OnQuotationJobNoClickListener,
+    OnPurchaseJobNoClickListener, OnInvoiceJobNoClickListener, OnTimeSheetJobNoClickListener {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,6 +39,9 @@ class SupplierFragment : Fragment() {
 
         //Initializing ViewModel class
         addSupplierViewModel = ViewModelProvider(this).get(AddSupplierViewModel::class.java)
+
+        val activity = activity as MainActivity
+        activity.setToolbarText("Suppliers")
 
         val fab = view.findViewById<FloatingActionButton>(R.id.supplier_fab)
         val supplierRecyclerView:RecyclerView = view.findViewById(R.id.supplier_recycler)
@@ -50,6 +57,7 @@ class SupplierFragment : Fragment() {
             it?.let {
                 supplierListAdapter.submitList(it.posts)
                 noSupplierTv.visibility = View.GONE
+                addSupplierViewModel.createSupplierNameList(it.posts)
             }?:let {
                 Timber.e("No supplier")
                 noSupplierTv.visibility = View.VISIBLE
@@ -62,13 +70,85 @@ class SupplierFragment : Fragment() {
                 addSupplierViewModel.doneNavigating()
             }
         })
+
+        //Observe name list
+        addSupplierViewModel.nameList.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                supNameList.addAll(it)
+            }
+        })
+
         //Add supplier
         fab.setOnClickListener {
             view.findNavController().navigate(SupplierFragmentDirections.actionSupplierFragmentToAddSupplierFragment(
-                SupPost("","","","","","","",""),"add"
+                SupPost(
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ),"add"
             ))
         }
+        setHasOptionsMenu(true)
         return view
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.search_menu,menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            R.id.action_search ->{
+                if (supNameList.isNotEmpty()){
+                    val searchCustomerBottomSheetFragment = SearchCustomerBottomSheetFragment(
+                        getString(R.string.supplier),
+                        supNameList.toMutableList(),this,this,
+                    this, this,
+                    this, this,
+                    this, this)
+                    searchCustomerBottomSheetFragment.show(activity!!.supportFragmentManager, searchCustomerBottomSheetFragment.tag)
+                }
+            }
+        }
+        return true
+    }
+
+    override fun onSearchItemClick(searchCustomer: SearchCustomer) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onCustomerNameClick(name: String) {
+
+    }
+
+    override fun onSupplierNameClick(name: String) {
+
+    }
+
+    override fun onQuotationNameClick(name: String) {
+
+    }
+
+    override fun onPurchaseNameClick(name: String) {
+
+    }
+
+    override fun onInvoiceJobNoClick(name: String) {
+
+    }
+
+    override fun onTimeSheetJobClick(name: String) {
+
+    }
 }

@@ -2,6 +2,7 @@ package com.example.jeffaccount.ui.home.quotation
 
 import android.Manifest
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -20,9 +21,13 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
+import com.example.jeffaccount.createPreviewDialog
 import com.example.jeffaccount.databinding.AddQuotationFragmentBinding
+import com.example.jeffaccount.model.Post
 import com.example.jeffaccount.model.QuotationPost
 import com.example.jeffaccount.network.*
+import com.example.jeffaccount.ui.MainActivity
+import com.google.android.material.button.MaterialButton
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -35,6 +40,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.PermissionRequestErrorListener
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
+import kotlinx.android.synthetic.main.add_quotation_fragment.*
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -44,7 +50,9 @@ import kotlin.math.roundToLong
 
 
 class AddQuotationFragment : Fragment(),
-    DatePickerDialog.OnDateSetListener,OnSearchItemClickListener,OnSearchSupplierClickListener {
+    DatePickerDialog.OnDateSetListener, OnSearchItemClickListener, OnSearchSupplierClickListener,
+    OnCustomerNameClickListener, OnSupplierNameClickListener, OnQuotationJobNoClickListener,
+    OnPurchaseJobNoClickListener, OnInvoiceJobNoClickListener, OnTimeSheetJobNoClickListener {
 
     private lateinit var filePath: String
 //    private var apiKey = getString(R.string.api_key)
@@ -61,24 +69,63 @@ class AddQuotationFragment : Fragment(),
     private lateinit var action: String
     private lateinit var itemAdapter: ItemAdapter
     private var itemList: MutableList<Item> = mutableListOf()
-    private var nameList:MutableList<String> = mutableListOf()
-    private var addedItemList:MutableList<Item> = mutableListOf()
-    private lateinit var street:String
-    private lateinit var country:String
-    private lateinit var telephone:String
-    private lateinit var postCode:String
+    private var nameList: MutableList<String> = mutableListOf()
+    private var addedItemList: MutableList<Item> = mutableListOf()
+    private lateinit var street: String
+    private lateinit var country: String
+    private lateinit var telephone: String
+    private lateinit var postCode: String
     private var itemNo: Int = 1
     private var singleItemQty = 0
+    private lateinit var customer: Post
+    private var vat:Double = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Timber.e("on create")
+
+        viewModel = ViewModelProvider(this).get(AddQuotationViewModel::class.java)
         quotationBinding = AddQuotationFragmentBinding.inflate(inflater, container, false)
 
-        quotationBinding.saveQuotationButton.setOnClickListener {
-            findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
+        val activity = activity as MainActivity
+        activity.setToolbarText("Add Quotation")
+
+        //Taking arguments from Quotation Fragment
+        val arguments = AddQuotationFragmentArgs.fromBundle(arguments!!)
+        action = arguments.actionQuotation
+
+        if (action.equals(getString(R.string.update))) {
+            activity.setToolbarText("Update Quotation")
+            quotationItem = arguments.quotationItem!!
+            quotationBinding.quotation = quotationItem
+            quotationBinding.supplierUpdateButton.visibility = View.VISIBLE
+            quotationBinding.saveQuotationButton.visibility = View.GONE
+            itemList = quotationItem.itemDescription
+            viewModel.addItemToQuotation(itemList)
+            itemNo = itemList.size.plus(1)
+            quotationBinding.quotationCustomerNameTextInputLayout.text = quotationItem.customerName
+            quotationBinding.addQuotationStreetTv.text = quotationItem.street
+            quotationBinding.addQuotaitonCountryTv.text = quotationItem.country
+            quotationBinding.addQuotationPostcodeTv.text = quotationItem.postCode
+            quotationBinding.addQuotationTelephoneTv.text = quotationItem.telephone
+            quotationBinding.custAddtionalGroup.visibility = View.VISIBLE
+            quotationBinding.quotationAddItemTv.setText("No. of items: ${itemList.size}")
+        } else if (action.equals(getString(R.string.customer_data))) {
+            customer = arguments.customerItem!!
+            Timber.e("customer data ${customer.custname}")
+            quotationBinding.quotationCustomerNameTextInputLayout.text = customer.custname
+            quotationBinding.addQuotationStreetTv.text = customer.street
+            quotationBinding.addQuotaitonCountryTv.text = customer.country
+            quotationBinding.addQuotationPostcodeTv.text = customer.postcode
+            quotationBinding.addQuotationTelephoneTv.text = customer.telephone
+            quotationBinding.custAddtionalGroup.visibility = View.VISIBLE
+            Timber.e("customer data after set ${quotationBinding.quotationCustomerNameTextInputLayout.text}")
+            Toast.makeText(
+                context,
+                "Name is : ${quotationBinding.quotationCustomerNameTextInputLayout.text}",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         setHasOptionsMenu(true)
@@ -102,11 +149,14 @@ class AddQuotationFragment : Fragment(),
             val customerName = quotationBinding.quotationCustomerNameTextInputLayout.text.toString()
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
             val paymentMethod = quotationBinding.quotationPayementMethodTextInput.text.toString()
+            val vatPercentage = quotationBinding.quotationVatTextInput.text.toString()
             street = quotationBinding.addQuotationStreetTv.text.toString()
             country = quotationBinding.addQuotaitonCountryTv.text.toString()
             postCode = quotationBinding.addQuotationPostcodeTv.text.toString()
             telephone = quotationBinding.addQuotationTelephoneTv.text.toString()
-
+            if (vatPercentage.isNotEmpty()){
+                vat = vatPercentage.toDouble()
+            }
             when {
                 jobNo.isEmpty() -> {
                     quotationBinding.quotationJobTextInputLayout.error =
@@ -125,26 +175,41 @@ class AddQuotationFragment : Fragment(),
                     quotationBinding.quotationCustomerNameTextInputLayout.error =
                         getString(R.string.enter_customer_name)
                 }
-                comment.isEmpty() -> {
-                    quotationBinding.quotationCommentTextInputLayout.error =
-                        getString(R.string.enter_comment)
-                }
-                paymentMethod.isEmpty() -> {
-                    quotationBinding.quotationPayementMethodTextInputLayout.error =
-                        "Select a payment method"
-                }
                 else -> {
-                    val quotation = QuotationAdd(
-                        "AngE9676#254r5", jobNo, quotationNo, customerName, date, street,
-                        country, postCode, telephone,paymentMethod,comment, itemList
-                    )
-                    viewModel.addQuotaiton(quotation).observe(viewLifecycleOwner,
-                        Observer {
-                            it?.let {
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
-                            }
-                        })
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Save Quotation?")
+                    builder.setPositiveButton("Save", DialogInterface.OnClickListener{ dialog, which ->
+                        val quotation = QuotationAdd(
+                            "AngE9676#254r5",
+                            jobNo,
+                            quotationNo,
+                            customerName,
+                            date,
+                            street,
+                            country,
+                            postCode,
+                            telephone,
+                            paymentMethod,
+                            comment,
+                            vat,
+                            itemList
+                        )
+                        viewModel.addQuotaiton(quotation).observe(viewLifecycleOwner,
+                            Observer {
+                                it?.let {
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
+                                }
+                            })
+                        dialog.dismiss()
+                    })
+                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                        dialog.dismiss()
+
+                    })
+                    val dialog = builder.create()
+                    dialog.show()
+
                 }
             }
         }
@@ -157,11 +222,14 @@ class AddQuotationFragment : Fragment(),
             val customerName = quotationBinding.quotationCustomerNameTextInputLayout.text.toString()
             val comment = quotationBinding.quotationCommentTextInput.text.toString()
             val paymentMethod = quotationBinding.quotationPayementMethodTextInput.text.toString()
+            val vatPercentage = quotationBinding.quotationVatTextInput.text.toString()
             street = quotationBinding.addQuotationStreetTv.text.toString()
             country = quotationBinding.addQuotaitonCountryTv.text.toString()
             postCode = quotationBinding.addQuotationPostcodeTv.text.toString()
             telephone = quotationBinding.addQuotationTelephoneTv.text.toString()
-
+            if (vatPercentage.isNotEmpty()){
+                vat = vatPercentage.toDouble()
+            }
             when {
                 jobNo.isEmpty() -> {
                     quotationBinding.quotationJobTextInputLayout.error =
@@ -180,50 +248,61 @@ class AddQuotationFragment : Fragment(),
                     quotationBinding.quotationCustomerNameTextInputLayout.error =
                         getString(R.string.enter_customer_name)
                 }
-                comment.isEmpty() -> {
-                    quotationBinding.quotationCommentTextInputLayout.error =
-                        getString(R.string.enter_comment)
-                }
-
-                paymentMethod.isEmpty() -> {
-                    quotationBinding.quotationPayementMethodTextInputLayout.error =
-                        "Select a payment method"
-                }
                 else -> {
-                    val quotaionUpdate = QuotationUpdate(
-                        quotationItem.qid,
-                        "AngE9676#254r5",
-                        jobNo,
-                        quotationNo,
-                        customerName,
-                        date,
-                        street,
-                        country,
-                        postCode,
-                        telephone,
-                        comment,
-                        paymentMethod,
-                        itemList
-                    )
-                    viewModel.updateQuotation(quotaionUpdate).observe(viewLifecycleOwner,
-                        Observer {
-                            it?.let {
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
-                            }
-                        })
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Update Quotation?")
+                    builder.setPositiveButton("Update",DialogInterface.OnClickListener{dialog, which ->
+                        val quotaionUpdate = QuotationUpdate(
+                            quotationItem.qid,
+                            "AngE9676#254r5",
+                            jobNo,
+                            quotationNo,
+                            customerName,
+                            date,
+                            street,
+                            country,
+                            postCode,
+                            telephone,
+                            paymentMethod,
+                            comment,
+                            vat,
+                            itemList
+                        )
+                        viewModel.updateQuotation(quotaionUpdate).observe(viewLifecycleOwner,
+                            Observer {
+                                it?.let {
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(AddQuotationFragmentDirections.actionAddQuotationFragmentToQuotationFragment())
+                                }
+                            })
+                        dialog.dismiss()
+                    })
+                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                        dialog.dismiss()
+
+                    })
+                    val dialog = builder.create()
+                    dialog.show()
                 }
             }
         }
 
         //Set on click listener to add item text view
         quotationBinding.quotationAddItemTv.setOnClickListener {
-            createItemDialog()
+            createItemDialog(null)
         }
 
         quotationBinding.quotationCustomerNameTextInputLayout.setOnClickListener {
-            val searchnameFragment = SearchCustomerBottomSheetFragment(getString(R.string.quotation),nameList,this,this)
-            searchnameFragment.show(activity!!.supportFragmentManager,searchnameFragment.tag)
+            val searchnameFragment = SearchCustomerBottomSheetFragment(
+                getString(R.string.quotation),
+                nameList,
+                this,
+                this,
+                this, this,
+                this, this,
+                this, this
+            )
+            searchnameFragment.show(activity!!.supportFragmentManager, searchnameFragment.tag)
         }
 
         //Add Text Watcher to job no
@@ -268,53 +347,64 @@ class AddQuotationFragment : Fragment(),
             }
         })
 
+        //Add text watcher to vat percentage text input
+        quotationBinding.quotationVatTextInput.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                quotation_vat_textInputLayout.isErrorEnabled = true
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                quotation_vat_textInputLayout.isErrorEnabled = false
+            }
+        })
+
         //Setting up item recycler view
         val itemRecycler = quotationBinding.quotationItemRecyclerView
         itemAdapter = ItemAdapter(OnAddedItemClickListener {
             val item = it
-            val layout =
-                LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
-            val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
-            builder?.setCancelable(false)
-            builder?.setView(layout)
-            val dialog = builder?.create()
-            dialog?.show()
-
-            val delButton = layout.findViewById<Button>(R.id.delete_button)
-            val canButton: Button = layout.findViewById(R.id.cancel_del_button)
-            delButton.setOnClickListener {
-                addedItemList.remove(item)
-                viewModel.removeItem(addedItemList)
-                dialog?.dismiss()
-            }
-            canButton.setOnClickListener {
-                dialog?.dismiss()
-            }
+            createChoiceDialog(item)
         })
         itemRecycler.adapter = itemAdapter
+
+        //Observe customer data
+        viewModel.customerData.observe(viewLifecycleOwner, Observer {
+            it?.let {
+
+            } ?: let {
+                Timber.e("viewmodel customer data empty")
+            }
+        })
+
         return quotationBinding.root
+    }
+
+    private fun createChoiceDialog(item: Item) {
+        val layout = LayoutInflater.from(context).inflate(R.layout.choose_layout, null)
+        val builder = AlertDialog.Builder(context!!)
+        builder.setView(layout)
+        val dialog = builder.create()
+        dialog.show()
+        val editButton: MaterialButton = layout.findViewById(R.id.choice_edit_button)
+        val deleteButton: MaterialButton = layout.findViewById(R.id.choice_delete_button)
+        deleteButton.setOnClickListener {
+            addedItemList.remove(item)
+            viewModel.addItemToQuotation(addedItemList)
+            dialog.dismiss()
+        }
+        editButton.setOnClickListener {
+            dialog.dismiss()
+            createItemDialog(item)
+        }
+
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         requestReadPermissions()
-        viewModel = ViewModelProvider(this).get(AddQuotationViewModel::class.java)
-        //Taking arguments from Quotation Fragment
-        val arguments = AddQuotationFragmentArgs.fromBundle(arguments!!)
-        action = arguments.actionQuotation
-
-        if (action.equals(getString(R.string.update))) {
-            quotationItem = arguments.quotationItem!!
-            quotationBinding.quotation = quotationItem
-            quotationBinding.supplierUpdateButton.visibility = View.VISIBLE
-            quotationBinding.saveQuotationButton.visibility = View.GONE
-            itemList = quotationItem.itemDescription
-            viewModel.addItemToQuotation(itemList)
-            itemNo = itemList.size.plus(1)
-            quotationBinding.custAddtionalGroup.visibility = View.VISIBLE
-            quotationBinding.quotationAddItemTv.setText("No. of items: ${itemList.size}")
-        }
 
         viewModel.dateString.observe(viewLifecycleOwner, Observer {
             it?.let {
@@ -336,18 +426,19 @@ class AddQuotationFragment : Fragment(),
         viewModel.getCustomerList().observe(viewLifecycleOwner, Observer {
             it?.let {
                 val comList = it.posts
-                for (item in comList){
+                for (item in comList) {
                     nameList.add(item.custname!!)
                 }
                 Timber.e("Name list size: ${nameList.size}, Com list size: ${comList.size}")
             }
         })
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (action.equals(getString(R.string.update))) {
-            inflater.inflate(R.menu.main_menu, menu)
+            inflater.inflate(R.menu.quotation_menu, menu)
         }
     }
 
@@ -400,6 +491,16 @@ class AddQuotationFragment : Fragment(),
                 Timber.e("file path: $filePath")
                 savePdf()
             }
+            R.id.add_to_invoice -> {
+                findNavController().navigate(
+                    AddQuotationFragmentDirections.actionAddQuotationFragmentToAddInvoiceFragment(
+                        getString(R.string.quotation),
+                        null,
+                        null,
+                        quotationItem
+                    )
+                )
+            }
         }
         return true
     }
@@ -424,10 +525,10 @@ class AddQuotationFragment : Fragment(),
                     // check if all permissions are granted
                     if (report.areAllPermissionsGranted()) {
                         Toast.makeText(
-                                context,
-                                "All permissions are granted by user!",
-                                Toast.LENGTH_SHORT
-                            )
+                            context,
+                            "All permissions are granted by user!",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
 
@@ -465,8 +566,8 @@ class AddQuotationFragment : Fragment(),
             val addressCell = getAddressTable()
             val dateCell = PdfPCell()
             dateCell.border = PdfPCell.NO_BORDER
-            dateCell.addElement(Paragraph("Date: $quotationItem.date"))
-            dateCell.addElement(Paragraph("Quotation No. : $quotationItem.quotationNo"))
+            dateCell.addElement(Paragraph("Date: ${quotationItem.date}"))
+            dateCell.addElement(Paragraph("Quotation No. : ${quotationItem.quotationNo}"))
             dateCell.horizontalAlignment = Element.ALIGN_RIGHT
             headTable.addCell(addressCell)
             headTable.addCell(dateCell)
@@ -494,6 +595,9 @@ class AddQuotationFragment : Fragment(),
             doc.add(Paragraph(" "))
             doc.add(Paragraph("Additional Charges"))
             doc.add(Paragraph(" "))
+            doc.add(Paragraph("Special instruction"))
+            doc.add(Paragraph(quotationItem.comment))
+            doc.add(Paragraph(" "))
             val totalTable = createTotalTable()
             doc.add(totalTable)
             doc.add(Paragraph(" "))
@@ -507,10 +611,8 @@ class AddQuotationFragment : Fragment(),
             doc.close().let {
                 loadingDialog?.dismiss()
                 Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
-                val intent = Intent(Intent.ACTION_VIEW)
-                val data = Uri.parse("file://" + filePath)
-                intent.setDataAndType(data, "application/pdf")
-                startActivity(Intent.createChooser(intent, "Open Pdf"))
+                Timber.e("Pdf saved in $filePath")
+                createPreviewDialog(filePath, context!!, activity!!)
             }
         } catch (e: java.lang.Exception) {
 
@@ -527,7 +629,7 @@ class AddQuotationFragment : Fragment(),
         table.addCell(subTotalCell)
         val subTotalDCell = PdfPCell()
         var subTotal = 0.0
-        for (item in addedItemList){
+        for (item in addedItemList) {
             subTotal += item.unitAmount!!
         }
         subTotalDCell.addElement(Paragraph(subTotal.toString()))
@@ -538,15 +640,16 @@ class AddQuotationFragment : Fragment(),
         taxCell.setPadding(8f)
         table.addCell(taxCell)
         val taxDCell = PdfPCell()
-//        taxDCell.addElement(Paragraph(quotationItem.vat))
+        taxDCell.addElement(Paragraph(quotationItem.vat.toString()))
         taxDCell.setPadding(8f)
         table.addCell(taxDCell)
         val taxAmountCell = PdfPCell()
+        val taxAmount = (quotationItem.vat?.toDouble()?.div(100))?.times(subTotal)
         taxAmountCell.addElement(Paragraph("TAX AMOUNT"))
         taxAmountCell.setPadding(8f)
         table.addCell(taxAmountCell)
         val taxAmountDCell = PdfPCell()
-        taxAmountDCell.addElement(Paragraph(" "))
+        taxAmountDCell.addElement(Paragraph(taxAmount.toString()))
         taxAmountDCell.setPadding(8f)
         table.addCell(taxAmountDCell)
         val disocuntCell = PdfPCell()
@@ -555,7 +658,7 @@ class AddQuotationFragment : Fragment(),
         table.addCell(disocuntCell)
         val discountDCell = PdfPCell()
         var totalDiscount = 0.0
-        for (item in addedItemList){
+        for (item in addedItemList) {
             totalDiscount += item.discountAmount!!
         }
         discountDCell.addElement(Paragraph(totalDiscount.toString()))
@@ -566,7 +669,7 @@ class AddQuotationFragment : Fragment(),
         totalAmountCell.setPadding(8f)
         table.addCell(totalAmountCell)
         val totalAmountDCell = PdfPCell()
-        val totalAmount = subTotal.minus(totalDiscount).roundToLong()
+        val totalAmount = subTotal.plus(taxAmount!!).minus(totalDiscount).roundToLong()
         totalAmountDCell.addElement(Paragraph(totalAmount.toString()))
         totalAmountDCell.setPadding(8f)
         table.addCell(totalAmountDCell)
@@ -593,7 +696,7 @@ class AddQuotationFragment : Fragment(),
         discountCell.setPadding(8f)
         table.addCell(discountCell)
 
-        for(item in addedItemList){
+        for (item in addedItemList) {
             val itemNoCell = PdfPCell(Paragraph(item.noOfItem.toString()))
             itemNoCell.setPadding(8f)
             val itemDesCell = PdfPCell(Paragraph(item.itemDes))
@@ -743,7 +846,7 @@ class AddQuotationFragment : Fragment(),
     }
 
 
-    private fun createItemDialog() {
+    private fun createItemDialog(item: Item?) {
 
         val layout = LayoutInflater.from(context).inflate(R.layout.fragment_add_item, null)
         val builder = context.let { androidx.appcompat.app.AlertDialog.Builder(it!!) }
@@ -756,11 +859,88 @@ class AddQuotationFragment : Fragment(),
         val unitAmountTv: TextView = layout.findViewById(R.id.item_unitamount_editText)
         val discountAmountTv: TextView = layout.findViewById(R.id.discount_amount_editText)
         val totalAmountTv: TextView = layout.findViewById(R.id.total_editText)
-        val vatTv: TextView = layout.findViewById(R.id.vat_editText)
         val addButton: Button = layout.findViewById(R.id.add_item_button)
         val negButton: ImageButton = layout.findViewById(R.id.neg_qty_button)
         val posButton: ImageButton = layout.findViewById(R.id.pos_qty_button)
+        var amount = 0.0
+        var discountAmount = 0.0
 
+        unitAmountTv.addTextChangedListener(object :TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+                s?.let {
+                    if (s.isNotEmpty()) {
+                        amount = s.toString().toDouble()
+                        if (qtytv.text.isNotEmpty()&& discountAmountTv.text.isNotEmpty()){
+                            viewModel.calculateAmount(singleItemQty,amount,discountAmount)
+                        }
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+        })
+
+        discountAmountTv.addTextChangedListener(object :TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                s?.let {
+                    if (s.isNotEmpty()) {
+                        discountAmount = s.toString().toDouble()
+                        if (qtytv.text.isNotEmpty()&& unitAmountTv.text.isNotEmpty()) {
+                            viewModel.calculateAmount(singleItemQty, amount, discountAmount)
+                        }
+                    }
+                }
+            }
+        })
+
+        qtytv.addTextChangedListener(object :TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+             s?.let {
+                 if (s.isNotEmpty()){
+                     singleItemQty = s.toString().toInt()
+                     if (unitAmountTv.text.isNotEmpty()&& discountAmountTv.text.isNotEmpty()){
+                         viewModel.calculateAmount(singleItemQty,amount,discountAmount)
+                     }
+                 }
+             }
+            }
+        })
+        viewModel.totalAmount.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                totalAmountTv.text = it.toString()
+            }
+        })
+        item?.let {
+            singleItemQty = item.qty!!
+            itemDestv.text = item.itemDes
+            qtytv.text = item.qty.toString()
+            unitAmountTv.text = item.unitAmount.toString()
+            discountAmountTv.text = item.discountAmount.toString()
+            totalAmountTv.text = item.totalAmount.toString()
+            addButton.text = getString(R.string.update)
+        }
         singleItemQty = when {
             qtytv.text.isEmpty() -> {
                 0
@@ -781,53 +961,105 @@ class AddQuotationFragment : Fragment(),
                 qtytv.setText(singleItemQty.toString())
             }
         }
-        addButton.setOnClickListener {
-            val itemDes = itemDestv.text.toString()
-            val qty = qtytv.text.toString()
-            val unitAmount = unitAmountTv.text.toString()
-            val discountAmount = discountAmountTv.text.toString()
-            val totalAmount = totalAmountTv.text.toString()
-            val vat = vatTv.text.toString()
-            when {
-                itemDes.isEmpty() -> Toast.makeText(
-                    context,
-                    "Add item description",
-                    Toast.LENGTH_SHORT
-                ).show()
-                qty.isEmpty() -> Toast.makeText(context, "Add Quantity", Toast.LENGTH_SHORT).show()
-                unitAmount.isEmpty() -> Toast.makeText(
-                    context,
-                    "Enter Unit Amount",
-                    Toast.LENGTH_SHORT
-                ).show()
-                discountAmount.isEmpty() -> Toast.makeText(
-                    context,
-                    "Enter Discount Amount",
-                    Toast.LENGTH_SHORT
-                ).show()
-                totalAmount.isEmpty() -> Toast.makeText(
-                    context,
-                    "Enter Total Amount",
-                    Toast.LENGTH_SHORT
-                ).show()
-                vat.isEmpty() -> Toast.makeText(context, "Enter vat Amount", Toast.LENGTH_SHORT)
-                    .show()
-                else -> {
-                    val item = Item(
-                        itemNo,
-                        itemDes,
-                        qty.toInt(),
-                        unitAmount.toDouble(),
-                        discountAmount.toDouble(),
-                        totalAmount.toDouble(),
-                        vat.toDouble()
-                    )
-                    itemNo++
-                    itemList.add(item)
-                    Timber.e("List size is ${itemList.size}")
-                    quotationBinding.quotationAddItemTv.setText("No. of items: ${itemList.size}")
-                    viewModel.addItemToQuotation(itemList)
-                    dialog.dismiss()
+
+        if (item == null) {
+            addButton.setOnClickListener {
+                viewModel.setDefaultAmount()
+                val itemDes = itemDestv.text.toString()
+                val qty = qtytv.text.toString()
+                val unitAmount = unitAmountTv.text.toString()
+                val discountAmount = discountAmountTv.text.toString()
+                val totalAmount = totalAmountTv.text.toString()
+                when {
+                    itemDes.isEmpty() -> Toast.makeText(
+                        context,
+                        "Add item description",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    qty.isEmpty() -> Toast.makeText(context, "Add Quantity", Toast.LENGTH_SHORT)
+                        .show()
+                    unitAmount.isEmpty() -> Toast.makeText(
+                        context,
+                        "Enter Unit Amount",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    discountAmount.isEmpty() -> Toast.makeText(
+                        context,
+                        "Enter Discount Amount",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    totalAmount.isEmpty() -> Toast.makeText(
+                        context,
+                        "Enter Total Amount",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    else -> {
+                        val item = Item(
+                            itemNo,
+                            itemDes,
+                            qty.toInt(),
+                            unitAmount.toDouble(),
+                            discountAmount.toDouble(),
+                            totalAmount.toDouble()
+                        )
+                        itemNo++
+                        itemList.add(item)
+                        Timber.e("List size is ${itemList.size}")
+                        quotationBinding.quotationAddItemTv.setText("No. of items: ${itemList.size}")
+                        viewModel.addItemToQuotation(itemList)
+                        dialog.dismiss()
+                    }
+                }
+            }
+        } else {
+
+            addButton.setOnClickListener {
+                viewModel.setDefaultAmount()
+                val itemDes = itemDestv.text.toString()
+                val qty = qtytv.text.toString()
+                val unitAmount = unitAmountTv.text.toString()
+                val discountAmount = discountAmountTv.text.toString()
+                val totalAmount = totalAmountTv.text.toString()
+                when {
+                    itemDes.isEmpty() -> Toast.makeText(
+                        context,
+                        "Add item description",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    qty.isEmpty() -> Toast.makeText(context, "Add Quantity", Toast.LENGTH_SHORT)
+                        .show()
+                    unitAmount.isEmpty() -> Toast.makeText(
+                        context,
+                        "Enter Unit Amount",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    discountAmount.isEmpty() -> Toast.makeText(
+                        context,
+                        "Enter Discount Amount",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    totalAmount.isEmpty() -> Toast.makeText(
+                        context,
+                        "Enter Total Amount",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    else -> {
+                        val newItem = Item(
+                            itemNo,
+                            itemDes,
+                            qty.toInt(),
+                            unitAmount.toDouble(),
+                            discountAmount.toDouble(),
+                            totalAmount.toDouble()
+                        )
+                        itemNo++
+                        addedItemList.remove(item)
+                        addedItemList.add(newItem)
+                        Timber.e("List size is ${itemList.size}")
+                        quotationBinding.quotationAddItemTv.setText("No. of items: ${itemList.size}")
+                        viewModel.addItemToQuotation(addedItemList)
+                        dialog.dismiss()
+                    }
                 }
             }
         }
@@ -846,6 +1078,30 @@ class AddQuotationFragment : Fragment(),
     }
 
     override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost) {
+
+    }
+
+    override fun onCustomerNameClick(name: String) {
+
+    }
+
+    override fun onSupplierNameClick(name: String) {
+
+    }
+
+    override fun onQuotationNameClick(name: String) {
+
+    }
+
+    override fun onPurchaseNameClick(name: String) {
+
+    }
+
+    override fun onInvoiceJobNoClick(name: String) {
+
+    }
+
+    override fun onTimeSheetJobClick(name: String) {
 
     }
 }

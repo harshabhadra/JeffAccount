@@ -1,24 +1,26 @@
 package com.example.jeffaccount.ui.home.customer
 
 import android.Manifest
-import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.*
 import android.widget.Button
 import androidx.fragment.app.Fragment
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
+import com.example.jeffaccount.createPreviewDialog
 import com.example.jeffaccount.databinding.AddCustomerFragmentBinding
 import com.example.jeffaccount.model.Post
+import com.example.jeffaccount.ui.MainActivity
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -35,7 +37,6 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
-import java.lang.NumberFormatException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -86,30 +87,22 @@ class AddCustomerFragment : Fragment() {
                     addCustomerBinding.customerNameTextInputLayout.error =
                         getString(R.string.add_name)
                 }
-                street.isEmpty() -> {
-                    addCustomerBinding.customerAddressTextInputLayout.error =
-                        getString(R.string.add_address)
-                }
-                postCode.isEmpty() -> {
-                    addCustomerBinding.customerPostCodeTextInputLayout.error =
-                        getString(R.string.enter_post_code)
-                }
-                phone.isEmpty() -> {
-                    addCustomerBinding.customerTelephoneTextInputLayout.error =
-                        getString(R.string.add_phone_no)
-                }
-                email.isEmpty() -> {
-                    addCustomerBinding.customerEmailTextInputLayout.error =
-                        getString(R.string.add_email)
-                }
-                web.isEmpty() -> {
-                    addCustomerBinding.customerWebTextInputLayout.error =
-                        getString(R.string.add_web_address)
-                }
                 else -> {
-                    loadingDialog = createLoadingDialog()
-                    loadingDialog?.show()
-                    addCustomer(name, street, country, postCode, phone, email, web)
+
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Save Customer?")
+                    builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
+                        loadingDialog = createLoadingDialog()
+                        loadingDialog?.show()
+                        addCustomer(name, street, country, postCode, phone, email, web)
+                        dialog.dismiss()
+                    })
+                   builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                       dialog.dismiss()
+
+                   })
+                    val dialog = builder.create()
+                    dialog.show()
                 }
             }
         }
@@ -130,39 +123,30 @@ class AddCustomerFragment : Fragment() {
                     addCustomerBinding.customerNameTextInputLayout.error =
                         getString(R.string.add_name)
                 }
-                street.isEmpty() -> {
-                    addCustomerBinding.customerAddressTextInputLayout.error =
-                        getString(R.string.add_address)
-                }
-                postCode.isEmpty() -> {
-                    addCustomerBinding.customerPostCodeTextInputLayout.error =
-                        getString(R.string.enter_post_code)
-                }
-                phone.isEmpty() -> {
-                    addCustomerBinding.customerTelephoneTextInputLayout.error =
-                        getString(R.string.add_phone_no)
-                }
-                email.isEmpty() -> {
-                    addCustomerBinding.customerEmailTextInputLayout.error =
-                        getString(R.string.add_email)
-                }
-                web.isEmpty() -> {
-                    addCustomerBinding.customerWebTextInputLayout.error =
-                        getString(R.string.add_web_address)
-                }
                 else -> {
-                    loadingDialog = createLoadingDialog()
-                    loadingDialog?.show()
-                    updateCustomer(
-                        customer.custid!!,
-                        name,
-                        street,
-                        country,
-                        postCode,
-                        phone,
-                        email,
-                        web
-                    )
+
+                    val builder = AlertDialog.Builder(context!!)
+                    builder.setTitle("Update Customer?")
+                    builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
+                        loadingDialog = createLoadingDialog()
+                        loadingDialog?.show()
+                        updateCustomer(
+                            customer.custid!!,
+                            name,
+                            street,
+                            country,
+                            postCode,
+                            phone,
+                            email,
+                            web
+                        )
+                        dialog.dismiss()
+                    })
+                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
+                        dialog.dismiss()
+                    })
+                    val dialog = builder.create()
+                    dialog.show()
                 }
             }
         }
@@ -263,6 +247,8 @@ class AddCustomerFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(CustomerViewModel::class.java)
         requestReadPermissions()
+        val activity = activity as MainActivity
+        activity.setToolbarText(getString(R.string.add_customer))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -275,31 +261,46 @@ class AddCustomerFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         val id = item.itemId
-        if (id == R.id.customer_delete) {
-            val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
-            val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
-            builder?.setCancelable(false)
-            builder?.setView(layout)
-            val dialog = builder?.create()
-            dialog?.show()
+        when (id) {
+            R.id.customer_delete -> {
+                val layout = LayoutInflater.from(context).inflate(R.layout.delete_confirmation, null)
+                val builder = context?.let { androidx.appcompat.app.AlertDialog.Builder(it) }
+                builder?.setCancelable(false)
+                builder?.setView(layout)
+                val dialog = builder?.create()
+                dialog?.show()
 
-            val delButton = layout.findViewById<Button>(R.id.delete_button)
-            val canButton: Button = layout.findViewById(R.id.cancel_del_button)
+                val delButton = layout.findViewById<Button>(R.id.delete_button)
+                val canButton: Button = layout.findViewById(R.id.cancel_del_button)
 
-            delButton.setOnClickListener {
-                loadingDialog = createLoadingDialog()
-                loadingDialog?.show()
-                deleteUser(customer.custid!!)
-                dialog?.dismiss()
+                delButton.setOnClickListener {
+                    loadingDialog = createLoadingDialog()
+                    loadingDialog?.show()
+                    deleteUser(customer.custid!!)
+                    dialog?.dismiss()
+                }
+
+                canButton.setOnClickListener {
+                    dialog?.dismiss()
+                }
+
             }
-
-            canButton.setOnClickListener {
-                dialog?.dismiss()
+            R.id.customer_pdf_convert -> {
+                Timber.e("Pdf click")
+                createPdf()
             }
-
-        } else if (id == R.id.convert_pdf_item) {
-            Timber.e("Pdf click")
-            createPdf()
+            R.id.customer_quotation -> {
+                findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToAddQuotationFragment(null,
+                    getString(R.string.customer_data),null,customer))
+            }
+            R.id.customer_invoice->{
+                findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToAddInvoiceFragment(
+                    getString(R.string.customer_data),
+                    null,
+                    customer,
+                    null
+                ))
+            }
         }
         return true
     }
@@ -410,11 +411,7 @@ class AddCustomerFragment : Fragment() {
             createCustomerTable(customerBody)
             mDoc.add(customerBody)
             mDoc.close().let {
-                Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
-                val intent = Intent(Intent.ACTION_VIEW)
-                val data = Uri.parse("file://" + filePath)
-                intent.setDataAndType(data, "application/pdf")
-                startActivity(Intent.createChooser(intent, "Open Pdf"))
+               createPreviewDialog(filePath,context!!, activity!!)
             }
         } catch (e: Exception) {
 

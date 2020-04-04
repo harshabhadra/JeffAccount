@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <variable
+            name="invoice"
+            type="com.example.jeffaccount.model.Invoice" />
+        <variable
+            name="clickListener"
+            type="com.example.jeffaccount.ui.home.invoice.InvoiceClickListener" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="6dp"
+        app:cardUseCompatPadding="true"
+        android:onClick="@{()->clickListener.invoiceItemClick(invoice)}"
+        android:background="@drawable/loginpage">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/loginpage">
+
+            <TextView
+                android:id="@+id/i_textView46"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{invoice.customerName}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView45"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="@+id/i_textView45"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView45" />
+
+            <TextView
+                android:id="@+id/i_textView30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="Job No."
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/i_textView31"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Quotation No."
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/invoice_job_no" />
+
+            <TextView
+                android:id="@+id/i_textView33"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Date"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView44" />
+
+            <TextView
+                android:id="@+id/i_textView34"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Customer Name"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView45" />
+
+            <TextView
+                android:id="@+id/i_textView35"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Special Instruction"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView77" />
+
+            <TextView
+                android:id="@+id/i_textView37"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Payment Method"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView48" />
+
+            <TextView
+                android:id="@+id/i_textView38"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="Quantity"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView49" />
+
+            <TextView
+                android:id="@+id/invoice_job_no"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@{invoice.jobNo}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/i_textView35"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/i_textView44"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{invoice.quotationNo}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/invoice_job_no"
+                app:layout_constraintStart_toStartOf="@+id/invoice_job_no"
+                app:layout_constraintTop_toBottomOf="@+id/invoice_job_no" />
+
+            <TextView
+                android:id="@+id/i_textView45"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{invoice.date}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView44"
+                app:layout_constraintStart_toStartOf="@+id/i_textView44"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView44" />
+
+            <TextView
+                android:id="@+id/i_textView48"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{invoice.comment}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView46"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/i_textView46"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView77" />
+
+            <TextView
+                android:id="@+id/i_textView49"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@{invoice.paymentMethod}"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView48"
+                app:layout_constraintStart_toStartOf="@+id/i_textView48"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView48" />
+
+            <TextView
+                android:id="@+id/i_textView50"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="@{String.valueOf(invoice.itemDescription.size())}"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView49"
+                app:layout_constraintStart_toStartOf="@+id/i_textView49"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView49" />
+
+            <TextView
+                android:id="@+id/i_textView69"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/street_address"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView46" />
+
+            <TextView
+                android:id="@+id/i_textView71"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{invoice.street}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView46"
+                app:layout_constraintStart_toStartOf="@+id/i_textView46"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView46" />
+
+            <TextView
+                android:id="@+id/i_textView72"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/country"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView71" />
+
+            <TextView
+                android:id="@+id/i_textView73"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{invoice.country}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView71"
+                app:layout_constraintStart_toStartOf="@+id/i_textView71"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView71" />
+
+            <TextView
+                android:id="@+id/i_textView74"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/post_code"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView73" />
+
+            <TextView
+                android:id="@+id/i_textView75"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{invoice.postCode}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView73"
+                app:layout_constraintStart_toStartOf="@+id/i_textView73"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView73" />
+
+            <TextView
+                android:id="@+id/i_textView76"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/telephone_no"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView75" />
+
+            <TextView
+                android:id="@+id/i_textView77"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@{invoice.telephone}"
+                android:textColor="@android:color/white"
+                app:layout_constraintEnd_toEndOf="@+id/i_textView75"
+                app:layout_constraintStart_toStartOf="@+id/i_textView75"
+                app:layout_constraintTop_toBottomOf="@+id/i_textView75" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+</layout>

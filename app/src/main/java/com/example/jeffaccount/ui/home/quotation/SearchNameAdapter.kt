@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jeffaccount.R
 import com.example.jeffaccount.generated.callback.OnClickListener
+import timber.log.Timber
 
 class SearchNameAdapter(private val nameList:ArrayList<String>,val itemClickListener: OnItemClickListener)
     : RecyclerView.Adapter<SearchNameAdapter.ViewHolder>() {
@@ -36,11 +37,13 @@ class SearchNameAdapter(private val nameList:ArrayList<String>,val itemClickList
     }
 
     override fun getItemCount(): Int {
+        Timber.e("in adapter size is : ${nameList.size}")
        return nameList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = nameList.get(position)
+        Timber.e(item)
         holder.bind(item,itemClickListener)
     }
 }
