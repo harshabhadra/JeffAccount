@@ -13,9 +13,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/loginpage">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/loginpage"
         tools:context=".ui.home.supplier.AddSupplierFragment">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -116,8 +118,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/call_supplier_iv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/supplier_post_code_textInputLayout">
 
@@ -125,11 +127,11 @@
                 android:id="@+id/supplier_telephone_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
+                android:hint="@string/telephone_no"
                 android:inputType="phone"
                 android:maxLines="1"
                 android:text="@{supplier.telephone}"
-                android:hint="@string/telephone_no" />
+                android:textColor="@android:color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -138,8 +140,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/email_supplier_iv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/supplier_telephone_textInputLayout">
 
@@ -147,11 +149,11 @@
                 android:id="@+id/supplier_email_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/white"
+                android:hint="@string/email_address"
+                android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:text="@{supplier.supemail}"
-                android:inputType="textEmailAddress"
-                android:hint="@string/email_address" />
+                android:textColor="@android:color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -160,8 +162,8 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/web_supplier_iv"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/supplier_email_textInputLayout">
 
@@ -169,11 +171,11 @@
                 android:id="@+id/supplier_web_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:hint="@string/web_address"
                 android:inputType="textWebEditText"
                 android:maxLines="1"
                 android:text="@{supplier.web}"
-                android:textColor="@android:color/white"
-                android:hint="@string/web_address" />
+                android:textColor="@android:color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
@@ -181,14 +183,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="32dp"
             android:text="@string/save"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/supplier_update_button"
-            app:layout_constraintTop_toBottomOf="@+id/supplier_web_textInputLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/supplier_county_textInputLayout" />
 
         <Button
             android:id="@+id/supplier_update_button"
@@ -203,7 +204,58 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/save_supplier_button"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/supplier_web_textInputLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/supplier_county_textInputLayout" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/supplier_county_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/supplier_web_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/supplier_county_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:maxLines="1"
+                android:text="@{supplier.county}"
+                android:hint="@string/county" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/call_supplier_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/supplier_telephone_textInputLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/supplier_telephone_textInputLayout"
+            app:srcCompat="@drawable/ic_call_24dp" />
+
+        <ImageView
+            android:id="@+id/email_supplier_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/supplier_email_textInputLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/supplier_email_textInputLayout"
+            app:srcCompat="@drawable/ic_email_white_24dp" />
+
+        <ImageView
+            android:id="@+id/web_supplier_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintBottom_toBottomOf="@+id/supplier_web_textInputLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/supplier_web_textInputLayout"
+            app:srcCompat="@drawable/ic_web_24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

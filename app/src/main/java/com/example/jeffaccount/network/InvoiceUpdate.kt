@@ -4,6 +4,9 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class InvoiceUpdate(
+    @SerializedName("comid")
+    @Expose
+    var comid:String,
     @SerializedName("inid")
     @Expose
     var inid:String?,
@@ -53,5 +56,8 @@ data class InvoiceUpdate(
     var vat: Double?,
     @SerializedName("items")
     @Expose
-    var items: List<Item>?
+    var items: List<Item>?,
+    @SerializedName("paymentlink")
+    @Expose
+    var paymentLink:String? = ""
 )

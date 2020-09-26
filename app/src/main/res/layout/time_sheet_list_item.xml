@@ -16,7 +16,7 @@
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardBackgroundColor="@android:color/transparent"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
         app:cardCornerRadius="8dp"
         app:cardElevation="6dp"
         android:onClick="@{()->clickListener.timeSheetItemClick(timeSheet)}"
@@ -26,17 +26,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent">
-
-            <TextView
-                android:id="@+id/ts_textView46"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.name}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView45"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView45"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView45" />
 
             <TextView
                 android:id="@+id/ts_textView30"
@@ -57,119 +46,8 @@
                 android:layout_marginTop="8dp"
                 android:text="Quotation No."
                 android:textColor="@android:color/white"
-
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/ts_quotation_job_no" />
-
-            <TextView
-                android:id="@+id/ts_textView32"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Vat%"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView44" />
-
-            <TextView
-                android:id="@+id/ts_textView33"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Date"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView43" />
-
-            <TextView
-                android:id="@+id/ts_textView34"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Name"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView45" />
-
-            <TextView
-                android:id="@+id/ts_textView35"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Special Instruction"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView93" />
-
-            <TextView
-                android:id="@+id/ts_textView36"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Item Description"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView48" />
-
-            <TextView
-                android:id="@+id/ts_textView37"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Payment Method"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView47" />
-
-            <TextView
-                android:id="@+id/ts_textView38"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Hours"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView49" />
-
-            <TextView
-                android:id="@+id/ts_textView39"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Advance Amount"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView51" />
-
-            <TextView
-                android:id="@+id/ts_textView40"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Discount Amount"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView53" />
-
-            <TextView
-                android:id="@+id/ts_textView41"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="Unit Amount"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_view6" />
 
             <TextView
                 android:id="@+id/ts_quotation_job_no"
@@ -178,25 +56,14 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
+
                 android:text="@{timeSheet.jobNo}"
                 android:textColor="@android:color/white"
-
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/ts_textView35"
+                app:layout_constraintStart_toEndOf="@+id/textView55"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/ts_textView43"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.vat}"
-                android:textColor="@android:color/white"
-
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView44"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView44"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView44" />
 
             <TextView
                 android:id="@+id/ts_textView44"
@@ -210,211 +77,51 @@
                 app:layout_constraintTop_toBottomOf="@+id/ts_quotation_job_no" />
 
             <TextView
-                android:id="@+id/ts_textView45"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.date}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView43"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView43"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView43" />
-
-            <TextView
-                android:id="@+id/ts_textView47"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.itemDescription}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/textView48"
-                app:layout_constraintStart_toStartOf="@+id/textView48"
-                app:layout_constraintTop_toBottomOf="@+id/textView48" />
-
-            <TextView
-                android:id="@+id/textView48"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.specialInstruction}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView46"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView46"
-                app:layout_constraintTop_toBottomOf="@+id/textView93" />
-
-            <TextView
-                android:id="@+id/ts_textView49"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.paymentMethod}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView47"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView47"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView47" />
-
-            <TextView
-                android:id="@+id/ts_textView50"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.hrs}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView49"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView49"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView49" />
-
-            <TextView
-                android:id="@+id/ts_textView51"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.amount}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView50"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView50"
-                app:layout_constraintTop_toBottomOf="@+id/ts_view6" />
-
-            <TextView
-                android:id="@+id/ts_textView52"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{String.valueOf(timeSheet.discountAmount)}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView53"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView53"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView53" />
-
-            <TextView
-                android:id="@+id/ts_textView53"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{String.valueOf(timeSheet.advanceAmount)}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView51"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView51"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView51" />
-
-            <TextView
-                android:id="@+id/ts_textView54"
+                android:id="@+id/textView55"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:text="Total Amount"
+                android:text="@string/customer_name"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_view5" />
-
-            <View
-                android:id="@+id/ts_view6"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView38" />
-
-            <View
-                android:id="@+id/ts_view5"
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:background="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView52" />
+                app:layout_constraintTop_toBottomOf="@+id/ts_textView31" />
 
             <TextView
-                android:id="@+id/ts_textView55"
+                android:id="@+id/textView56"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:layout_marginBottom="32dp"
-                android:text="@{String.valueOf(timeSheet.totalAmount)}"
+                android:text="@{timeSheet.custname}"
                 android:textColor="@android:color/white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView52"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView52"
-                app:layout_constraintTop_toBottomOf="@+id/ts_view5" />
+                app:layout_constraintEnd_toEndOf="@+id/ts_textView44"
+                app:layout_constraintStart_toStartOf="@+id/ts_textView44"
+                app:layout_constraintTop_toBottomOf="@+id/ts_textView44" />
 
             <TextView
-                android:id="@+id/textView78"
+                android:id="@+id/textView57"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
-                android:text="@string/street_address"
+                android:text="@string/email_address"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView46" />
+                app:layout_constraintTop_toBottomOf="@+id/textView55" />
 
             <TextView
-                android:id="@+id/textView87"
+                android:id="@+id/textView58"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@{timeSheet.street}"
+                android:text="@{timeSheet.customeremail}"
                 android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/ts_textView46"
-                app:layout_constraintStart_toStartOf="@+id/ts_textView46"
-                app:layout_constraintTop_toBottomOf="@+id/ts_textView46" />
+                app:layout_constraintEnd_toEndOf="@+id/textView56"
+                app:layout_constraintStart_toStartOf="@+id/textView56"
+                app:layout_constraintTop_toBottomOf="@+id/textView56" />
 
             <TextView
-                android:id="@+id/textView88"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/country"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView87" />
-
-            <TextView
-                android:id="@+id/textView89"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.country}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/textView87"
-                app:layout_constraintStart_toStartOf="@+id/textView87"
-                app:layout_constraintTop_toBottomOf="@+id/textView87" />
-
-            <TextView
-                android:id="@+id/textView90"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/post_code"
-                android:textColor="@android:color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView89" />
-
-            <TextView
-                android:id="@+id/textView91"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@{timeSheet.postCode}"
-                android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/textView89"
-                app:layout_constraintStart_toStartOf="@+id/textView89"
-                app:layout_constraintTop_toBottomOf="@+id/textView89" />
-
-            <TextView
-                android:id="@+id/textView92"
+                android:id="@+id/textView59"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -422,18 +129,46 @@
                 android:text="@string/telephone_no"
                 android:textColor="@android:color/white"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView90" />
+                app:layout_constraintTop_toBottomOf="@+id/textView57" />
 
             <TextView
-                android:id="@+id/textView93"
+                android:id="@+id/textView60"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@{timeSheet.telephone}"
                 android:textColor="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/textView91"
-                app:layout_constraintStart_toStartOf="@+id/textView91"
-                app:layout_constraintTop_toBottomOf="@+id/textView91" />
+                app:layout_constraintEnd_toEndOf="@+id/textView58"
+                app:layout_constraintStart_toStartOf="@+id/textView58"
+                app:layout_constraintTop_toBottomOf="@+id/textView58" />
+
+            <TextView
+                android:id="@+id/textView61"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/county"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView59" />
+
+            <TextView
+                android:id="@+id/textView62"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="@{timeSheet.county}"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/textView60"
+                app:layout_constraintStart_toStartOf="@+id/textView60"
+                app:layout_constraintTop_toBottomOf="@+id/textView60" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

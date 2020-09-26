@@ -124,4 +124,6 @@ dependencies {
     implementation 'com.wdullaer:materialdatetimepicker:4.2.3'
 
     implementation 'com.github.manishkummar21:AndroidPdfViewer:1.0'
+
+    implementation 'gr.escsoft.michaelprimez.searchablespinner:SearchableSpinner:1.0.9'
 }

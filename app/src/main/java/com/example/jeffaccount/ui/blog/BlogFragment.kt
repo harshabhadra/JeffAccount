@@ -21,13 +21,9 @@ class BlogFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.blog_fragment, container, false)
-    }
+        val view =  inflater.inflate(R.layout.blog_fragment, container, false)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(BlogViewModel::class.java)
-        // TODO: Use the ViewModel
+        return view
     }
 
 }

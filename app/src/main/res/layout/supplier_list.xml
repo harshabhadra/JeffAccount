@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="supplier"
+            type="com.example.jeffaccount.network.SupList" />
+    </data>
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardUseCompatPadding="true"
+        app:cardElevation="6dp"
+        android:background="@drawable/loginpage"
+        app:cardCornerRadius="8dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/loginpage">
+
+            <EditText
+                android:id="@+id/purchase_supplier_name_editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@android:color/white"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/supplier_name"
+                android:inputType="textPersonName"
+                android:maxLines="1"
+                android:text="@{supplier.supName}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+            <EditText
+                android:id="@+id/purchase_supplier_date_editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@android:color/white"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/enter_date"
+                android:inputType="date"
+                android:maxLines="1"
+                android:text="@{supplier.supDate}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_name_editText" />
+
+            <EditText
+                android:id="@+id/purchase_supplier_county_editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@android:color/white"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/enter_county_name"
+                android:inputType="textPersonName"
+                android:text="@{supplier.county}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_date_editText" />
+
+            <EditText
+                android:id="@+id/purchase_supplier_payment_editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@android:color/white"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/payment_method"
+                android:inputType="textPersonName"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_county_editText" />
+
+            <EditText
+                android:id="@+id/supplier_purchase_vat_editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:backgroundTint="@android:color/white"
+                android:ems="10"
+                android:enabled="false"
+                android:hint="@string/vat"
+                android:inputType="textPersonName"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_payment_editText" />
+
+            <TextView
+                android:id="@+id/purchase_supplier_item_no_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:padding="8dp"
+                android:textColor="@android:color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/supplier_purchase_vat_editText"
+                app:layout_constraintStart_toStartOf="@+id/supplier_purchase_vat_editText"
+                app:layout_constraintTop_toBottomOf="@+id/supplier_purchase_vat_editText"
+                tools:text="TextView" />
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_edit_white_24dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+</layout>

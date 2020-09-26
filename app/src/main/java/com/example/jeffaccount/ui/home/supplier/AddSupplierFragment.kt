@@ -3,6 +3,8 @@ package com.example.jeffaccount.ui.home.supplier
 import android.Manifest
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -13,13 +15,18 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
+import com.example.jeffaccount.utils.createPreviewDialog
 import com.example.jeffaccount.databinding.AddSupplierFragmentBinding
+import com.example.jeffaccount.model.Country
 import com.example.jeffaccount.model.SupPost
+import com.example.jeffaccount.ui.CountryBottomSheetFragment
 import com.example.jeffaccount.ui.MainActivity
+import com.example.jeffaccount.ui.OnCountryItemClickListener
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -33,6 +40,7 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.PermissionRequestErrorListener
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.lang.Exception
@@ -40,7 +48,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class AddSupplierFragment : Fragment() {
+class AddSupplierFragment : Fragment(), OnCountryItemClickListener {
 
     companion object {
         fun newInstance() =
@@ -50,18 +58,21 @@ class AddSupplierFragment : Fragment() {
     private lateinit var viewModel: AddSupplierViewModel
     private lateinit var supplier: SupPost
     private lateinit var action:String
+    private lateinit var comid: String
+    private lateinit var addsupplierBinding:AddSupplierFragmentBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        val addsupplierBinding = AddSupplierFragmentBinding.inflate(inflater, container, false)
+        addsupplierBinding = AddSupplierFragmentBinding.inflate(inflater, container, false)
 
         val arguments= AddSupplierFragmentArgs.fromBundle(arguments!!)
         supplier = arguments.supplier
         action = arguments.update
         val activity = activity as MainActivity
         activity.setToolbarText("Add Supplier")
+        comid = activity.companyDetails.comid
         setHasOptionsMenu(true)
 
         if (action.equals(getString(R.string.edit))){
@@ -165,7 +176,7 @@ class AddSupplierFragment : Fragment() {
             val telephone = addsupplierBinding.supplierTelephoneTextInput.text.toString()
             val email = addsupplierBinding.supplierEmailTextInput.text.toString()
             val web = addsupplierBinding.supplierWebTextInput.text.toString()
-
+            val county = addsupplierBinding.supplierCountyTextInput.text.toString()
             when{
                 name.isEmpty()->{
                     addsupplierBinding.supplierNameTextInputLayout.error = getString(R.string.add_name)
@@ -174,7 +185,7 @@ class AddSupplierFragment : Fragment() {
                     val builder = AlertDialog.Builder(context!!)
                     builder.setTitle("Save Supplier?")
                     builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
-                        addSupplier(name, street, country, postCode, telephone, email, web)
+                        addSupplier(comid,name, street, country, county, postCode, telephone, email, web)
                         dialog.dismiss()
                     })
                     builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
@@ -198,6 +209,7 @@ class AddSupplierFragment : Fragment() {
             val telephone = addsupplierBinding.supplierTelephoneTextInput.text.toString()
             val email = addsupplierBinding.supplierEmailTextInput.text.toString()
             val web = addsupplierBinding.supplierWebTextInput.text.toString()
+            val county = addsupplierBinding.supplierCountyTextInput.text.toString()
 
             when{
                 name.isEmpty()->{
@@ -207,7 +219,7 @@ class AddSupplierFragment : Fragment() {
                     val builder = AlertDialog.Builder(context!!)
                     builder.setTitle("Update Supplier?")
                     builder.setPositiveButton("Save", DialogInterface.OnClickListener{ dialog, which ->
-                        updateSupplier(supplier.supid!!,name, street, country, postCode, telephone, email, web)
+                        updateSupplier(comid,supplier.supid!!,name, street, country,county, postCode, telephone, email, web)
                         dialog.dismiss()
                     })
                     builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
@@ -217,6 +229,41 @@ class AddSupplierFragment : Fragment() {
                     val dialog = builder.create()
                     dialog.show()
                 }
+            }
+        }
+
+        //Set on Click listener to country tv
+        addsupplierBinding.supplierCountryTv.setOnClickListener {
+            val countryBottomSheet = CountryBottomSheetFragment(this)
+            countryBottomSheet.show(activity!!.supportFragmentManager,countryBottomSheet.tag)
+        }
+
+        addsupplierBinding.callSupplierIv.setOnClickListener {
+            val tele = addsupplierBinding.supplierTelephoneTextInput.text.toString()
+            if (tele.isNotEmpty()){
+                val intent = Intent(Intent.ACTION_DIAL)
+                intent.data = Uri.parse("tel:$tele")
+                startActivity(intent)
+            }
+        }
+
+        addsupplierBinding.emailSupplierIv.setOnClickListener {
+            val email = addsupplierBinding.supplierEmailTextInput.text.toString()
+            if (email.isNotEmpty()){
+                Timber.e("Email is: $email")
+                val intent = Intent(Intent.ACTION_SENDTO)
+                intent.data = Uri.parse("mailto:$email")
+                intent.putExtra(Intent.EXTRA_EMAIL,email)
+                startActivity(Intent.createChooser(intent, "Send Email"))
+            }
+        }
+
+        addsupplierBinding.webSupplierIv.setOnClickListener {
+            val web = addsupplierBinding.supplierWebTextInput.text.toString()
+            if (web.isNotEmpty()){
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data = Uri.parse(web)
+                startActivity(Intent.createChooser(i,"Open with"))
             }
         }
         return addsupplierBinding.root
@@ -272,7 +319,7 @@ class AddSupplierFragment : Fragment() {
             }
             R.id.supplier_purchase->{
                 findNavController().navigate(AddSupplierFragmentDirections.actionAddSupplierFragmentToAddPurchaseFragment(
-                    null,getString(R.string.supplier_details),null,supplier
+                    null,getString(R.string.supplier_details),null,supplier, null,null
                 ))
             }
         }
@@ -295,6 +342,13 @@ class AddSupplierFragment : Fragment() {
         try {
             PdfWriter.getInstance(mDoc, FileOutputStream(filePath))
             mDoc.open()
+            val drawble = ContextCompat.getDrawable(context!!,R.drawable.pdf_img)
+            val bitDw = drawble as BitmapDrawable
+            val bmp = bitDw.bitmap
+            val stream = ByteArrayOutputStream()
+            bmp.compress(Bitmap.CompressFormat.PNG,100, stream)
+            val image = com.itextpdf.text.Image.getInstance(stream.toByteArray())
+            mDoc.add(image)
             val lineSeparator = LineSeparator()
             lineSeparator.lineColor = BaseColor.WHITE
 
@@ -318,10 +372,11 @@ class AddSupplierFragment : Fragment() {
             mDoc.add(supplierBody)
             mDoc.close().let {
                 Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
-                val intent = Intent(Intent.ACTION_VIEW)
-                val data = Uri.parse("file://" + filePath)
-                intent.setDataAndType(data, "application/pdf")
-                startActivity(Intent.createChooser(intent, "Open Pdf"))
+                createPreviewDialog(
+                    filePath,
+                    context!!,
+                    activity!!
+                )
             }
         } catch (e: Exception) {
 
@@ -396,15 +451,17 @@ class AddSupplierFragment : Fragment() {
 
     //Add Supplier
     private fun addSupplier(
+        comid:String,
         supplierName: String,
         streetAdd: String,
         coutry: String,
+        county:String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ) {
-        viewModel.addSupplier(supplierName, streetAdd, coutry, postCode, telephone, email, web)
+        viewModel.addSupplier(comid,supplierName, streetAdd, coutry,county, postCode, telephone, email, web)
             .observe(viewLifecycleOwner, Observer {
                 it?.let {
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -415,16 +472,18 @@ class AddSupplierFragment : Fragment() {
 
     //Update supplier
     private fun updateSupplier(
+        comid: String,
         supplierId:String,
         supplierName: String,
         streetAdd: String,
         coutry: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ){
-        viewModel.updateSupplier(supplierId, supplierName, streetAdd, coutry, postCode, telephone, email, web).observe(viewLifecycleOwner,
+        viewModel.updateSupplier(comid,supplierId, supplierName, streetAdd, coutry,county, postCode, telephone, email, web).observe(viewLifecycleOwner,
             Observer {
                 it?.let {
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
@@ -472,5 +531,9 @@ class AddSupplierFragment : Fragment() {
             })
             .onSameThread()
             .check()
+    }
+
+    override fun onCountryItemClick(country: Country) {
+        addsupplierBinding.supplierCountryTv.text = country.name
     }
 }

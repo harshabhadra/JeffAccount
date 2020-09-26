@@ -6,6 +6,7 @@ import kotlinx.android.parcel.Parcelize
 @Parcelize
 data class WorkSheet(
     val purchaseList:List<PurchasePost>,
-    val invoiceList: List<Invoice>,
+    val invoiceList: List<QuotationPost>,
+    val invoiceItemList:List<Invoice>,
     val timesheetList:List<TimeSheetPost>
 ):Parcelable

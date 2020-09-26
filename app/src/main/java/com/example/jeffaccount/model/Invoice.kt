@@ -28,33 +28,36 @@ data class Invoice(
 
     @SerializedName("customer_name")
     @Expose
-    var customerName: String?,
+    var customerName: String? = "",
 
     @SerializedName("date")
     @Expose
-    var date: String?,
+    var date: String? = "",
     @SerializedName("street_address")
     @Expose
-    var street:String?,
+    var street:String? = "",
     @SerializedName("country")
     @Expose
-    var country:String?,
+    var country:String? = "",
     @SerializedName("post_code")
     @Expose
-    var postCode:String?,
+    var postCode:String? = "",
     @SerializedName("telephone")
     @Expose
-    var telephone:String?,
+    var telephone:String? = "",
     @SerializedName("payment_method")
     @Expose
-    var paymentMethod:String?,
+    var paymentMethod:String? = "",
     @SerializedName("comment")
     @Expose
-    var comment:String?,
+    var comment:String? = "",
     @SerializedName("vat")
     @Expose
-    var vat:String?,
+    var vat:String? = "",
     @SerializedName("item_description")
     @Expose
-    var itemDescription: MutableList<Item>
+    var itemDescription: MutableList<Item>,
+    @SerializedName("paymentlink")
+    @Expose
+    var paymentLink:String? = ""
 ):Parcelable

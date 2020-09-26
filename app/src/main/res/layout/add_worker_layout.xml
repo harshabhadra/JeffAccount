@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <variable
+            name="worker"
+            type="com.example.jeffaccount.network.WorkerList" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/loginpage">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/worker_name_textinputlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/worker_name_textinput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/name"
+                    android:inputType="text"
+                    android:text="@{worker.name}"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:id="@+id/worker_telephone_textInputLayout"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/worker_telephone_textInput"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/telephone_no"
+                    android:inputType="phone"
+                    android:text="@{worker.telephone}"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <EditText
+                    android:id="@+id/worker_hour_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/hours"
+                    android:text="@{worker.hours.toString()}"
+                    android:inputType="number"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+
+                <ImageButton
+                    android:id="@+id/hour_minus_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_exposure_neg_1_black_24dp" />
+
+                <ImageButton
+                    android:id="@+id/hour_plus_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@drawable/ic_exposure_plus_1_black_24dp" />
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/worker_advance_amount_textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/worker_advance_amount_textInput"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/advance_amount"
+                    android:inputType="numberDecimal"
+                    android:text="@{worker.advanceAmount.toString()}"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/worker_amount_textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/worker_amount_textInput"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/amount_per_hour"
+                    android:text="@{worker.amount.toString()}"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/worker_vat_textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/worker_vat_textInput"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/vat"
+                    android:text="@{worker.vat.toString()}"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/worker_total_amount_textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/worker_total_amount_textInput"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/total_amount"
+                    android:text="@{worker.totalAmount.toString()}"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/worker_paymentmethod_textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:id="@+id/worker_paymentmethod_textInput"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/payment_method"
+                    android:text="@{worker.paymentMethod}"
+                    android:inputType="text"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/worker_date_textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/worker_date_textInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/date"
+                    android:text="@{worker.date}"
+                    android:drawableEnd="@drawable/ic_date_24dp"
+                    android:inputType="text"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/worker_comment_textInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/worker_comment_textInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/special_instruction_comment"
+                    android:text="@{worker.comment}"
+                    android:inputType="text"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/save_worker_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:textColor="@android:color/white"
+                android:text="@string/save"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

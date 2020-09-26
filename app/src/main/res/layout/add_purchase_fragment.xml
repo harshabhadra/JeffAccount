@@ -14,276 +14,243 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/loginpage">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".ui.home.quotation.AddQuotationFragment">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/purchase_jobno_textInputLayout"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:context=".ui.home.quotation.AddQuotationFragment">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_jobno_textInputLayout"
-                android:layout_width="0dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/purchase_jobno_textInput"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_jobno_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/job_no"
-                    android:maxLines="1"
-                    android:inputType="text"
-                    android:text="@{purchase.jobNo}"
-                    android:textColor="@android:color/white" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_quotation_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_jobno_textInputLayout">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_quotation_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/quotation_no"
-                    android:maxLines="1"
-                    android:inputType="text"
-                    android:text="@{purchase.quotationNo}"
-                    android:textColor="@android:color/white" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <TextView
-                android:id="@+id/purchase_date_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:drawableEnd="@drawable/ic_edit_white_24dp"
-                android:hint="@string/date"
-                android:padding="16dp"
-                android:text="@{purchase.date}"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_quotation_textInputLayout" />
-
-            <TextView
-                android:id="@+id/purchase_supplier_textInputLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:hint="@string/supplier_name"
+                android:hint="@string/job_no"
+                android:inputType="text"
                 android:maxLines="1"
-                android:padding="8dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_date_textInputLayout" />
+                android:textColor="@android:color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_comment_textInputLayout"
-                android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/purchase_quotation_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_jobno_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/purchase_quotation_textInput"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/add_purchase_post_tv">
+                android:hint="@string/quotation_no"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@android:color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_comment_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/special_instruction_comment"
-                    android:inputType="textMultiLine"
-                    android:text="@{purchase.specialInstruction}"
-                    android:textColor="@android:color/white" />
-            </com.google.android.material.textfield.TextInputLayout>
+        <TextView
+            android:id="@+id/purchase_date_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:drawableEnd="@drawable/ic_edit_white_24dp"
+            android:hint="@string/date"
+            android:padding="16dp"
+            android:text="@{purchase.date}"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_quotation_textInputLayout" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_payment_method_textInputLayout"
-                android:layout_width="0dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/purchase_comment_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_date_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/purchase_comment_textInput"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_vat_textinputlayout">
+                android:hint="@string/special_instruction_comment"
+                android:inputType="textMultiLine"
+                android:text="@{purchase.comment}"
+                android:textColor="@android:color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_payment_method_textInput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/payment_method"
-                    android:maxLines="1"
-                    android:text="@{purchase.paymentMethod}"
-                    android:textColor="@android:color/white" />
-            </com.google.android.material.textfield.TextInputLayout>
+        <Button
+            android:id="@+id/purchase_save_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:text="@string/save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/purchase_edit_button"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_county_textView" />
 
-            <Button
-                android:id="@+id/purchase_save_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
-                android:text="@string/save"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/purchase_edit_button"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_payment_method_textInputLayout" />
+        <Button
+            android:id="@+id/purchase_edit_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="32dp"
+            android:text="@string/update"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/purchase_save_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_county_textView" />
 
-            <Button
-                android:id="@+id/purchase_edit_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="32dp"
-                android:text="@string/update"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/purchase_save_button"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_payment_method_textInputLayout" />
+        <TextView
+            android:id="@+id/purchase_add_supplier_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:drawableEnd="@drawable/ic_add_circle_white_24dp"
+            android:hint="@string/add_supplier"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/supplier_item_recyclerView" />
 
-            <TextView
-                android:id="@+id/purchase_add_item_tv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:drawableEnd="@drawable/ic_add_circle_white_24dp"
-                android:hint="@string/add_item"
-                android:padding="8dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_comment_textInputLayout" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/supplier_item_recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_comment_textInputLayout"
+            tools:itemCount="2" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/supplier_item_recyclerView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_add_item_tv"
-                tools:itemCount="0"
-                tools:listitem="@layout/item_list" />
+        <TextView
+            android:id="@+id/purchas_add_customer_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:drawableEnd="@drawable/ic_add_circle_white_24dp"
+            android:padding="8dp"
+            android:text="@string/add_customer"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_add_supplier_tv" />
 
-            <TextView
-                android:id="@+id/add_purchase_street_tv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:hint="@string/street_address"
-                android:padding="8dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/purchase_supplier_textInputLayout" />
+        <TextView
+            android:id="@+id/purchase_street_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchas_add_customer_textView"
+            tools:text="Manynaguri" />
 
-            <TextView
-                android:id="@+id/add_purchase_country_tv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="@string/country"
-                android:padding="8dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/add_purchase_street_tv"
-                app:layout_constraintStart_toStartOf="@+id/add_purchase_street_tv"
-                app:layout_constraintTop_toBottomOf="@+id/add_purchase_street_tv" />
+        <TextView
+            android:id="@+id/purchase_email_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_postcode_textView"
+            tools:text="Manynaguri@gmail.com" />
 
-            <TextView
-                android:id="@+id/add_purchase_tele_tv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="@string/telephone_no"
-                android:padding="8dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/add_purchase_country_tv"
-                app:layout_constraintStart_toStartOf="@+id/add_purchase_country_tv"
-                app:layout_constraintTop_toBottomOf="@+id/add_purchase_country_tv" />
+        <TextView
+            android:id="@+id/purchase_telephone_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_email_textView"
+            tools:text="7982764035" />
 
-            <TextView
-                android:id="@+id/add_purchase_post_tv"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:hint="@string/post_code"
-                android:padding="8dp"
-                android:textColor="@android:color/white"
-                android:textColorHint="@android:color/white"
-                app:layout_constraintEnd_toEndOf="@+id/add_purchase_tele_tv"
-                app:layout_constraintStart_toStartOf="@+id/add_purchase_tele_tv"
-                app:layout_constraintTop_toBottomOf="@+id/add_purchase_tele_tv" />
+        <TextView
+            android:id="@+id/purchase_county_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_telephone_textView"
+            tools:text="West Bengal" />
 
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/purchase_info_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:constraint_referenced_ids="add_purchase_street_tv,
-                add_purchase_country_tv,add_purchase_tele_tv,add_purchase_post_tv" />
+        <TextView
+            android:id="@+id/purchase_postcode_textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            tools:text="Post code: 735224"
+            android:textColor="@android:color/white"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/purchase_street_textView" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/purchase_vat_textinputlayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/supplier_item_recyclerView">
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/purchase_customer_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="purchase_street_textView, purchase_email_textView,
+            purchase_telephone_textView, purchase_county_textView, purchase_postcode_textView" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/purchase_vat_textinput"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
-                    android:maxLines="1"
-                    android:text="@{purchase.vat}"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="@android:color/white"
-                    android:hint="@string/vat" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-</layout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView></layout>

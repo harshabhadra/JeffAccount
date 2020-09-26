@@ -25,7 +25,8 @@
         app:cardElevation="8dp">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent">
 
         <TextView
             android:id="@+id/cus_item_name"
@@ -56,63 +57,63 @@
 
         <TextView
             android:id="@+id/textView7"
+            style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:textColor="@android:color/white"
-            style="@style/TextAppearance.AppCompat.Body2"
             android:text="@string/street_address"
+            android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView6" />
+            app:layout_constraintTop_toBottomOf="@+id/cus_item_name" />
 
         <TextView
             android:id="@+id/textView8"
+            style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:textColor="@android:color/white"
-            style="@style/TextAppearance.AppCompat.Body2"
             android:text="@string/country"
+            android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView7" />
+            app:layout_constraintTop_toBottomOf="@+id/textView12" />
 
         <TextView
             android:id="@+id/textView9"
+            style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:textColor="@android:color/white"
             android:text="@string/post_code"
-            style="@style/TextAppearance.AppCompat.Body2"
+            android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView8" />
+            app:layout_constraintTop_toBottomOf="@+id/textView13" />
 
         <TextView
             android:id="@+id/textView10"
+            style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:textColor="@android:color/white"
-            style="@style/TextAppearance.AppCompat.Body2"
             android:text="@string/telephone_no"
+            android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView9" />
+            app:layout_constraintTop_toBottomOf="@+id/textView14" />
 
         <TextView
             android:id="@+id/textView11"
+            style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:textColor="@android:color/white"
-            style="@style/TextAppearance.AppCompat.Body2"
             android:text="@string/email_address"
+            android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView10" />
+            app:layout_constraintTop_toBottomOf="@+id/textView15" />
 
         <TextView
             android:id="@+id/textView12"
@@ -176,31 +177,50 @@
 
         <TextView
             android:id="@+id/textView17"
+            style="@style/TextAppearance.AppCompat.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            style="@style/TextAppearance.AppCompat.Body2"
             android:text="@string/web_address"
             android:textColor="@android:color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+            app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
         <TextView
             android:id="@+id/textView18"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@{post.web}"
+            android:textColor="@android:color/white"
+            app:layout_constraintEnd_toEndOf="@+id/textView16"
+            app:layout_constraintStart_toStartOf="@+id/textView16"
+            app:layout_constraintTop_toBottomOf="@+id/textView16" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/county"
+            android:textColor="@android:color/white"
+            app:layout_constraintStart_toStartOf="@+id/textView17"
+            app:layout_constraintTop_toBottomOf="@+id/textView18" />
+
+        <TextView
+            android:id="@+id/textView40"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            android:text="@{post.web}"
-            style="@style/TextAppearance.AppCompat.Body2"
+            android:text="@{post.county}"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/textView16"
-            app:layout_constraintStart_toStartOf="@+id/textView16"
-            app:layout_constraintTop_toBottomOf="@+id/textView16" />
+            app:layout_constraintEnd_toEndOf="@+id/textView18"
+            app:layout_constraintStart_toStartOf="@+id/textView18"
+            app:layout_constraintTop_toBottomOf="@+id/textView18" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

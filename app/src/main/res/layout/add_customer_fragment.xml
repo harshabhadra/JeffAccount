@@ -14,10 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/loginpage">
-
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/loginpage"
             tools:context=".ui.home.customer.AddCustomerFragment">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -118,8 +118,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/call_customer_iv"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customer_post_code_textInputLayout">
 
@@ -128,10 +128,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/telephone_no"
-                    android:text="@{customer.telephone}"
                     android:inputType="number"
-                    android:textColor="@android:color/white"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:text="@{customer.telephone}"
+                    android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -140,8 +140,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/email_cust_iv"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customer_telephone_textInputLayout">
 
@@ -150,10 +150,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/email_address"
-                    android:text="@{customer.customeremail}"
-                    android:textColor="@android:color/white"
                     android:inputType="textEmailAddress"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:text="@{customer.customeremail}"
+                    android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -162,8 +162,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
+                app:layout_constraintEnd_toStartOf="@+id/web_cust_iv"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/customer_email_textInputLayout">
 
@@ -172,10 +172,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/web_address"
-                    android:text="@{customer.web}"
-                    android:textColor="@android:color/white"
                     android:inputType="textWebEditText"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:text="@{customer.web}"
+                    android:textColor="@android:color/white" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
@@ -192,7 +192,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/update_customer_button"
-                app:layout_constraintTop_toBottomOf="@+id/customer_web_textInputLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/customer_county_textInputLayout" />
 
             <Button
                 android:id="@+id/update_customer_button"
@@ -207,7 +207,58 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/customer_save_button"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/customer_web_textInputLayout" />
+                app:layout_constraintTop_toBottomOf="@+id/customer_county_textInputLayout" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/customer_county_textInputLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/customer_web_textInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/customer_county_textInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{customer.county}"
+                    android:textColorHint="@android:color/white"
+                    android:textColor="@android:color/white"
+                    android:hint="@string/county" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ImageView
+                android:id="@+id/call_customer_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/customer_telephone_textInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/customer_telephone_textInputLayout"
+                app:srcCompat="@drawable/ic_call_24dp" />
+
+            <ImageView
+                android:id="@+id/email_cust_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/customer_email_textInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/customer_email_textInputLayout"
+                app:srcCompat="@drawable/ic_email_white_24dp" />
+
+            <ImageView
+                android:id="@+id/web_cust_iv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="@+id/customer_web_textInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/customer_web_textInputLayout"
+                app:srcCompat="@drawable/ic_web_24dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

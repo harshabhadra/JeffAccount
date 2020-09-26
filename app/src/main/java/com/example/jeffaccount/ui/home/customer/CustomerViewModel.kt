@@ -22,27 +22,31 @@ class CustomerViewModel : ViewModel() {
         get() = _navigateToAddCustomerFragment
 
     private var _nameList = MutableLiveData<List<String>>()
-    val nameList:LiveData<List<String>>
-    get() = _nameList
+    val nameList: LiveData<List<String>>
+        get() = _nameList
 
     private var _custList = MutableLiveData<List<Post>>()
-    val custList:LiveData<List<Post>>
-    get() = _custList
+    val custList: LiveData<List<Post>>
+        get() = _custList
 
     //Add Customer
     fun addCustomer(
+        comid: String,
         customerName: String,
         streetAdd: String,
         coutry: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ): LiveData<String> {
         return jeffRepository.getAddCustomerMessage(
+            comid,
             customerName,
             streetAdd,
             coutry,
+            county,
             postCode,
             telephone,
             email,
@@ -52,60 +56,76 @@ class CustomerViewModel : ViewModel() {
 
     //Update customer
     fun updateCustomer(
-        customerId:String,
+        comid: String,
+        customerId: String,
         customerName: String,
         streetAdd: String,
         coutry: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
-    ):LiveData<String>{
-        return jeffRepository.getUpdateCustomerMessage(customerId, customerName, streetAdd, coutry, postCode, telephone, email, web)
+    ): LiveData<String> {
+        return jeffRepository.getUpdateCustomerMessage(
+            comid,
+            customerId,
+            customerName,
+            streetAdd,
+            coutry,
+            county,
+            postCode,
+            telephone,
+            email,
+            web
+        )
     }
 
     //Delete User
-    fun deleteUser(customerId: String):LiveData<String>{
+    fun deleteUser(customerId: String): LiveData<String> {
         return jeffRepository.getDeleteCustomerMessage(customerId)
     }
 
-    fun onCustomerItemClick(customer: Post){
+    fun onCustomerItemClick(customer: Post) {
         _navigateToAddCustomerFragment.value = customer
     }
 
-    fun doneNavigating(){
+    fun doneNavigating() {
         _navigateToAddCustomerFragment.value = null
     }
+
     //Get Customer List
-    fun getCustomerList(): LiveData<Customer> {
-        return jeffRepository.getAllCustomer()
+    fun getCustomerList(comid: String): LiveData<Customer> {
+        return jeffRepository.getAllCustomer(comid)
     }
 
     //Get search list of customer for quotation
-    fun searchCustomer(name:String,apiKey: String):LiveData<SearchCustomerList>{
-        return jeffRepository.searchCustomerList(apiKey, name)
+    fun searchCustomer(comid: String, name: String, apiKey: String): LiveData<SearchCustomerList> {
+        return jeffRepository.searchCustomerList(comid, apiKey, name)
     }
 
     //Crate CustomerName list
-    fun createCustomerNameList(custList:List<Post>){
+    fun createCustomerNameList(custList: List<Post>) {
         val custNameList = mutableListOf<String>()
-        for (item in custList){
+        for (item in custList) {
             custNameList.add(item.custname!!)
         }
         _nameList.value = custNameList.toList()
     }
 
-    fun convertSearchCustomerToCustomer(list:List<SearchCustomer>){
-        var customerList:MutableList<Post> = mutableListOf()
-        for (item in list!!){
-            val customer = Post(item.comid,item.custname, item.street,
-                item.postcode, item.telephone, item.customerEmail, item.web, item.country)
+    fun convertSearchCustomerToCustomer(list: List<SearchCustomer>) {
+        var customerList: MutableList<Post> = mutableListOf()
+        for (item in list!!) {
+            val customer = Post(
+                item.comid, item.custname, item.street,
+                item.postcode, item.telephone, item.customerEmail, item.web, item.country, item.county!!
+            )
             customerList.add(customer)
         }
         _custList.value = customerList
     }
 
-    fun doneSubmittingList(){
+    fun doneSubmittingList() {
         _custList.value = null
     }
 }

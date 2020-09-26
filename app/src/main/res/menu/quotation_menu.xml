@@ -12,4 +12,10 @@
         android:title="@string/delete"
         android:icon="@drawable/ic_delete_white_24dp"
         app:showAsAction="never"/>
+    <item android:title="@string/purchase"
+        android:id="@+id/purchase_action"/>
+    <item android:id="@+id/action_timeSheet"
+        android:title="@string/time_sheet"/>
+    <item android:id="@+id/worksheet_action"
+        android:title="@string/worksheet"/>
 </menu>

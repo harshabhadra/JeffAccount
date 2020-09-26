@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="country"
+            type="com.example.jeffaccount.model.Country" />
+        <variable
+            name="clicklistener"
+            type="com.example.jeffaccount.ui.CountryClickListener" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:onClick="@{()->clicklistener.onCountryClick(country)}"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/country_name_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{country.name}"
+            style="@style/TextAppearance.AppCompat.Title" />
+
+        <TextView
+            android:id="@+id/country_code_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{country.code}"
+            style="@style/TextAppearance.AppCompat.Caption" />
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/darker_gray"/>
+    </LinearLayout>
+</layout>

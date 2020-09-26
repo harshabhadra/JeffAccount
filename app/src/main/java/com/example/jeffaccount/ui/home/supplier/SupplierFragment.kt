@@ -30,6 +30,7 @@ class SupplierFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
     OnCustomerNameClickListener, OnSupplierNameClickListener, OnQuotationJobNoClickListener,
     OnPurchaseJobNoClickListener, OnInvoiceJobNoClickListener, OnTimeSheetJobNoClickListener {
 
+    private lateinit var comid:String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +43,7 @@ class SupplierFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
 
         val activity = activity as MainActivity
         activity.setToolbarText("Suppliers")
+        comid = activity.companyDetails.comid
 
         val fab = view.findViewById<FloatingActionButton>(R.id.supplier_fab)
         val supplierRecyclerView:RecyclerView = view.findViewById(R.id.supplier_recycler)
@@ -53,7 +55,7 @@ class SupplierFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
         supplierRecyclerView.adapter = supplierListAdapter
 
         //Get list of suppliers
-        addSupplierViewModel.getSuppliers().observe(viewLifecycleOwner, Observer {
+        addSupplierViewModel.getSuppliers(comid).observe(viewLifecycleOwner, Observer {
             it?.let {
                 supplierListAdapter.submitList(it.posts)
                 noSupplierTv.visibility = View.GONE
@@ -78,10 +80,18 @@ class SupplierFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
             }
         })
 
+        //observe list after search
+        addSupplierViewModel.supplierList.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                supplierListAdapter.submitList(it)
+                supplierListAdapter.notifyDataSetChanged()
+            }
+        })
         //Add supplier
         fab.setOnClickListener {
             view.findNavController().navigate(SupplierFragmentDirections.actionSupplierFragmentToAddSupplierFragment(
                 SupPost(
+                    "",
                     "",
                     "",
                     "",
@@ -121,11 +131,10 @@ class SupplierFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
     }
 
     override fun onSearchItemClick(searchCustomer: SearchCustomer) {
-        TODO("Not yet implemented")
+
     }
 
-    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost) {
-        TODO("Not yet implemented")
+    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost, action:String) {
     }
 
     override fun onCustomerNameClick(name: String) {
@@ -133,7 +142,11 @@ class SupplierFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
     }
 
     override fun onSupplierNameClick(name: String) {
-
+        addSupplierViewModel.getSearchSupplierList(comid,name,"AngE9676#254r5").observe(viewLifecycleOwner,
+            Observer {
+                val list = it.posts
+                addSupplierViewModel.searchSupplierToSupplier(list!!)
+            })
     }
 
     override fun onQuotationNameClick(name: String) {

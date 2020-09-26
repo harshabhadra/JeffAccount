@@ -17,29 +17,32 @@ data class SearchCustomer (
 
     @SerializedName("custname")
     @Expose
-    var custname: String?,
+    var custname: String = "",
 
     @SerializedName("street")
     @Expose
-    var street: String?,
+    var street: String="",
 
     @SerializedName("postcode")
     @Expose
-    var postcode: String?,
+    var postcode: String = "",
 
     @SerializedName("telephone")
     @Expose
-    var telephone: String?,
+    var telephone: String = "",
 
     @SerializedName("customeremail")
     @Expose
-    var customerEmail: String?,
+    var customerEmail: String = "",
 
     @SerializedName("web")
     @Expose
-    var web: String?,
+    var web: String = "",
 
     @SerializedName("country")
     @Expose
-    var country: String?
+    var country: String = "",
+    @SerializedName("county")
+    @Expose
+    var county:String = ""
 )

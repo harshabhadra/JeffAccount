@@ -1,8 +1,11 @@
 package com.example.jeffaccount.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.StrictMode
+import android.os.StrictMode.VmPolicy
 import android.view.Gravity
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -13,19 +16,24 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
+import com.example.jeffaccount.LogInViewModel
 import com.example.jeffaccount.R
 import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.databinding.ActivityMainBinding
+import com.example.jeffaccount.model.CompanyDetails
 import com.infideap.drawerbehavior.Advance3DDrawerLayout
 import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout:Advance3DDrawerLayout
     private lateinit var appBarConfigaration: AppBarConfiguration
     private lateinit var mainBinding: ActivityMainBinding
-    var loginCred:LogInCred? = null
+    lateinit var companyDetails:CompanyDetails
+    private lateinit var logInViewModel: LogInViewModel
+    lateinit var loginCred:LogInCred
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +42,18 @@ class MainActivity : AppCompatActivity() {
             setContentView<ActivityMainBinding>(this,
                 R.layout.activity_main
             )
+
+        val builder = VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())
+        builder.detectFileUriExposure()
+
+        //Getting intent
+        val intent = getIntent()
+        intent?.let {
+            companyDetails = it.getParcelableExtra("company")!!
+            loginCred = it.getParcelableExtra("login")!!
+            Toast.makeText(this, "Company is ${companyDetails.comname}",Toast.LENGTH_SHORT).show()
+        }
 
         val toolbar = mainBinding.mainToolbar
         setSupportActionBar(toolbar)

@@ -1,4 +1,4 @@
-package com.example.jeffaccount
+package com.example.jeffaccount.utils
 
 import android.app.Activity
 import android.content.Context

@@ -6,68 +6,50 @@ import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
 import com.example.jeffaccount.model.ComPost
 import com.example.jeffaccount.model.Company
+import com.example.jeffaccount.model.CompanyLogo
+import com.example.jeffaccount.model.Logos
+import okhttp3.RequestBody
 
 class CompanyViewModel : ViewModel() {
 
     private val jeffRepository = JeffRepository.getInstance()
 
-    private var _navigateToAddComFragment = MutableLiveData<ComPost>()
-    val navigateToAddFragment: LiveData<ComPost>
-        get() = _navigateToAddComFragment
-
-    init {
-        _navigateToAddComFragment.value = null
-    }
-    //Add Company
-    fun addCompany(
-        companyName: String,
-        streetAdd: String, coutry: String,
-        postCode: String, telephone: String, email: String, web: String
-    ): LiveData<String> {
-        return jeffRepository.getAddCompanyMessage(
-            companyName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            email,
-            web
-        )
-    }
-
-    //Get list of all companies
-    fun getCompanyList(): LiveData<Company> {
-        return jeffRepository.getAllCompany()
-    }
 
     //Update company
     fun updateCompany(
-        comId: Int, companyName: String,
-        streetAdd: String, coutry: String,
-        postCode: String, telephone: String, email: String, web: String
+        apiKey: String,
+        companyId: String,
+        streetAdd: String,
+        companyDes:String,
+        country: String,
+        county:String,
+        postCode: String,
+        telephone: String,
+        email: String,
+        web: String
     ): LiveData<String> {
         return jeffRepository.getUpdateCompanyMessage(
-            comId,
-            companyName,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            email,
-            web
+            apiKey,companyId,streetAdd,companyDes,country,county,postCode,telephone,email,web
         )
     }
 
-    //Delete company
-    fun deleteCompany(companyId: Int): LiveData<String> {
-        return jeffRepository.getDeleteCompanyMessage(companyId)
+    //Upload company logo
+    fun uploadCompanyLogo(comid:String, logo:RequestBody):LiveData<CompanyLogo>{
+        return jeffRepository.uploadLogo(comid,logo)
     }
 
-    fun navigateToAddCompany(company: ComPost){
-        _navigateToAddComFragment.value = company
+    //Upload other logos
+    fun uploadImage(comid: String,logo: RequestBody):LiveData<String>{
+        return jeffRepository.uploadLogoB(comid, logo)
     }
 
-    fun doneNavigating(){
-        _navigateToAddComFragment.value = null
+    //Get logo list
+    fun getLogoList(comid: String):LiveData<Logos>{
+        return jeffRepository.getLogoList(comid)
+    }
+
+    //Delete logo
+    fun deletelogo(comid:String, imgId:String):LiveData<String>{
+        return jeffRepository.deleteLogo(comid,imgId)
     }
 }

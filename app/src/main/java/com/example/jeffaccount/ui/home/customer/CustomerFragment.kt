@@ -25,6 +25,7 @@ private lateinit var customerLisAdapter: CusomerListAdapter
 private lateinit var noCusTv: TextView
 private var custNameList: MutableSet<String> = mutableSetOf()
 private var customerList:MutableList<Post> = mutableListOf()
+private lateinit var comid:String
 class CustomerFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplierClickListener,
     OnCustomerNameClickListener, OnSupplierNameClickListener, OnQuotationJobNoClickListener,
     OnPurchaseJobNoClickListener, OnInvoiceJobNoClickListener, OnTimeSheetJobNoClickListener {
@@ -51,9 +52,6 @@ class CustomerFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
         //Initializing ViewModel class
         customerViewModel = ViewModelProvider(this).get(CustomerViewModel::class.java)
 
-        //Call to get list of customers
-        getCustomerList()
-
         //Set onClick listener to the add fab button
         fab.setOnClickListener {
             this.findNavController().navigate(
@@ -66,7 +64,8 @@ class CustomerFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
                         "",
                         "",
                         "",
-                        ""
+                        "",
+                    ""
                     ), getString(R.string.add)
                 )
             )
@@ -109,6 +108,9 @@ class CustomerFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
 
         val activity = activity as MainActivity
         activity.setToolbarText(getString(R.string.customer))
+        comid = activity.companyDetails.comid
+        //Call to get list of customers
+        getCustomerList()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -141,7 +143,7 @@ class CustomerFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
     //Get CustomerList
     private fun getCustomerList() {
 
-        customerViewModel.getCustomerList().observe(viewLifecycleOwner, Observer {
+        customerViewModel.getCustomerList(comid).observe(viewLifecycleOwner, Observer {
             it?.let {
                 customerLisAdapter.submitList(it.posts)
                 noCusTv.visibility = View.INVISIBLE
@@ -155,14 +157,14 @@ class CustomerFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplier
     override fun onSearchItemClick(searchCustomer: SearchCustomer) {
     }
 
-    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost) {
+    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost,action:String) {
 
     }
 
     override fun onCustomerNameClick(name: String) {
 
        name?.let {
-           customerViewModel.searchCustomer(name,"AngE9676#254r5").observe(viewLifecycleOwner, Observer {
+           customerViewModel.searchCustomer(comid,name,"AngE9676#254r5").observe(viewLifecycleOwner, Observer {
                it?.let {
                    val list = it.customerList
                    customerViewModel.convertSearchCustomerToCustomer(list!!)

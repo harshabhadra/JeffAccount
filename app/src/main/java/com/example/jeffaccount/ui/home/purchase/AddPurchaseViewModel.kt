@@ -1,20 +1,36 @@
 package com.example.jeffaccount.ui.home.purchase
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
-import com.example.jeffaccount.model.Company
-import com.example.jeffaccount.model.Purchase
-import com.example.jeffaccount.model.PurchasePost
-import com.example.jeffaccount.model.Supplier
+import com.example.jeffaccount.model.*
 import com.example.jeffaccount.network.*
+import kotlinx.coroutines.*
+import timber.log.Timber
+import java.io.IOException
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.net.ssl.HttpsURLConnection
 
 class AddPurchaseViewModel : ViewModel() {
 
     private val jeffRepository = JeffRepository.getInstance()
+
+    private val viewModelJob = Job()
+
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
+    private var _imageBitmap = MutableLiveData<Bitmap>()
+    val imageBitmap: LiveData<Bitmap>
+        get() = _imageBitmap
+
+    private var _companyBitmap = MutableLiveData<Bitmap>()
+    val companyBitmap:LiveData<Bitmap>
+        get() = _companyBitmap
 
     //Store quantity value
     private var _purchaseQuantityValue = MutableLiveData<Int>()
@@ -33,8 +49,16 @@ class AddPurchaseViewModel : ViewModel() {
     val jobNoList:LiveData<Set<String>>
     get() = _jobNoList
 
-    private var _itemChangedToPurchase = MutableLiveData<MutableList<Item>>()
-    val itemChangedToPurchase:LiveData<MutableList<Item>>
+    private var _quotationList = MutableLiveData<Set<String>>()
+    val quotationList:LiveData<Set<String>>
+    get() = _quotationList
+
+    private var _customerNameList = MutableLiveData<Set<String>>()
+    val customerNameList:LiveData<Set<String>>
+    get() = _customerNameList
+
+    private var _itemChangedToPurchase = MutableLiveData<List<SupList>>()
+    val supplierChangedToPurchase:LiveData<List<SupList>>
     get() = _itemChangedToPurchase
 
     private var _totalAmuont = MutableLiveData<Double>()
@@ -51,8 +75,8 @@ class AddPurchaseViewModel : ViewModel() {
     }
 
     //Get List of purchase
-    fun getPurchaseList(apikey: String): LiveData<Purchase> {
-        return jeffRepository.getAllPurchase(apikey)
+    fun getPurchaseList(comid: String, apikey: String): LiveData<Purchase> {
+        return jeffRepository.getAllPurchase(comid,apikey)
     }
 
     //Update purchase
@@ -63,6 +87,11 @@ class AddPurchaseViewModel : ViewModel() {
     //Delete purchase
     fun deletePurchase(purchaseId: Int): LiveData<String> {
         return jeffRepository.getDeletePurchaseMessage(purchaseId)
+    }
+
+    //Get list of customers
+    fun getCustomerList(comid:String): LiveData<Customer> {
+        return jeffRepository.getAllCustomer(comid)
     }
 
     //function to change quantity
@@ -93,44 +122,91 @@ class AddPurchaseViewModel : ViewModel() {
         return formatter.format(this)
     }
 
-    fun addItemToPurchase(itemList: MutableList<Item>){
+    fun changeItemToSupList(itemList: List<SupList>){
         _itemChangedToPurchase.value = itemList
     }
 
     //Get list of supplier
-    fun getSuppliers(): LiveData<Supplier> {
-        return jeffRepository.getAllSuppliers()
+    fun getSuppliers(comid:String): LiveData<Supplier> {
+        return jeffRepository.getAllSuppliers(comid)
     }
 
-    fun removeItem(itemList: MutableList<Item>){
-        _itemChangedToPurchase.value = itemList
-    }
 
     //Get search supplier list
-    fun getSearchSupplierList(name:String, apikey: String):LiveData<SearchSupplier>{
-        return jeffRepository.getSearchSupplierList(name,apikey)
+    fun getSearchSupplierList(comid: String,name:String, apikey: String):LiveData<SearchSupplier>{
+        return jeffRepository.getSearchSupplierList(comid,name,apikey)
     }
 
-    //Get list of all companies
-    fun getCompanyList(): LiveData<Company> {
-        return jeffRepository.getAllCompany()
-    }
 
     fun createJobNoList(purchaseList:List<PurchasePost>){
         val nolist = mutableSetOf<String>()
+        val quotationSet = mutableSetOf<String>()
+        val customerSet = mutableSetOf<String>()
         for (items in purchaseList){
             nolist.add(items.jobNo!!.toString())
+            quotationSet.add(items.quotationNo!!.toString())
+            if (items.custname != ""){
+                customerSet.add(items.custname)
+            }
         }
         _jobNoList.value = nolist
+        _quotationList.value = quotationSet
+        _customerNameList.value = customerSet
     }
 
-    fun calculateAmount(qty: Int,unitA: Double, dAmount: Double) {
-        if (qty>0 && unitA > dAmount) {
+    fun calculateAmount(qty: Int,unitA: Double, dAmount: Double){
             _totalAmuont.value = unitA.times(qty).minus(dAmount)
-        }
     }
 
     fun setDefaultAmount(){
         _totalAmuont.value = null
+    }
+
+    //search purchase
+    fun searchPurchase(comid: String, jobNo:String?, quotationNO:String?, customerName:String?, apikey: String):LiveData<Purchase>{
+        return jeffRepository.searchPurchase(comid,jobNo,quotationNO, customerName, apikey)
+    }
+
+    //Get logo list
+    fun getLogoList(comid: String): LiveData<Logos> {
+        return jeffRepository.getLogoList(comid)
+    }
+
+    fun getBitmapFromUrl(url: String) {
+        uiScope.launch {
+            _imageBitmap.value = convertUrlToBitmap(url)
+        }
+    }
+
+    fun getCompanyBitmap(url:String){
+        uiScope.launch {
+            _companyBitmap.value = convertUrlToBitmap(url)
+        }
+    }
+
+    private suspend fun convertUrlToBitmap(src: String?): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(src)
+                val connection =
+                    url.openConnection() as HttpsURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input = connection.inputStream
+                Timber.e("converted to bitmap suceesfully")
+                val option = BitmapFactory.Options()
+                option.inPreferredConfig = Bitmap.Config.ARGB_8888
+                BitmapFactory.decodeStream(input,null, option)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Timber.e("Failed to convert to bitmap: ${e.message}")
+                null
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 }

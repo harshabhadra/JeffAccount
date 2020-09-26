@@ -4,6 +4,9 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class QuotationUpdate(
+    @SerializedName("comid")
+    @Expose
+    var comid:String,
     @SerializedName("qid")
     @Expose
     var qid:String?,

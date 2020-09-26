@@ -8,7 +8,10 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class QuotationAdd (
+data class  QuotationAdd (
+    @SerializedName("comid")
+    @Expose
+    var comid:String,
     @SerializedName("apikey")
     @Expose
     var apikey: String?,
@@ -60,17 +63,18 @@ data class QuotationAdd (
 
 @Parcelize
 data class Item (
-    @SerializedName("no_of_item")
-    @Expose
-    var noOfItem: Int?,
 
     @SerializedName("item_des")
     @Expose
-    var itemDes: String?,
+    var itemDes: String? = "",
 
     @SerializedName("qty")
     @Expose
-    var qty: Int?,
+    var qty: Int? = 0,
+
+    @SerializedName("unit")
+    @Expose
+    var unit:String? = "",
 
     @SerializedName("unit_amount")
     @Expose

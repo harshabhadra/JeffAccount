@@ -3,6 +3,8 @@ package com.example.jeffaccount.ui.home.customer
 import android.Manifest
 import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -10,17 +12,21 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
-import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
-import com.example.jeffaccount.createPreviewDialog
+import com.example.jeffaccount.utils.createPreviewDialog
 import com.example.jeffaccount.databinding.AddCustomerFragmentBinding
+import com.example.jeffaccount.model.Country
 import com.example.jeffaccount.model.Post
+import com.example.jeffaccount.ui.CountryBottomSheetFragment
 import com.example.jeffaccount.ui.MainActivity
+import com.example.jeffaccount.ui.OnCountryItemClickListener
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -34,29 +40,31 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.PermissionRequestErrorListener
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
 private var loadingDialog: androidx.appcompat.app.AlertDialog? = null
 
-class AddCustomerFragment : Fragment() {
+class AddCustomerFragment : Fragment(), OnCountryItemClickListener {
 
     companion object {
         fun newInstance() =
             AddCustomerFragment()
     }
 
+    private lateinit var addCustomerBinding:AddCustomerFragmentBinding
     private lateinit var viewModel: CustomerViewModel
     private lateinit var customer: Post
     private lateinit var action: String
+    private lateinit var comid: String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val addCustomerBinding = AddCustomerFragmentBinding.inflate(inflater, container, false)
+        addCustomerBinding = AddCustomerFragmentBinding.inflate(inflater, container, false)
 
         setHasOptionsMenu(true)
 //        Getting arguments
@@ -81,6 +89,7 @@ class AddCustomerFragment : Fragment() {
             val phone = addCustomerBinding.customerTelephoneTextInput.text.toString()
             val email = addCustomerBinding.customerEmailTextInput.text.toString()
             val web = addCustomerBinding.customerWebTextInput.text.toString()
+            val county = addCustomerBinding.customerCountyTextInput.text.toString()
 
             when {
                 name.isEmpty() -> {
@@ -94,7 +103,7 @@ class AddCustomerFragment : Fragment() {
                     builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
                         loadingDialog = createLoadingDialog()
                         loadingDialog?.show()
-                        addCustomer(name, street, country, postCode, phone, email, web)
+                        addCustomer(name, street, country,county, postCode, phone, email, web)
                         dialog.dismiss()
                     })
                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
@@ -117,6 +126,7 @@ class AddCustomerFragment : Fragment() {
             val phone = addCustomerBinding.customerTelephoneTextInput.text.toString()
             val email = addCustomerBinding.customerEmailTextInput.text.toString()
             val web = addCustomerBinding.customerWebTextInput.text.toString()
+            val county = addCustomerBinding.customerCountyTextInput.text.toString()
 
             when {
                 name.isEmpty() -> {
@@ -135,6 +145,7 @@ class AddCustomerFragment : Fragment() {
                             name,
                             street,
                             country,
+                            county,
                             postCode,
                             phone,
                             email,
@@ -240,6 +251,43 @@ class AddCustomerFragment : Fragment() {
             }
         })
 
+        //Set on click listener to country tv
+        addCustomerBinding.customerCountryTv.setOnClickListener {
+            val countryBottomSheet = CountryBottomSheetFragment(this)
+            countryBottomSheet.show(activity!!.supportFragmentManager,countryBottomSheet.tag)
+        }
+
+        //Set on click listener to the call imageView
+        addCustomerBinding.callCustomerIv.setOnClickListener {
+            val telephoneNo = addCustomerBinding.customerTelephoneTextInput.text.toString()
+            if(telephoneNo.isNotEmpty()){
+                val intent = Intent(Intent.ACTION_DIAL)
+                intent.data = Uri.parse("tel:$telephoneNo")
+                startActivity(intent)
+            }
+        }
+
+        //Set on Click listener to the email imageView
+        addCustomerBinding.emailCustIv.setOnClickListener {
+            val email = addCustomerBinding.customerEmailTextInput.text.toString()
+            if (email.isNotEmpty()){
+                Timber.e("Email is: $email")
+                val intent = Intent(Intent.ACTION_SENDTO)
+                intent.data = Uri.parse("mailto:$email")
+                intent.putExtra(Intent.EXTRA_EMAIL,email)
+                startActivity(Intent.createChooser(intent, "Send Email"))
+            }
+        }
+
+        //Set on Click listener to web imageView
+        addCustomerBinding.webCustIv.setOnClickListener {
+            val web = addCustomerBinding.customerWebTextInput.text.toString()
+            if (web.isNotEmpty()){
+                val i = Intent(Intent.ACTION_VIEW)
+                i.data = Uri.parse(web)
+                startActivity(Intent.createChooser(i,"Open with"))
+            }
+        }
         return addCustomerBinding.root
     }
 
@@ -249,6 +297,7 @@ class AddCustomerFragment : Fragment() {
         requestReadPermissions()
         val activity = activity as MainActivity
         activity.setToolbarText(getString(R.string.add_customer))
+        comid = activity.companyDetails.comid
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -291,7 +340,7 @@ class AddCustomerFragment : Fragment() {
             }
             R.id.customer_quotation -> {
                 findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToAddQuotationFragment(null,
-                    getString(R.string.customer_data),null,customer))
+                    getString(R.string.customer_data),null,customer,null, null))
             }
             R.id.customer_invoice->{
                 findNavController().navigate(AddCustomerFragmentDirections.actionAddCustomerToAddInvoiceFragment(
@@ -299,6 +348,7 @@ class AddCustomerFragment : Fragment() {
                     null,
                     customer,
                     null
+                ,null, null
                 ))
             }
         }
@@ -310,12 +360,13 @@ class AddCustomerFragment : Fragment() {
         customerName: String,
         streetAdd: String,
         coutry: String = getString(R.string.united_kingdom),
+        county:String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ) {
-        viewModel.addCustomer(customerName, streetAdd, coutry, postCode, telephone, email, web)
+        viewModel.addCustomer(comid,customerName, streetAdd, coutry,county, postCode, telephone, email, web)
             .observe(viewLifecycleOwner,
                 Observer {
                     it?.let {
@@ -332,14 +383,16 @@ class AddCustomerFragment : Fragment() {
         customerName: String,
         streetAdd: String,
         coutry: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ) {
         viewModel.updateCustomer(
+            comid,
             customerId, customerName,
-            streetAdd, coutry, postCode, telephone, email, web
+            streetAdd, coutry,county, postCode, telephone, email, web
         ).observe(viewLifecycleOwner,
             Observer {
                 it?.let {
@@ -392,6 +445,13 @@ class AddCustomerFragment : Fragment() {
             val lineSeparator = LineSeparator()
             lineSeparator.lineColor = BaseColor.WHITE
 
+            val drawble = ContextCompat.getDrawable(context!!,R.drawable.pdf_img)
+            val bitDw = drawble as BitmapDrawable
+            val bmp = bitDw.bitmap
+            val stream = ByteArrayOutputStream()
+            bmp.compress(Bitmap.CompressFormat.PNG,100, stream)
+            val image = com.itextpdf.text.Image.getInstance(stream.toByteArray())
+            mDoc.add(image)
             val jeffChunk = Chunk(
                 getString(R.string.app_name), Font(Font.FontFamily.TIMES_ROMAN,32.0f)
             )
@@ -411,7 +471,11 @@ class AddCustomerFragment : Fragment() {
             createCustomerTable(customerBody)
             mDoc.add(customerBody)
             mDoc.close().let {
-               createPreviewDialog(filePath,context!!, activity!!)
+                createPreviewDialog(
+                    filePath,
+                    context!!,
+                    activity!!
+                )
             }
         } catch (e: Exception) {
 
@@ -523,5 +587,9 @@ class AddCustomerFragment : Fragment() {
             })
             .onSameThread()
             .check()
+    }
+
+    override fun onCountryItemClick(country: Country) {
+       addCustomerBinding.customerCountryTv.text = country.name
     }
 }

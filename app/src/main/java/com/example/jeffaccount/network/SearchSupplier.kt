@@ -1,5 +1,6 @@
 package com.example.jeffaccount.network
 
+import com.example.jeffaccount.model.SupPost
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -35,10 +36,28 @@ data class SearchSupplierPost(
 
     @SerializedName("country")
     @Expose
-    var country: String?
+    var country: String?,
+    @SerializedName("county")
+    @Expose
+    var county: String
 )
-data class SearchSupplier (
+
+data class SearchSupplier(
     @SerializedName("posts")
     @Expose
     var posts: List<SearchSupplierPost>?
 )
+
+fun SearchSupplierPost.asSupplierPost(): SupPost {
+    return SupPost(
+        this.supid,
+        this.supname,
+        this.street,
+        this.postcode,
+        this.telephone,
+        this.supemail,
+        this.web,
+        this.country,
+        this.county
+    )
+}

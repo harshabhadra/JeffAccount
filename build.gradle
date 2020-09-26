@@ -8,7 +8,6 @@ buildscript {
         version_moshi = "1.8.0"
         version_retrofit = "2.5.0"
         version_retrofit_coroutines_adapter = "0.9.2"
-
     }
     repositories {
         google()
@@ -16,7 +15,7 @@ buildscript {
         
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.1'
+        classpath 'com.android.tools.build:gradle:4.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "android.arch.navigation:navigation-safe-args-gradle-plugin:$version_navigation"
 

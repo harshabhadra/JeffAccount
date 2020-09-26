@@ -1,25 +1,29 @@
 package com.example.jeffaccount.ui.home.timeSheet
 
 import android.Manifest
-import android.content.DialogInterface
-import android.content.Intent
-import android.net.Uri
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Paint
 import android.os.Bundle
 import android.os.Environment
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
 import com.example.jeffaccount.databinding.FragmentAddTimeSheetBinding
+import com.example.jeffaccount.model.CompanyDetails
+import com.example.jeffaccount.model.Logo
 import com.example.jeffaccount.model.TimeSheetPost
+import com.example.jeffaccount.network.*
 import com.example.jeffaccount.ui.MainActivity
+import com.example.jeffaccount.ui.home.quotation.*
+import com.example.jeffaccount.utils.createPreviewDialog
+import com.google.android.material.button.MaterialButton
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
 import com.itextpdf.text.pdf.PdfPTable
@@ -33,443 +37,299 @@ import com.karumi.dexter.listener.PermissionRequestErrorListener
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 
 /**
  * A simple [Fragment] subclass.
  */
-class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
+class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener,
+    OnWorkerSaveClickListener, OnSearchItemClickListener, OnSearchSupplierClickListener,
+    OnCustomerNameClickListener, OnSupplierNameClickListener, OnQuotationJobNoClickListener,
+    OnPurchaseJobNoClickListener, OnInvoiceJobNoClickListener, OnTimeSheetJobNoClickListener {
 
     private lateinit var addTimeSheetBinding: FragmentAddTimeSheetBinding
     private lateinit var viewModel: TimeSheetViewModel
-    private var _vat: Double = 0.0
-    private var _hours: Int = 0
-    private var _amount: Double = 0.0
-    private var _advanceAmount: Double = 0.0
-    private var _discountAmount: Double = 0.0
-    private var _totalAmount: Double = 0.0
+    private lateinit var filePath: String
+    private lateinit var workerListAdapter: WorkerListAdapter
+    private lateinit var worker: WorkerList
     private lateinit var action: String
+    private var custNameList: MutableList<String> = mutableListOf()
+    private var listWorker: WorkerList? = null
+    private var workersList: MutableList<WorkerList> = mutableListOf()
+    private lateinit var comId: String
+    private var noOfWorker: Int = 0
     private lateinit var timeSheet: TimeSheetPost
-    private lateinit var filePath:String
+    private lateinit var companyDetails: CompanyDetails
+    private var logoList: MutableList<Logo> = mutableListOf()
+    private var bmpList: MutableList<Bitmap> = mutableListOf()
+    private lateinit var companyBitmap: Bitmap
+    private var customerName: String = ""
+    private var customerStreet: String = ""
+    private var customerPostCode: String = ""
+    private var customerTelephone: String = ""
+    private var customerEmail: String = ""
+    private var customerWeb: String = ""
+    private var customerCountry: String = ""
+    private var customerCounty: String = ""
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
+        Timber.e("OnCreateView")
         // Inflate the layout for this fragment
         addTimeSheetBinding = FragmentAddTimeSheetBinding.inflate(inflater, container, false)
+
+        //Initializing ViewModel class
+        viewModel = ViewModelProvider(this).get(TimeSheetViewModel::class.java)
 
         requestReadPermissions()
         val activity = activity as MainActivity
         activity.setToolbarText("Add Time sheet")
-        val arguments = AddTimeSheetFragmentArgs.fromBundle(arguments!!)
-        action = arguments.action
-        if (action.equals(getString(R.string.update))) {
-            val activity = activity as MainActivity
-            activity.setToolbarText("Update Time sheet")
-            addTimeSheetBinding.tsUpdateButton.visibility = View.VISIBLE
-            addTimeSheetBinding.tsSaveButton.visibility = View.GONE
+        companyDetails = activity.companyDetails
+        companyDetails.caomimge?.let {
+            viewModel.getCompanyBitmap("https://alphabusinessdesigns.com/wordpress/appproject/jtapp/$it")
+        }
+        comId = activity.companyDetails.comid
+
+
+        //Initializing worker adapter
+        workerListAdapter = WorkerListAdapter(WorkerItemClickListener {
+            listWorker = it
+            createChoiceDialog(it)
+        })
+
+        //set up worker recycler with the adapter
+        addTimeSheetBinding.workerListRecyclerView.adapter = workerListAdapter
+
+        //Getting arguments
+        val arguments = AddTimeSheetFragmentArgs.fromBundle(getArguments()!!)
+        action = arguments.action!!
+        if (action == getString(R.string.update)) {
             timeSheet = arguments.timeSheetItem!!
             addTimeSheetBinding.timeSheet = timeSheet
-            _hours = timeSheet.hrs!!.toInt()
+            addTimeSheetBinding.timeSheetJobNoTextInput.setText(timeSheet.jobNo)
+            addTimeSheetBinding.tsQuotationNoTextInput.setText(timeSheet.quotationNo)
+            addTimeSheetBinding.tsSaveButton.visibility = View.GONE
+            addTimeSheetBinding.tsUpdateButton.visibility = View.VISIBLE
+            val list = timeSheet.workerList
+            list?.let {
+                for (worker in list) {
+                    viewModel.modifyWorkerList(worker)
+                }
+            }
+
+            if (timeSheet.custname != "") {
+                customerName = timeSheet.custname
+                customerStreet = timeSheet.street
+                customerPostCode = timeSheet.postcode
+                customerTelephone = timeSheet.telephone
+                customerEmail = timeSheet.customeremail
+                customerWeb = timeSheet.web
+                customerCountry = timeSheet.country
+                customerCounty = timeSheet.county
+                addTimeSheetBinding.timeshetCustomerGroup.visibility = View.VISIBLE
+                addTimeSheetBinding.timesheetAddCustomerTextView.text = "Name: $customerName"
+                addTimeSheetBinding.timesheetCustomerStreetTextView.text = "Street: $customerStreet"
+                addTimeSheetBinding.timesheetCustomerPostCodeTextView.text =
+                    "Postcode: $customerPostCode"
+                addTimeSheetBinding.timesheetCustomerPhoneTextView.text =
+                    "Telephone: $customerTelephone"
+                addTimeSheetBinding.timesheetCustomerEmailTextView.text = "Email: $customerEmail"
+                addTimeSheetBinding.timesheetCustomerWebTextView.text = "Web: $customerWeb"
+                addTimeSheetBinding.timesheetCustomerCountyTextView.text = "County: $customerCounty"
+            }
+        } else if (action == getString(R.string.purchase) || action == getString(R.string.quotation)) {
+            val jobNo = arguments.jobno!!
+            val quotationNo = arguments.quotationno!!
+            addTimeSheetBinding.timeSheetJobNoTextInput.setText(jobNo)
+            addTimeSheetBinding.tsQuotationNoTextInput.setText(quotationNo)
         }
 
+        //Set on Click listener to add worker textView
+        addTimeSheetBinding.addWorkerTv.setOnClickListener {
+
+            val addWorkerBottomSheet = AddWorkerBottomSheetFragment(null, this)
+            addWorkerBottomSheet.show(activity.supportFragmentManager, addWorkerBottomSheet.tag)
+        }
+
+        //Set on click listener to add customer textView
+        addTimeSheetBinding.timesheetAddCustomerTextView.setOnClickListener {
+            val searchNameBottomSheet = SearchCustomerBottomSheetFragment(
+                getString(R.string.quotation), custNameList, this
+                , this, this,
+                this, this, this,
+                this, this
+            )
+            searchNameBottomSheet.show(activity!!.supportFragmentManager, searchNameBottomSheet.tag)
+        }
+
+        //Observe Worker List
+        viewModel.workerList.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let {
+                workersList.clear()
+                workersList.addAll(it)
+                noOfWorker = workersList.size
+                workerListAdapter.submitList(it)
+                workerListAdapter.notifyDataSetChanged()
+            }
+        })
+
+        //Observe customer list
+        viewModel.getCustomerList(comId).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let {
+                if (it.posts != null) {
+                    for (item in it.posts) {
+                        custNameList.add(item.custname!!)
+                    }
+                }
+            }
+        })
+        //Set on Click listener to save button
+        addTimeSheetBinding.tsSaveButton.setOnClickListener {
+            val jobNo = addTimeSheetBinding.timeSheetJobNoTextInput.text.toString()
+            val quotationNo = addTimeSheetBinding.tsQuotationNoTextInput.text.toString()
+
+            when {
+                jobNo.isEmpty() -> {
+                    addTimeSheetBinding.timeSheetJobNoTextInputLayout.error =
+                        getString(R.string.enter_job_no)
+                }
+                quotationNo.isEmpty() -> {
+                    addTimeSheetBinding.tsQuotationNoTextInputLayout.error =
+                        getString(R.string.enter_quotation_no)
+                }
+                else -> {
+                    val timeSheetAdd =
+                        TimeSheetAdd(
+                            comId,
+                            "AngE9676#254r5",
+                            jobNo,
+                            quotationNo,
+                            workersList,
+                            customerName,
+                            customerStreet,
+                            customerPostCode,
+                            customerTelephone,
+                            customerEmail,
+                            customerWeb,
+                            customerCountry,
+                            customerCounty
+                        )
+                    viewModel.addTimeSheet(timeSheetAdd)
+                        .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                            it?.let {
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                findNavController().navigate(
+                                    AddTimeSheetFragmentDirections
+                                        .actionAddTimeSheetFragmentToTimeSheetFragment()
+                                )
+                                viewModel.clearWorkerList()
+                            }
+                        })
+
+                }
+            }
+        }
+
+        //Set on Click listener to updte button
+        addTimeSheetBinding.tsUpdateButton.setOnClickListener {
+            val jobNo = addTimeSheetBinding.timeSheetJobNoTextInput.text.toString()
+            val quotationNo = addTimeSheetBinding.tsQuotationNoTextInput.text.toString()
+            var sWorkersList = workersList
+
+            when {
+                jobNo.isEmpty() -> {
+                    addTimeSheetBinding.timeSheetJobNoTextInputLayout.error =
+                        getString(R.string.enter_job_no)
+                }
+                quotationNo.isEmpty() -> {
+                    addTimeSheetBinding.tsQuotationNoTextInputLayout.error =
+                        getString(R.string.enter_quotation_no)
+                }
+                else -> {
+                    val timeSheetUpdate =
+                        TimeSheetUpdate(
+                            comId,
+                            timeSheet.tid,
+                            "AngE9676#254r5",
+                            jobNo,
+                            quotationNo,
+                            sWorkersList,
+                            customerName,
+                            customerStreet,
+                            customerPostCode,
+                            customerTelephone,
+                            customerEmail,
+                            customerWeb,
+                            customerCountry,
+                            customerCounty
+                        )
+                    viewModel.updateTimeSheet(timeSheetUpdate)
+                        .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                            it?.let {
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                findNavController().navigate(
+                                    AddTimeSheetFragmentDirections
+                                        .actionAddTimeSheetFragmentToTimeSheetFragment()
+                                )
+                                viewModel.clearWorkerList()
+                            }
+                        })
+
+                }
+            }
+        }
         setHasOptionsMenu(true)
 
-        //Adding Text watcher to all input fields
-        addTimeSheetBinding.timeSheetJobNoTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.timeSheetJobNoTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.timeSheetJobNoTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        addTimeSheetBinding.tsQuotationNoTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsQuotationNoTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsQuotationNoTextInputLayout.isErrorEnabled = false
+        viewModel.getLogoList(comId).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it.logoList?.let {
+                logoList.addAll(it)
+                if (logoList.isNotEmpty()) {
+                    for (logo in logoList) {
+                        val imgUrl =
+                            "https://alphabusinessdesigns.com/wordpress/appproject/jtapp/${logo.fileName}"
+                        Timber.e("Image url is:$imgUrl")
+                        viewModel.getBitmapFromUrl(imgUrl)
+                    }
+                }
             }
         })
 
-        addTimeSheetBinding.tsVatTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsVatTextInputLayout.isErrorEnabled = true
-            }
+        //Observe to get logo bitmap list
+        viewModel.imageBitmap.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let {
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsVatTextInputLayout.isErrorEnabled = false
+                bmpList.add(it)
+                Timber.e("Bitmap list size: ${bmpList.size}")
             }
         })
 
-        addTimeSheetBinding.tsNameTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsNameTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsNameTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        addTimeSheetBinding.tsCommentTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsCommentTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsCommentTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        addTimeSheetBinding.tsItemDesTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsItemDesTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsItemDesTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        addTimeSheetBinding.tsPaymentMethodTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsPaymentMethodTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsPaymentMethodTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        addTimeSheetBinding.tsAmountTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        addTimeSheetBinding.tsAdvanceAmountTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsAdvanceAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsAdvanceAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        addTimeSheetBinding.tsDiscountAmountTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsDiscountAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsDiscountAmountTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        addTimeSheetBinding.tsTotalAmountTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                addTimeSheetBinding.tsTotalAmountTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                addTimeSheetBinding.tsTotalAmountTextInputLayout.isErrorEnabled = false
+        //Observe to get company logo bitmap
+        viewModel.companyBitmap.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let {
+                companyBitmap = it
+                Timber.e("Company bitmap size: ${companyBitmap.height}, ${companyBitmap.width}")
             }
         })
         return addTimeSheetBinding.root
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        //Initializing ViewModel class
-        viewModel = ViewModelProvider(this).get(TimeSheetViewModel::class.java)
-
-        //Set on click listener to hrs plus button
-        addTimeSheetBinding.tsPlusButton.setOnClickListener {
-            if (_hours >= 0) {
-                _hours++
-                viewModel.changeHours(_hours)
-            }
-        }
-
-        //Set on click listener to hrs minus button
-        addTimeSheetBinding.tsMinusButton.setOnClickListener {
-            if (_hours > 0) {
-                _hours--
-                viewModel.changeHours(_hours)
-            }
-        }
-
-        //Observe hours value
-        viewModel.timeSheetHours.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                Timber.e(it.toString())
-                addTimeSheetBinding.tsHoursTv.text = it.toString()
-            }
-        })
-
-        //set on click listener to date  tv
-        addTimeSheetBinding.tsDateTv.setOnClickListener {
-            val now = Calendar.getInstance()
-            val dpd =
-                DatePickerDialog.newInstance(
-                    this,
-                    now[Calendar.YEAR],  // Initial year selection
-                    now[Calendar.MONTH],  // Initial month selection
-                    now[Calendar.DAY_OF_MONTH] // Inital day selection
-                )
-            dpd.show(activity?.supportFragmentManager!!, "Datepickerdialog")
-        }
-
-        //Set on Click listener to save button
-        addTimeSheetBinding.tsSaveButton.setOnClickListener {
-
-            val jobNo = addTimeSheetBinding.timeSheetJobNoTextInput.text.toString()
-            val quotationNo = addTimeSheetBinding.tsQuotationNoTextInput.text.toString()
-            val vat = addTimeSheetBinding.tsVatTextInput.text.toString()
-            if (vat.isNotEmpty()) {
-                _vat = vat.toDouble()
-            }
-            val date = addTimeSheetBinding.tsDateTv.text.toString()
-            val name = addTimeSheetBinding.tsNameTextInput.text.toString()
-            val street = addTimeSheetBinding.tsStreetTextInput.text.toString()
-            val postCode = addTimeSheetBinding.tsPostCodeTextInput.text.toString()
-            val telephone = addTimeSheetBinding.tsTelephoneTextInput.text.toString()
-            val comment = addTimeSheetBinding.tsCommentTextInput.text.toString()
-            val itemDes = addTimeSheetBinding.tsItemDesTextInput.text.toString()
-            val paymentMethod = addTimeSheetBinding.tsPaymentMethodTextInput.text.toString()
-            val amount = addTimeSheetBinding.tsAmountTextInput.text.toString()
-            if (amount.isNotEmpty()) {
-                _amount = amount.toDouble()
-            }
-            val advanceAmount = addTimeSheetBinding.tsAdvanceAmountTextInput.text.toString()
-            if (advanceAmount.isNotEmpty()) {
-                _advanceAmount = advanceAmount.toDouble()
-            }
-            val discountAmount = addTimeSheetBinding.tsDiscountAmountTextInput.text.toString()
-            if (discountAmount.isNotEmpty()) {
-                _discountAmount = discountAmount.toDouble()
-            }
-            val totalAmount = addTimeSheetBinding.tsTotalAmountTextInput.text.toString()
-            if (totalAmount.isNotEmpty()) {
-                _totalAmount = totalAmount.toDouble()
-            }
-
-            //Check if fields are not empty
-            when {
-                jobNo.isEmpty() -> addTimeSheetBinding.timeSheetJobNoTextInputLayout.error =
-                    getString(R.string.enter_job_no)
-                quotationNo.isEmpty() -> addTimeSheetBinding.tsQuotationNoTextInputLayout.error =
-                    getString(R.string.enter_quotation_no)
-                vat.isEmpty() -> addTimeSheetBinding.tsVatTextInputLayout.error =
-                    getString(R.string.enter_vat)
-                date.isEmpty() -> Toast.makeText(context, "Enter date", Toast.LENGTH_SHORT).show()
-                name.isEmpty() -> addTimeSheetBinding.tsNameTextInputLayout.error =
-                    getString(R.string.enter_name)
-                itemDes.isEmpty() -> addTimeSheetBinding.tsItemDesTextInputLayout.error =
-                    getString(R.string.enter_item_des)
-
-                (_hours == 0) -> Toast.makeText(context, "Hours can't be zero", Toast.LENGTH_SHORT)
-                    .show()
-                amount.isEmpty() -> addTimeSheetBinding.tsAmountTextInputLayout.error =
-                    getString(R.string.enter_amount)
-                totalAmount.isEmpty() -> addTimeSheetBinding.tsTotalAmountTextInputLayout.error =
-                    getString(R.string.enter_total_amount)
-                else -> {
-                    val builder = AlertDialog.Builder(context!!)
-                    builder.setTitle("Save TimeSheet?")
-                    builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
-                        viewModel.addTimeSheet(
-                            "AngE9676#254r5",
-                            jobNo,
-                            quotationNo,
-                            _vat,
-                            date,
-                            name,
-                            street,
-                            "United Kingdom",
-                            postCode,
-                            telephone,
-                            comment,
-                            itemDes,
-                            paymentMethod,
-                            _hours,
-                            _amount,
-                            _advanceAmount,
-                            _discountAmount,
-                            _totalAmount
-                        ).observe(
-                            viewLifecycleOwner, Observer {
-                                it?.let {
-                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                    findNavController().navigate(AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToTimeSheetFragment())
-                                }
-                            }
-                        )
-                        dialog.dismiss()
-                    })
-                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
-                        dialog.dismiss()
-
-                    })
-                    val dialog = builder.create()
-                    dialog.show()
-
-                }
-            }
-        }
-
-        //Set on click listener to update button
-        addTimeSheetBinding.tsUpdateButton.setOnClickListener {
-            val jobNo = addTimeSheetBinding.timeSheetJobNoTextInput.text.toString()
-            val quotationNo = addTimeSheetBinding.tsQuotationNoTextInput.text.toString()
-            val vat = addTimeSheetBinding.tsVatTextInput.text.toString()
-            if (vat.isNotEmpty()) {
-                _vat = vat.toDouble()
-            }
-            val date = addTimeSheetBinding.tsDateTv.text.toString()
-            val name = addTimeSheetBinding.tsNameTextInput.text.toString()
-            val street = addTimeSheetBinding.tsStreetTextInput.text.toString()
-            val postCode = addTimeSheetBinding.tsPostCodeTextInput.text.toString()
-            val telephone = addTimeSheetBinding.tsTelephoneTextInput.text.toString()
-            val comment = addTimeSheetBinding.tsCommentTextInput.text.toString()
-            val itemDes = addTimeSheetBinding.tsItemDesTextInput.text.toString()
-            val paymentMethod = addTimeSheetBinding.tsPaymentMethodTextInput.text.toString()
-            val amount = addTimeSheetBinding.tsAmountTextInput.text.toString()
-            if (amount.isNotEmpty()) {
-                _amount = amount.toDouble()
-            }
-            val advanceAmount = addTimeSheetBinding.tsAdvanceAmountTextInput.text.toString()
-            if (advanceAmount.isNotEmpty()) {
-                _advanceAmount = advanceAmount.toDouble()
-            }
-            val discountAmount = addTimeSheetBinding.tsDiscountAmountTextInput.text.toString()
-            if (discountAmount.isNotEmpty()) {
-                _discountAmount = discountAmount.toDouble()
-            }
-            val totalAmount = addTimeSheetBinding.tsTotalAmountTextInput.text.toString()
-            if (totalAmount.isNotEmpty()) {
-                _totalAmount = totalAmount.toDouble()
-            }
-
-            //Check if fields are not empty
-            when {
-                jobNo.isEmpty() -> addTimeSheetBinding.timeSheetJobNoTextInputLayout.error =
-                    getString(R.string.enter_job_no)
-                quotationNo.isEmpty() -> addTimeSheetBinding.tsQuotationNoTextInputLayout.error =
-                    getString(R.string.enter_quotation_no)
-                vat.isEmpty() -> addTimeSheetBinding.tsVatTextInputLayout.error =
-                    getString(R.string.enter_vat)
-                date.isEmpty() -> Toast.makeText(context, "Enter date", Toast.LENGTH_SHORT).show()
-                name.isEmpty() -> addTimeSheetBinding.tsNameTextInputLayout.error =
-                    getString(R.string.enter_name)
-                (_hours == 0) -> Toast.makeText(context, "Hours can't be zero", Toast.LENGTH_SHORT)
-                    .show()
-                amount.isEmpty() -> addTimeSheetBinding.tsAmountTextInputLayout.error =
-                    getString(R.string.enter_amount)
-                totalAmount.isEmpty() -> addTimeSheetBinding.tsTotalAmountTextInputLayout.error =
-                    getString(R.string.enter_total_amount)
-                else -> {
-                    val builder = AlertDialog.Builder(context!!)
-                    builder.setTitle("Update TimeSheet?")
-                    builder.setPositiveButton("Save", DialogInterface.OnClickListener{ dialog, which ->
-                        viewModel.updateTimeSheet(
-                            "AngE9676#254r5",
-                            timeSheet.tid!!.toInt(),
-                            jobNo,
-                            quotationNo,
-                            _vat,
-                            date,
-                            name,
-                            street,
-                            "United Kingdom",
-                            postCode,
-                            telephone,
-                            comment,
-                            itemDes,
-                            paymentMethod,
-                            _hours,
-                            _amount,
-                            _advanceAmount,
-                            _discountAmount,
-                            _totalAmount
-                        ).observe(
-                            viewLifecycleOwner, Observer {
-                                it?.let {
-                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                    findNavController().navigate(AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToTimeSheetFragment())
-                                }
-                            }
-                        )
-                        dialog.dismiss()
-                    })
-                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
-                        dialog.dismiss()
-
-                    })
-                    val dialog = builder.create()
-                    dialog.show()
-                }
-            }
-        }
-    }
-
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
 
-        addTimeSheetBinding.tsDateTv.text =
-            viewModel.changeDateFormat(dayOfMonth, monthOfYear, year)
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        if (action.equals(getString(R.string.update))) {
-            inflater.inflate(R.menu.main_menu, menu)
+        if (action == getString(R.string.update)) {
+            inflater.inflate(R.menu.timesheet_menu, menu)
         }
     }
 
@@ -490,8 +350,8 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 val canButton: Button = layout.findViewById(R.id.cancel_del_button)
                 delButton.setOnClickListener {
                     dialog?.dismiss()
-                    viewModel.deleteTimeSheet(timeSheet.tid!!.toInt()).observe(viewLifecycleOwner,
-                        Observer {
+                    viewModel.deleteTimeSheet(timeSheet.tid.toInt())
+                        .observe(viewLifecycleOwner, androidx.lifecycle.Observer {
                             it?.let {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                                 findNavController().navigate(
@@ -522,6 +382,33 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 Timber.e("file path: $filePath")
                 savePdf()
             }
+            R.id.action_quotation -> {
+                findNavController().navigate(
+                    AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToAddQuotationFragment(
+                        null,
+                        getString(R.string.time_sheet),
+                        null,
+                        null,
+                        timeSheet.jobNo,
+                        timeSheet.quotationNo
+                    )
+                )
+            }
+            R.id.action_purchase -> {
+                findNavController().navigate(
+                    AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToAddPurchaseFragment(
+                        null,
+                        getString(R.string.time_sheet),
+                        null,
+                        null,
+                        timeSheet.jobNo,
+                        timeSheet.quotationNo
+                    )
+                )
+            }
+            R.id.worksheet_action -> {
+                findNavController().navigate(AddTimeSheetFragmentDirections.actionAddTimeSheetFragmentToCreateWorkSheetFragment())
+            }
         }
         return true
     }
@@ -545,10 +432,10 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                         // show alert dialog navigating to Settings
                         //openSettingsDialog();
                         Toast.makeText(
-                                context,
-                                "We need To access your storage to create Pdf",
-                                Toast.LENGTH_SHORT
-                            )
+                            context,
+                            "We need To access your storage to create Pdf",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                     }
                 }
@@ -573,199 +460,111 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         try {
             PdfWriter.getInstance(doc, FileOutputStream(filePath))
             doc.open()
+            val cBitmap = BITMAP_RESIZER(companyBitmap, 80, 80)
+            val stream = ByteArrayOutputStream()
+            cBitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            val image = com.itextpdf.text.Image.getInstance(stream.toByteArray())
+            doc.add(image)
             val headTable = PdfPTable(2)
-            headTable.setWidths(intArrayOf(4, 2))
+            headTable.setWidths(intArrayOf(2, 2))
             headTable.widthPercentage = 100f
             val addressCell = getAddressTable()
             val dateCell = PdfPCell()
             dateCell.border = PdfPCell.NO_BORDER
-            dateCell.addElement(Paragraph(timeSheet.date))
-            dateCell.addElement(Paragraph(timeSheet.quotationNo))
+            dateCell.addElement(Paragraph("Date: ${Calendar.DAY_OF_MONTH}"))
+            dateCell.addElement(Paragraph("Job No. : ${timeSheet.jobNo}"))
+            dateCell.addElement(Paragraph("Quotation No. : ${timeSheet.quotationNo}"))
             dateCell.horizontalAlignment = Element.ALIGN_RIGHT
             headTable.addCell(addressCell)
             headTable.addCell(dateCell)
             doc.add(headTable)
-            doc.add(Paragraph(" "))
-            val detailsTable = populateDetailsTable()
-            doc.add(detailsTable)
-            doc.add(Paragraph(" "))
             doc.add(
                 Paragraph(
-                    "WEBSITE: www.jeffelectrical.com", Font(
+                    "Click the link below to visit our website", Font(
                         Font.FontFamily.COURIER, 10f, Font.BOLD,
                         BaseColor.RED
                     )
                 )
             )
             doc.add(Paragraph(" "))
+            val web = companyDetails.web
+            if (web.isNotEmpty()){
+                val chunk = Chunk(web)
+                chunk.setAnchor(URL(web))
+                doc.add(Paragraph(chunk))
+            }
+
+            val customerDetailsTitle =
+                Paragraph(
+                    getString(R.string.customer_data),
+                    Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD)
+                )
+            customerDetailsTitle.alignment = Element.ALIGN_CENTER
+            doc.add(customerDetailsTitle)
+            doc.add(Paragraph(""))
+            doc.add(Paragraph("Customer name: ${timeSheet.custname}"))
+            doc.add(Paragraph("Street Address: ${timeSheet.street}"))
+            doc.add(Paragraph("Postcode: ${timeSheet.postcode}"))
+            doc.add(Paragraph("Email: ${timeSheet.customeremail}"))
+            doc.add(Paragraph("Telephone no.: ${timeSheet.telephone}"))
+            doc.add(Paragraph("Country: ${timeSheet.country}"))
+            doc.add(Paragraph("County : ${timeSheet.county}"))
+
+            doc.add(Paragraph(" "))
             val invoiceTitle =
-                Paragraph("INVOICE", Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD))
+                Paragraph("TIME SHEET", Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD))
             invoiceTitle.alignment = Element.ALIGN_CENTER
-            val invoiceTable = createInvoiceTable()
             doc.add(invoiceTitle)
             doc.add(Paragraph(" "))
-            doc.add(invoiceTable)
+            doc.add(createTimeSheetTable())
             doc.add(Paragraph(" "))
-            doc.add(Paragraph("Additional Charges"))
-            doc.add(Paragraph(" "))
-            val totalTable = createTotalTable()
-            doc.add(totalTable)
-            doc.add(Paragraph(" "))
-            doc.add(Paragraph(getString(R.string.jeff_message_to_cus)))
+
+            val workList = timeSheet.workerList
+            var totalHours = 0
+            var totalAmount = 0.0
+            workList?.let {
+                for (work in workList) {
+                    totalHours += work.hours!!
+                    totalAmount += work.totalAmount!!
+                }
+                doc.add(Paragraph("Total hours worked: $totalHours"))
+                doc.add(Paragraph("Total Amount: $totalAmount"))
+            }
+            doc.add(Paragraph(companyDetails.comDesription))
             doc.add(
                 Paragraph(
-                    getString(R.string.jeff_inquiry_message),
+                    "${getString(R.string.jeff_inquiry_message)} ${companyDetails.web}",
                     Font(Font.FontFamily.UNDEFINED, 10f, Font.BOLD, BaseColor.RED)
                 )
             )
+
+            doc.add(Paragraph(" "))
+            for (bitmap in bmpList) {
+                try {
+                    Timber.e("Bitmap size: ${bitmap.width}, ${bitmap.height}")
+                    val btm = BITMAP_RESIZER(bitmap, 60, 60)
+                    Timber.e(bitmap.toString())
+                    val iStream = ByteArrayOutputStream()
+                    btm?.compress(Bitmap.CompressFormat.PNG, 100, iStream)
+                    val logoImg = Image.getInstance(iStream.toByteArray())
+                    doc.add(logoImg)
+                    doc.add(Paragraph(" "))
+                } catch (e: Exception) {
+                    Timber.e("Error adding image to pdf: ${e.message}")
+                }
+            }
             doc.close().let {
                 Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
-                val intent = Intent(Intent.ACTION_VIEW)
-                val data = Uri.parse("file://" + filePath)
-                intent.setDataAndType(data, "application/pdf")
-                startActivity(Intent.createChooser(intent, "Open Pdf"))
+                createPreviewDialog(
+                    filePath,
+                    context!!,
+                    activity!!
+                )
             }
         } catch (e: java.lang.Exception) {
 
             Timber.e("Error: ${e.message}")
         }
-    }
-
-    private fun createTotalTable(): PdfPTable {
-        val table = PdfPTable(2)
-        table.widthPercentage = 100f
-        val subTotalCell = PdfPCell()
-        subTotalCell.addElement(Paragraph("SUB TOTAL"))
-        subTotalCell.setPadding(8f)
-        table.addCell(subTotalCell)
-        val subTotalDCell = PdfPCell()
-        subTotalDCell.addElement(Paragraph(" "))
-        subTotalDCell.setPadding(8f)
-        table.addCell(subTotalDCell)
-        val taxCell = PdfPCell()
-        taxCell.addElement(Paragraph("TAX %"))
-        taxCell.setPadding(8f)
-        table.addCell(taxCell)
-        val taxDCell = PdfPCell()
-        taxDCell.addElement(Paragraph(timeSheet.vat))
-        taxDCell.setPadding(8f)
-        table.addCell(taxDCell)
-        val taxAmountCell = PdfPCell()
-        taxAmountCell.addElement(Paragraph("TAX AMOUNT"))
-        taxAmountCell.setPadding(8f)
-        table.addCell(taxAmountCell)
-        val taxAmountDCell = PdfPCell()
-        taxAmountDCell.addElement(Paragraph(" "))
-        taxAmountDCell.setPadding(8f)
-        table.addCell(taxAmountDCell)
-        val disocuntCell = PdfPCell()
-        disocuntCell.addElement(Paragraph("DISCOUNT AMOUNT"))
-        disocuntCell.setPadding(8f)
-        table.addCell(disocuntCell)
-        val discountDCell = PdfPCell()
-        discountDCell.addElement(Paragraph(timeSheet.discountAmount))
-        discountDCell.setPadding(8f)
-        table.addCell(discountDCell)
-        val totalAmountCell = PdfPCell()
-        totalAmountCell.addElement(Paragraph("TOTAL AMOUNT"))
-        totalAmountCell.setPadding(8f)
-        table.addCell(totalAmountCell)
-        val totalAmountDCell = PdfPCell()
-        totalAmountDCell.addElement(Paragraph(timeSheet.totalAmount))
-        totalAmountDCell.setPadding(8f)
-        table.addCell(totalAmountDCell)
-        return table
-    }
-
-    private fun createInvoiceTable(): PdfPTable {
-        val table = PdfPTable(5)
-        table.setWidths(intArrayOf(1, 4, 1, 2, 2))
-        val jobNoCell = PdfPCell(Paragraph("Job No."))
-        jobNoCell.setPadding(8f)
-        table.addCell(jobNoCell)
-        val desCell = PdfPCell(Paragraph("Description"))
-        desCell.horizontalAlignment = Element.ALIGN_CENTER
-        desCell.setPadding(8f)
-        table.addCell(desCell)
-        val quantityCell = PdfPCell(Paragraph("Hours"))
-        quantityCell.setPadding(8f)
-        table.addCell(quantityCell)
-        val unitCell = PdfPCell(Paragraph("Unit Amount"))
-        unitCell.setPadding(8f)
-        table.addCell(unitCell)
-        val discountCell = PdfPCell(Paragraph("Discount Amount"))
-        discountCell.setPadding(8f)
-        table.addCell(discountCell)
-
-        val noCell = PdfPCell(Paragraph("1"))
-        noCell.setPadding(8f)
-        table.addCell(noCell)
-        val itemDesCell = PdfPCell(Paragraph(timeSheet.itemDescription))
-        itemDesCell.setPadding(8f)
-        table.addCell(itemDesCell)
-        val qtyCell = PdfPCell(Paragraph(timeSheet.hrs))
-        qtyCell.setPadding(8f)
-        table.addCell(qtyCell)
-        val unitDCell = PdfPCell(Paragraph(timeSheet.amount))
-        unitDCell.setPadding(8f)
-        table.addCell(unitDCell)
-        val disDCell = PdfPCell(Paragraph(timeSheet.discountAmount))
-        disDCell.setPadding(8f)
-        table.addCell(disDCell)
-        table.widthPercentage = 100f
-        return table
-    }
-
-    private fun populateDetailsTable(): PdfPTable {
-
-        val table = PdfPTable(2)
-        val nameCell = PdfPCell()
-        table.widthPercentage = 100f
-        nameCell.border = PdfPCell.NO_BORDER
-        nameCell.addElement(Paragraph("Name"))
-        val nameDataCell = PdfPCell()
-        nameDataCell.border = PdfPCell.NO_BORDER
-        nameDataCell.addElement(Paragraph(timeSheet.name))
-        nameDataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        val addressCell = PdfPCell()
-        addressCell.border = PdfPCell.NO_BORDER
-        addressCell.addElement(Paragraph("Street Address"))
-        val addressDataCell = PdfPCell()
-        addressDataCell.border = PdfPCell.NO_BORDER
-        addressDataCell.addElement(Paragraph(timeSheet.street))
-        addressDataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        val countryCell = PdfPCell()
-        countryCell.border = PdfPCell.NO_BORDER
-        countryCell.addElement(Paragraph("Country"))
-        val countrydataCell = PdfPCell()
-        countrydataCell.border = PdfPCell.NO_BORDER
-        countrydataCell.addElement(Paragraph(timeSheet.country))
-        countrydataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        val postCell = PdfPCell()
-        postCell.border = PdfPCell.NO_BORDER
-        postCell.addElement(Paragraph("Post Code"))
-        val postDataCell = PdfPCell()
-        postDataCell.border = PdfPCell.NO_BORDER
-        postDataCell.addElement(Paragraph(timeSheet.postCode))
-        postDataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        val teleCell = PdfPCell()
-        teleCell.border = PdfPCell.NO_BORDER
-        teleCell.addElement(Paragraph("Telephone No"))
-        val teleDataCell = PdfPCell()
-        teleDataCell.border = PdfPCell.NO_BORDER
-        teleDataCell.addElement(Paragraph(timeSheet.telephone))
-        teleDataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        table.addCell(nameCell)
-        table.addCell(nameDataCell)
-        table.addCell(addressCell)
-        table.addCell(addressDataCell)
-        table.addCell(countryCell)
-        table.addCell(countrydataCell)
-        table.addCell(postCell)
-        table.addCell(postDataCell)
-        table.addCell(teleCell)
-        table.addCell(teleDataCell)
-        return table
     }
 
     private fun getAddressTable(): PdfPCell {
@@ -774,28 +573,184 @@ class AddTimeSheetFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         cell.border = PdfPCell.NO_BORDER
         cell.addElement(
             Paragraph(
-                "JEFF Electrical installation and testing",
-                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD)
+                companyDetails.comname,
+                Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLD)
             )
         )
         cell.addElement(
             Paragraph(
-                "2 Palgrave Road",
-                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+                companyDetails.street,
+                Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL)
             )
         )
         cell.addElement(
             Paragraph(
-                "Bedform, MK429DH",
-                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+                "${companyDetails.county}, ${companyDetails.postcode}",
+                Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL)
             )
         )
         cell.addElement(
             Paragraph(
-                "Phone: 004-7881871100",
-                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+                "Phone: ${companyDetails.telephone}",
+                Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL)
             )
         )
         return cell
+    }
+
+    //Create Time Sheet Table
+    private fun createTimeSheetTable(): PdfPTable {
+        val table = PdfPTable(7)
+        table.widthPercentage = 100f
+        table.setWidths(intArrayOf(2, 1, 1, 1, 1, 1, 1))
+        val workerList = timeSheet.workerList
+        val nameCell = PdfPCell(Paragraph("Worker Name"))
+        nameCell.setPadding(8f)
+        val dateCell = PdfPCell(Paragraph("Date"))
+        dateCell.setPadding(8f)
+        val hourCell = PdfPCell(Paragraph("Hours"))
+        hourCell.setPadding(8f)
+        val amountCell = PdfPCell(Paragraph("Amount/Hr"))
+        amountCell.setPadding(8f)
+        val advanceCell = PdfPCell(Paragraph("Advance Amount"))
+        advanceCell.setPadding(8f)
+        val vatCell = PdfPCell(Paragraph("Vat%"))
+        vatCell.setPadding(8f)
+        val totalAmountCell = PdfPCell(Paragraph("Total Amount"))
+        totalAmountCell.setPadding(8f)
+        table.addCell(nameCell)
+        table.addCell(dateCell)
+        table.addCell(hourCell)
+        table.addCell(amountCell)
+        table.addCell(advanceCell)
+        table.addCell(vatCell)
+        table.addCell(totalAmountCell)
+        workerList?.let {
+            for (worker in workerList) {
+                val nameVCell = PdfPCell(Paragraph(worker.name))
+                nameVCell.setPadding(8f)
+                val dateVCell = PdfPCell(Paragraph(worker.date))
+                dateVCell.setPadding(8f)
+                val hourVCell = PdfPCell(Paragraph(worker.hours.toString()))
+                hourVCell.setPadding(8f)
+                val amountVCell = PdfPCell(Paragraph(worker.amount.toString()))
+                amountVCell.setPadding(8f)
+                val advanceVCell = PdfPCell(Paragraph(worker.advanceAmount.toString()))
+                advanceVCell.setPadding(8f)
+                val vatVCell = PdfPCell(Paragraph(worker.vat.toString()))
+                vatVCell.setPadding(8f)
+                val totalVCell = PdfPCell(Paragraph(worker.totalAmount.toString()))
+                totalVCell.setPadding(8f)
+                table.addCell(nameVCell)
+                table.addCell(dateVCell)
+                table.addCell(hourVCell)
+                table.addCell(amountVCell)
+                table.addCell(advanceVCell)
+                table.addCell(vatVCell)
+                table.addCell(totalVCell)
+            }
+        }
+
+        return table
+    }
+
+    override fun onWorkerSave(worker: WorkerList) {
+
+        listWorker?.let {
+            if (listWorker != null) {
+                viewModel.removeWorker(listWorker!!)
+            }
+            listWorker = null
+        }
+        viewModel.modifyWorkerList(worker)
+    }
+
+    private fun createChoiceDialog(item: WorkerList) {
+        val layout = LayoutInflater.from(context).inflate(R.layout.choose_layout, null)
+        val builder = AlertDialog.Builder(context!!)
+        builder.setView(layout)
+        val dialog = builder.create()
+        dialog.show()
+        val editButton: MaterialButton = layout.findViewById(R.id.choice_edit_button)
+        val deleteButton: MaterialButton = layout.findViewById(R.id.choice_delete_button)
+        deleteButton.setOnClickListener {
+            viewModel.removeWorker(item)
+            dialog.dismiss()
+        }
+        editButton.setOnClickListener {
+            val addWorkerBottomSheetFragment = AddWorkerBottomSheetFragment(item, this)
+            addWorkerBottomSheetFragment.show(
+                activity!!.supportFragmentManager,
+                addWorkerBottomSheetFragment.tag
+            )
+            dialog.dismiss()
+        }
+
+    }
+
+    fun BITMAP_RESIZER(bitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
+        val scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+        val ratioX = newWidth / bitmap.width.toFloat()
+        val ratioY = newHeight / bitmap.height.toFloat()
+        val middleX = newWidth / 2.0f
+        val middleY = newHeight / 2.0f
+        val scaleMatrix = Matrix()
+        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY)
+        val canvas = Canvas(scaledBitmap)
+        canvas.setMatrix(scaleMatrix)
+        canvas.drawBitmap(
+            bitmap,
+            middleX - bitmap.width / 2,
+            middleY - bitmap.height / 2,
+            Paint(Paint.FILTER_BITMAP_FLAG)
+        )
+        return scaledBitmap
+    }
+
+    override fun onSearchItemClick(searchCustomer: SearchCustomer) {
+
+        addTimeSheetBinding.timeshetCustomerGroup.visibility = View.VISIBLE
+        customerName = searchCustomer.custname
+        customerStreet = searchCustomer.street
+        customerPostCode = searchCustomer.postcode
+        customerTelephone = searchCustomer.telephone
+        customerEmail = searchCustomer.customerEmail
+        customerWeb = searchCustomer.web
+        customerCountry = searchCustomer.country
+        customerCounty = searchCustomer.county
+        addTimeSheetBinding.timesheetAddCustomerTextView.text = "Name: $customerName"
+        addTimeSheetBinding.timesheetCustomerStreetTextView.text = "Street: $customerStreet"
+        addTimeSheetBinding.timesheetCustomerPostCodeTextView.text = "Postcode: $customerPostCode"
+        addTimeSheetBinding.timesheetCustomerPhoneTextView.text = "Telephone: $customerTelephone"
+        addTimeSheetBinding.timesheetCustomerEmailTextView.text = "Email: $customerEmail"
+        addTimeSheetBinding.timesheetCustomerWebTextView.text = "Web: $customerWeb"
+        addTimeSheetBinding.timesheetCustomerCountyTextView.text = "County: $customerCounty"
+
+    }
+
+    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost, action: String) {
+    }
+
+    override fun onCustomerNameClick(name: String) {
+
+    }
+
+    override fun onSupplierNameClick(name: String) {
+
+    }
+
+    override fun onQuotationNameClick(name: String) {
+
+    }
+
+    override fun onPurchaseNameClick(name: String) {
+    }
+
+    override fun onInvoiceJobNoClick(name: String) {
+
+    }
+
+    override fun onTimeSheetJobClick(name: String) {
+
     }
 }

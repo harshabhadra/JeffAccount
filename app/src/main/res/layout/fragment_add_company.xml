@@ -6,7 +6,7 @@
     <data>
         <variable
             name="company"
-            type="com.example.jeffaccount.model.ComPost" />
+            type="com.example.jeffaccount.model.CompanyDetails" />
     </data>
 
     <ScrollView
@@ -17,8 +17,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/loginpage"
         tools:context=".ui.home.company.AddCompanyFragment">
-
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/company_name_textInputLayout"
@@ -29,19 +29,40 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/add_company_logo_iv">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/company_name_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
+                android:enabled="false"
+                android:hint="@string/name"
                 android:inputType="text"
+                android:maxLines="1"
                 android:text="@{company.comname}"
-                android:textColor="@android:color/white"
-                android:hint="@string/name" />
+                android:textColor="@android:color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/company_des_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/company_name_textInputLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/company_des_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/com_description"
+                android:inputType="textMultiLine"
+                android:text="@{company.comDesription}"
+                android:textColor="@android:color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/company_street_textInputLayout"
             android:layout_width="0dp"
@@ -51,7 +72,7 @@
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/company_name_textInputLayout">
+            app:layout_constraintTop_toBottomOf="@+id/company_des_textInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/company_street_textInput"
@@ -71,18 +92,19 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/company_country_tv">
+            app:layout_constraintTop_toBottomOf="@+id/company_county_textInputLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/company_post_code_textInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
+                android:hint="@string/post_code"
                 android:inputType="text"
+                android:maxLines="1"
                 android:text="@{company.postcode}"
-                android:textColor="@android:color/white"
-                android:hint="@string/post_code" />
+                android:textColor="@android:color/white" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -152,33 +174,19 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/company_save_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="32dp"
-            android:text="@string/save"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/company_update_button"
-            app:layout_constraintTop_toBottomOf="@+id/company_web_textInputLayout" />
-
-        <Button
             android:id="@+id/company_update_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="16dp"
             android:text="@string/update"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/company_save_button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/company_web_textInputLayout" />
+            app:layout_constraintTop_toBottomOf="@+id/logo_recyclerView" />
 
         <TextView
             android:id="@+id/company_country_tv"
@@ -197,6 +205,59 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/company_street_textInputLayout" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/company_county_textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/company_country_tv">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/company_county_textInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@{company.county}"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:hint="@string/county" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <ImageView
+            android:id="@+id/add_company_logo_iv"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/com" />
+
+        <ImageView
+            android:id="@+id/add_logo_iv"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/company_web_textInputLayout"
+            app:srcCompat="@drawable/ic_add_circle_white_24dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/logo_recyclerView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="horizontal"
+            tools:listitem="@layout/logo_list_item"
+            app:layout_constraintBottom_toBottomOf="@+id/add_logo_iv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/add_logo_iv"
+            app:layout_constraintTop_toTopOf="@+id/add_logo_iv" />
     </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>

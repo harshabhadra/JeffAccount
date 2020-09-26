@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">JEFF ACCOUNT</string>
-    <string name="api_key">AngE9676#254r5</string>
+    <string name="api_key"></string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home">Home</string>
@@ -30,6 +30,9 @@
     <string name="purchase">Purchase</string>
     <string name="invoice">Invoice</string>
     <string name="time_sheet">Time Sheet</string>
+    <string name="time_sheet_job_no">Time Sheet job no</string>
+    <string name="time_sheet_quotation_no">Time Sheet quotation no</string>
+    <string name="time_sheet_customer_name">Time Sheet customer name</string>
     <string name="job_no">Job No</string>
     <string name="quotation_no">Quotation No.</string>
     <string name="vat">Vat %</string>
@@ -87,7 +90,7 @@
     <string name="enter_amount">Enter Amount</string>
     <string name="log_out">Log out</string>
     <string name="jeff_message_to_cus"><![CDATA[ALL KIND OF ELECTRICAL WORK SUCH AS REWIRING, REPLACE, CONSUMER UNIT, IN & OUT LIGHT SOCKET, COOKERS, SHOWERS, ELECTRIC HOBS & HOOD, UNDER FLOOR HEATER ETC.]]></string>
-    <string name="jeff_inquiry_message">If have nay inquiry drop your work on www.jeffelectrical.com</string>
+    <string name="jeff_inquiry_message">If have nay inquiry drop your work on </string>
     <string name="qty">Qty</string>
     <string name="no_of_item">No of Item</string>
     <string name="add_item">Add Item</string>
@@ -106,5 +109,37 @@
     <string name="search">Search</string>
     <string name="quotation_List">Quotation List</string>
     <string name="invoice_list">invoice list</string>
+    <string name="invoice_list_jobno">invoice list job no</string>
+    <string name="invoice_list_quotationno">invoice list quotation no</string>
+    <string name="invoice_list_customername">invoice list customer name</string>
     <string name="cancel">Cancel</string>
+    <string name="purchase_list">purchase list</string>
+    <string name="purchase_list_job_no">purchase list job no</string>
+    <string name="purchase_list_quotation_no">purchase list quotation no</string>
+    <string name="purchase_list_customer_name">purchase list customer name</string>
+    <string name="payment_link">Payment link</string>
+    <string name="county">County</string>
+    <string name="enter_county_name">Enter County name</string>
+    <string name="add_worker">Add Worker</string>
+    <string name="amount_per_hour">Amount per hour</string>
+    <string name="update_worker">Update Worker</string>
+    <string name="enter_current_password">Enter Current Password</string>
+    <string name="enter_new_password">Enter New Password</string>
+    <string name="confirm_new_password">Confirm New Password</string>
+    <string name="change_password">Change Password</string>
+    <string name="country_list">Country List</string>
+    <string name="search_by">Search By</string>
+    <string name="com_description">Company description</string>
+    <string name="search_supplier">Search Supplier</string>
+    <string name="select">Select</string>
+    <string name="modify">Modify</string>
+    <string name="unit">Unit</string>
+
+    <string-array name="quantities">
+        <item>No</item>
+        <item>Kg</item>
+        <item>lt</item>
+        <item>Pkt</item>
+        <item>box</item>
+    </string-array>
 </resources>

@@ -3,6 +3,8 @@ package com.example.jeffaccount.ui.home.timeSheet
 import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.*
+import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -14,6 +16,7 @@ import com.example.jeffaccount.network.SearchCustomer
 import com.example.jeffaccount.network.SearchSupplierPost
 import com.example.jeffaccount.ui.MainActivity
 import com.example.jeffaccount.ui.home.quotation.*
+import kotlinx.android.synthetic.main.search_choice_list_item_layout.view.*
 
 class TimeSheetFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplierClickListener,
     OnCustomerNameClickListener, OnSupplierNameClickListener, OnQuotationJobNoClickListener,
@@ -27,6 +30,13 @@ class TimeSheetFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplie
     private lateinit var timeSheetBinding: TimeSheetFragmentBinding
     private lateinit var timeSheetAdapter: TimeSheetListAdapter
     private var jobNoList:MutableSet<String> = mutableSetOf()
+    private var quotationNoList:MutableSet<String> = mutableSetOf()
+    private var customerList:MutableSet<String> = mutableSetOf()
+    private var isJobNo:Boolean = false
+    private var isQuotationNo:Boolean = false
+    private var isCustomerName:Boolean = false
+
+    private lateinit var comid:String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,12 +47,15 @@ class TimeSheetFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplie
 
         val activity = activity as MainActivity
         activity.setToolbarText("Time sheets")
+        comid = activity.companyDetails.comid
+
         //Set on click listener to fab button
         timeSheetBinding.timeSheetFab.setOnClickListener {
             findNavController().navigate(
                 TimeSheetFragmentDirections.actionTimeSheetFragmentToAddTimeSheetFragment(
                     null,
-                    getString(R.string.add), null
+                    getString(R.string.add),
+                null,null
                 )
             )
         }
@@ -68,14 +81,14 @@ class TimeSheetFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplie
                 findNavController().navigate(
                     TimeSheetFragmentDirections.actionTimeSheetFragmentToAddTimeSheetFragment(
                         it,
-                        getString(R.string.update), null
+                        getString(R.string.update), null, null
                     )
                 )
                 viewModel.doneNavigatingToAddTimeSheet()
             }
         })
         //Getting list of time sheet from ViewModel class
-        viewModel.getTimeSheetList(getString(R.string.api_key)).observe(viewLifecycleOwner, Observer {
+        viewModel.getTimeSheetList(comid,getString(R.string.api_key)).observe(viewLifecycleOwner, Observer {
             it?.let {
                 timeSheetAdapter.submitList(it.posts)
                 timeSheetBinding.noTimeSheetTv.visibility = View.GONE
@@ -91,6 +104,20 @@ class TimeSheetFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplie
                 jobNoList.addAll(it)
             }
         })
+
+        //Observe quotation no list
+        viewModel.quotationList.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                quotationNoList.addAll(it)
+            }
+        })
+
+        //Observe customer name list
+        viewModel.customerList.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                customerList.addAll(it)
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -102,24 +129,68 @@ class TimeSheetFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplie
 
         when(item.itemId){
             R.id.action_search->{
-                val searchBottomSheet = SearchCustomerBottomSheetFragment(
-                    getString(R.string.time_sheet),jobNoList.toMutableList(),this, this,
-                    this, this,
-                    this, this,
-                    this ,this
-                )
-                searchBottomSheet.show(activity!!.supportFragmentManager, searchBottomSheet.tag)
+                val layout = LayoutInflater.from(requireContext())
+                    .inflate(R.layout.search_choice_list_item_layout, null)
+                val builder = AlertDialog.Builder(requireContext())
+                builder.setView(layout)
+                val jobnoTv: TextView = layout.search_by_jobno_tv
+                val quotationnoTv: TextView = layout.search_by_quotationno_tv
+                val customerNameTv: TextView = layout.search_by_name_tv
+
+                val dialog = builder.create();
+                dialog.show()
+
+                //Set on click listener to textViews
+                jobnoTv.setOnClickListener {
+                    isJobNo = true
+                    isQuotationNo = false
+                    isCustomerName = false
+                    val searchBottomSheet = SearchCustomerBottomSheetFragment(
+                        getString(R.string.time_sheet_job_no),jobNoList.toMutableList(),this, this,
+                        this, this,
+                        this, this,
+                        this ,this
+                    )
+                    searchBottomSheet.show(activity!!.supportFragmentManager, searchBottomSheet.tag)
+                    dialog.dismiss()
+                }
+
+                quotationnoTv.setOnClickListener {
+                    isJobNo = false
+                    isQuotationNo = true
+                    isCustomerName = false
+                    val searchBottomSheet = SearchCustomerBottomSheetFragment(
+                        getString(R.string.time_sheet_quotation_no),quotationNoList.toMutableList(),this, this,
+                        this, this,
+                        this, this,
+                        this ,this
+                    )
+                    searchBottomSheet.show(activity!!.supportFragmentManager, searchBottomSheet.tag)
+                    dialog.dismiss()
+                }
+
+                customerNameTv.setOnClickListener {
+                    isJobNo = false
+                    isQuotationNo = false
+                    isCustomerName = true
+                    val searchBottomSheet = SearchCustomerBottomSheetFragment(
+                        getString(R.string.time_sheet_customer_name),customerList.toMutableList(),this, this,
+                        this, this,
+                        this, this,
+                        this ,this
+                    )
+                    searchBottomSheet.show(activity!!.supportFragmentManager, searchBottomSheet.tag)
+                    dialog.dismiss()
+                }
             }
         }
         return true
     }
 
     override fun onSearchItemClick(searchCustomer: SearchCustomer) {
-        TODO("Not yet implemented")
     }
 
-    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost) {
-        TODO("Not yet implemented")
+    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost,action:String) {
     }
 
     override fun onCustomerNameClick(name: String) {
@@ -144,5 +215,30 @@ class TimeSheetFragment : Fragment(), OnSearchItemClickListener, OnSearchSupplie
 
     override fun onTimeSheetJobClick(name: String) {
 
+        if (isJobNo) {
+            viewModel.searchTimeSheet(comid, name, null , null, "AngE9676#254r5")
+                .observe(viewLifecycleOwner, Observer {
+                    it?.let {
+                        timeSheetAdapter.submitList(it.posts)
+                        timeSheetAdapter.notifyDataSetChanged()
+                    }
+                })
+        }else if (isQuotationNo){
+            viewModel.searchTimeSheet(comid, null, name,null, "AngE9676#254r5")
+                .observe(viewLifecycleOwner, Observer {
+                    it?.let {
+                        timeSheetAdapter.submitList(it.posts)
+                        timeSheetAdapter.notifyDataSetChanged()
+                    }
+                })
+        }else if (isCustomerName){
+            viewModel.searchTimeSheet(comid,null , null, name, "AngE9676#254r5")
+                .observe(viewLifecycleOwner, Observer {
+                    it?.let {
+                        timeSheetAdapter.submitList(it.posts)
+                        timeSheetAdapter.notifyDataSetChanged()
+                    }
+                })
+        }
     }
 }

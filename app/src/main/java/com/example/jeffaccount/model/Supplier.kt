@@ -2,9 +2,12 @@ package com.example.jeffaccount.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.example.jeffaccount.network.SearchSupplierPost
+import com.example.jeffaccount.network.asSupplierPost
 import com.google.gson.annotations.Expose
 
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
 data class Supplier (
     @SerializedName("posts")
@@ -12,7 +15,7 @@ data class Supplier (
     var posts: List<SupPost>
 )
 
-
+@Parcelize
 data class SupPost (
     @SerializedName("supid")
     @Expose
@@ -37,42 +40,22 @@ data class SupPost (
     var web: String?,
     @SerializedName("country")
     @Expose
-    var country: String?
-):Parcelable {
-    constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString()
-    ) {
-    }
+    var country: String?,
+    @SerializedName("county")
+    @Expose
+    var county:String
+):Parcelable
 
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(supid)
-        parcel.writeString(supname)
-        parcel.writeString(street)
-        parcel.writeString(postcode)
-        parcel.writeString(telephone)
-        parcel.writeString(supemail)
-        parcel.writeString(web)
-        parcel.writeString(country)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<SupPost> {
-        override fun createFromParcel(parcel: Parcel): SupPost {
-            return SupPost(parcel)
-        }
-
-        override fun newArray(size: Int): Array<SupPost?> {
-            return arrayOfNulls(size)
-        }
-    }
+fun SupPost.asSearchSupplierPost():SearchSupplierPost{
+    return SearchSupplierPost(
+        this.supid,
+        this.supname,
+        this.street,
+        this.postcode,
+        this.telephone,
+        this.supemail,
+        this.web,
+        this.country,
+        this.county
+    )
 }

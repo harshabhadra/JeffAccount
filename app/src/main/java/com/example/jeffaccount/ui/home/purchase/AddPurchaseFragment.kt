@@ -2,29 +2,31 @@ package com.example.jeffaccount.ui.home.purchase
 
 import android.Manifest
 import android.content.DialogInterface
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Paint
 import android.os.Bundle
 import android.os.Environment
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.widget.Button
-import android.widget.ImageButton
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.jeffaccount.R
-import com.example.jeffaccount.createPreviewDialog
 import com.example.jeffaccount.databinding.AddPurchaseFragmentBinding
-import com.example.jeffaccount.model.ComPost
-import com.example.jeffaccount.model.PurchasePost
-import com.example.jeffaccount.model.SupPost
+import com.example.jeffaccount.model.*
 import com.example.jeffaccount.network.*
 import com.example.jeffaccount.ui.MainActivity
 import com.example.jeffaccount.ui.home.quotation.*
+import com.example.jeffaccount.ui.home.supplier.SupplierFragmentDirections
+import com.example.jeffaccount.utils.createPreviewDialog
 import com.google.android.material.button.MaterialButton
 import com.itextpdf.text.*
 import com.itextpdf.text.pdf.PdfPCell
@@ -38,39 +40,47 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.PermissionRequestErrorListener
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog
-import org.w3c.dom.Text
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.math.roundToLong
 
 
 class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
     OnSearchItemClickListener, OnSearchSupplierClickListener, OnCustomerNameClickListener,
     OnSupplierNameClickListener, OnQuotationJobNoClickListener, OnPurchaseJobNoClickListener,
-    OnInvoiceJobNoClickListener, OnTimeSheetJobNoClickListener {
+    OnInvoiceJobNoClickListener, OnTimeSheetJobNoClickListener, onSaveSupplierListener,
+    OnSupplierClickListener {
 
     private lateinit var purchaseBinding: AddPurchaseFragmentBinding
     private lateinit var action: String
     private lateinit var purchase: PurchasePost
-    private var _vat: Double = 0.0
-    private var qty: Int = 0
-    private var _unitAmount: Double = 0.0
-    private var _advanceAmount: Double = 0.0
-    private var _discountAmount: Double = 0.0
-    private var _totalAmount: Double = 0.0
     private lateinit var filePath: String
-    private lateinit var itemAdapter: ItemAdapter
     private var itemList: MutableList<Item> = mutableListOf()
     private var nameList: MutableList<String> = mutableListOf()
-    private var comNameList: MutableList<String> = mutableListOf()
-    private var addedItemList: MutableList<Item> = mutableListOf()
+    private var custNameList: MutableList<String> = mutableListOf()
     private var itemNo: Int = 1
-    private lateinit var company: ComPost
+    private lateinit var companyDetails: CompanyDetails
     private lateinit var supplier: SupPost
-    private var vatP:Double = 00.0
+    private lateinit var comid: String
+    private lateinit var supplierListAdapter: SupplierListAdapter
+    private var supllierList: MutableList<SupList> = mutableListOf()
+    private lateinit var supName: String
+    private lateinit var supCountyName: String
+    private var logoList: MutableList<Logo> = mutableListOf()
+    private var bmpList: MutableList<Bitmap> = mutableListOf()
+    private lateinit var companyBitmap: Bitmap
+    private  var customerName: String = ""
+    private  var customerStreet: String = ""
+    private  var customerPostCode: String = ""
+    private  var customerTelephone: String = ""
+    private  var customerEmail: String = ""
+    private  var customerWeb: String = ""
+    private  var customerCountry: String = ""
+    private  var customerCounty: String = ""
 
     companion object {
         fun newInstance() =
@@ -89,66 +99,98 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         setHasOptionsMenu(true)
 
         //Set on click listener to add item text
-        purchaseBinding.purchaseAddItemTv.setOnClickListener {
-            createItemDialog(null)
+        purchaseBinding.purchaseAddSupplierTv.setOnClickListener {
+
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("What you'd like to do?")
+            builder.setPositiveButton("Select", DialogInterface.OnClickListener { dialog, which ->
+                val searchnameBottomSheet = SearchCustomerBottomSheetFragment(
+                    getString(R.string.purchase), nameList, this
+                    , this
+                    , this, this, this, this,
+                    this, this
+                )
+                searchnameBottomSheet.show(activity!!.supportFragmentManager, searchnameBottomSheet.tag)
+            }).setNegativeButton("Create New", DialogInterface.OnClickListener { dialog, which ->
+
+                findNavController().navigate(
+                    AddPurchaseFragmentDirections.actionAddPurchaseFragmentToAddSupplierFragment(
+                    SupPost(
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        "",
+                        ""
+                    ),"add"
+                ))            })
+            val dialog = builder.create()
+            dialog.show()
+
+        }
+
+        //Set on Click listener to Add customer button
+        purchaseBinding.purchasAddCustomerTextView.setOnClickListener {
+
+            val searchNameBottomSheet = SearchCustomerBottomSheetFragment(
+                getString(R.string.quotation), custNameList, this
+                , this
+                , this, this, this, this,
+                this, this
+            )
+            searchNameBottomSheet.show(activity!!.supportFragmentManager, searchNameBottomSheet.tag)
         }
         //Set on click listener to save purchase button
         purchaseBinding.purchaseSaveButton.setOnClickListener {
             val jobNo = purchaseBinding.purchaseJobnoTextInput.text.toString()
             val quotationNo = purchaseBinding.purchaseQuotationTextInput.text.toString()
             val date = purchaseBinding.purchaseDateTextInputLayout.text.toString()
-            val supplierName = purchaseBinding.purchaseSupplierTextInputLayout.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
-            val paymentMethod = purchaseBinding.purchasePaymentMethodTextInput.text.toString()
-            val street = purchaseBinding.addPurchaseStreetTv.text.toString()
-            val country = purchaseBinding.addPurchaseCountryTv.text.toString()
-            val postCode = purchaseBinding.addPurchasePostTv.text.toString()
-            val telephone = purchaseBinding.addPurchaseTeleTv.text.toString()
-            val vat = purchaseBinding.purchaseVatTextinput.text.toString()
-            if (vat.isNotEmpty()){
-                vatP = vat.toDouble()
-            }
+
             when {
                 jobNo.isEmpty() -> purchaseBinding.purchaseJobnoTextInputLayout.error =
                     getString(R.string.enter_job_no)
                 quotationNo.isEmpty() -> purchaseBinding.purchaseQuotationTextInputLayout.error =
                     getString(R.string.enter_quotation_no)
-                (qty == 0) -> Toast.makeText(context, "Quantity can't be zero", Toast.LENGTH_SHORT)
-                    .show()
-                date.isEmpty() -> purchaseBinding.purchaseDateTextInputLayout.error =
-                    getString(R.string.enter_date)
-                supplierName.isEmpty() -> purchaseBinding.purchaseSupplierTextInputLayout.error =
-                    getString(R.string.enter_supplier_name)
                 else -> {
                     val builder = AlertDialog.Builder(context!!)
                     builder.setTitle("Save Purchase?")
-                    builder.setPositiveButton("Save", DialogInterface.OnClickListener{ dialog, which ->
-                        val purchaseAdd = PurchaseAdd(
-                            "AngE9676#254r5",
-                            jobNo,
-                            quotationNo,
-                            supplierName,
-                            date,
-                            street,
-                            country,
-                            postCode,
-                            telephone,
-                            paymentMethod,
-                            comment,
-                            vatP,
-                            addedItemList
-                        )
-                        viewModel.addPurchase(purchaseAdd).observe(viewLifecycleOwner,
-                            Observer {
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                findNavController().navigate(AddPurchaseFragmentDirections.actionAddPurchaseFragmentToPurchaseFragment())
-                            })
-                        dialog.dismiss()
-                    })
-                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
-                        dialog.dismiss()
+                    builder.setPositiveButton(
+                        "Save",
+                        DialogInterface.OnClickListener { dialog, which ->
+                            val purchaseAdd = PurchaseAdd(
+                                comid,
+                                "AngE9676#254r5",
+                                jobNo,
+                                quotationNo,
+                                supllierList,
+                                customerName,
+                                customerStreet,
+                                customerPostCode,
+                                customerTelephone,
+                                customerEmail,
+                                customerWeb,
+                                customerCountry,
+                                customerCounty,
+                                date,
+                                comment
+                            )
+                            viewModel.addPurchase(purchaseAdd).observe(viewLifecycleOwner,
+                                Observer {
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(AddPurchaseFragmentDirections.actionAddPurchaseFragmentToPurchaseFragment())
+                                })
+                            dialog.dismiss()
+                        })
+                    builder.setNegativeButton(
+                        "Cancel",
+                        DialogInterface.OnClickListener { dialog, which ->
+                            dialog.dismiss()
 
-                    })
+                        })
                     val dialog = builder.create()
                     dialog.show()
                 }
@@ -160,60 +202,50 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             val jobNo = purchaseBinding.purchaseJobnoTextInput.text.toString()
             val quotationNo = purchaseBinding.purchaseQuotationTextInput.text.toString()
             val date = purchaseBinding.purchaseDateTextInputLayout.text.toString()
-            val supplierName = purchaseBinding.purchaseSupplierTextInputLayout.text.toString()
             val comment = purchaseBinding.purchaseCommentTextInput.text.toString()
-            val paymentMethod = purchaseBinding.purchasePaymentMethodTextInput.text.toString()
-            val street = purchaseBinding.addPurchaseStreetTv.text.toString()
-            val country = purchaseBinding.addPurchaseCountryTv.text.toString()
-            val postCode = purchaseBinding.addPurchasePostTv.text.toString()
-            val telephone = purchaseBinding.addPurchaseTeleTv.text.toString()
-            val vat = purchaseBinding.purchaseVatTextinput.text.toString()
 
-            if(vat.isNotEmpty()){
-                vatP = vat.toDouble()
-            }
             when {
                 jobNo.isEmpty() -> purchaseBinding.purchaseJobnoTextInputLayout.error =
                     getString(R.string.enter_job_no)
                 quotationNo.isEmpty() -> purchaseBinding.purchaseQuotationTextInputLayout.error =
                     getString(R.string.enter_quotation_no)
-                (qty == 0) -> Toast.makeText(context, "Quantity can't be zero", Toast.LENGTH_SHORT)
-                    .show()
-                date.isEmpty() -> purchaseBinding.purchaseDateTextInputLayout.error =
-                    getString(R.string.enter_date)
-                supplierName.isEmpty() -> purchaseBinding.purchaseSupplierTextInputLayout.error =
-                    getString(R.string.enter_supplier_name)
                 else -> {
                     val builder = AlertDialog.Builder(context!!)
                     builder.setTitle("Update Purchase?")
-                    builder.setPositiveButton("Save",DialogInterface.OnClickListener{dialog, which ->
-                        val purchaseUpdate = PurchaseUpdate(
-                            purchase.pid,
-                            "AngE9676#254r5",
-                            jobNo,
-                            quotationNo,
-                            supplierName,
-                            date,
-                            street,
-                            country,
-                            postCode,
-                            telephone,
-                            paymentMethod,
-                            comment,
-                            vatP,
-                            addedItemList
-                        )
-                        viewModel.updatePurchase(purchaseUpdate).observe(viewLifecycleOwner,
-                            Observer {
-                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                                findNavController().navigate(AddPurchaseFragmentDirections.actionAddPurchaseFragmentToPurchaseFragment())
-                            })
-                        dialog.dismiss()
-                    })
-                    builder.setNegativeButton("Cancel",DialogInterface.OnClickListener{dialog, which ->
-                        dialog.dismiss()
+                    builder.setPositiveButton(
+                        "Update",
+                        DialogInterface.OnClickListener { dialog, which ->
+                            val purchaseUpdate = PurchaseUpdate(
+                                comid,
+                                purchase.pid!!,
+                                "AngE9676#254r5",
+                                jobNo,
+                                quotationNo,
+                                supllierList,
+                                customerName,
+                                customerStreet,
+                                customerPostCode,
+                                customerTelephone,
+                                customerEmail,
+                                customerWeb,
+                                customerCountry,
+                                customerCounty,
+                                date,
+                                comment
+                            )
+                            viewModel.updatePurchase(purchaseUpdate).observe(viewLifecycleOwner,
+                                Observer {
+                                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                                    findNavController().navigate(AddPurchaseFragmentDirections.actionAddPurchaseFragmentToPurchaseFragment())
+                                })
+                            dialog.dismiss()
+                        })
+                    builder.setNegativeButton(
+                        "Cancel",
+                        DialogInterface.OnClickListener { dialog, which ->
+                            dialog.dismiss()
 
-                    })
+                        })
                     val dialog = builder.create()
                     dialog.show()
                 }
@@ -247,50 +279,6 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             }
         })
 
-        purchaseBinding.purchaseCommentTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchaseCommentTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchaseCommentTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        purchaseBinding.purchasePaymentMethodTextInput.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                purchaseBinding.purchasePaymentMethodTextInputLayout.isErrorEnabled = true
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                purchaseBinding.purchasePaymentMethodTextInputLayout.isErrorEnabled = false
-            }
-        })
-
-        //Set on click listener to customer name tv
-        purchaseBinding.purchaseSupplierTextInputLayout.setOnClickListener {
-
-            val searchnameBottomSheet = SearchCustomerBottomSheetFragment(
-                getString(R.string.purchase), nameList, this
-                , this
-            ,this,this, this, this,
-                this, this
-            )
-            searchnameBottomSheet.show(activity!!.supportFragmentManager, searchnameBottomSheet.tag)
-        }
-
-        val itemRecyclerView = purchaseBinding.supplierItemRecyclerView
-        itemAdapter = ItemAdapter(OnAddedItemClickListener {
-            val item = it
-            createChoiceDialog(item)
-        })
-        itemRecyclerView.adapter = itemAdapter
 
         return purchaseBinding.root
 
@@ -303,53 +291,55 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         requestReadPermissions()
         val activity = activity as MainActivity
         activity.setToolbarText("Add Purchase")
+        companyDetails = activity.companyDetails
+        companyDetails.caomimge?.let {
+            viewModel.getCompanyBitmap("https://alphabusinessdesigns.com/wordpress/appproject/jtapp/$it")
+        }
+        comid = activity.companyDetails.comid
+
         val arguments = AddPurchaseFragmentArgs.fromBundle(arguments!!)
         action = arguments.action
 
         if (action.equals(getString(R.string.update))) {
             purchaseBinding.purchaseSaveButton.visibility = View.GONE
             purchaseBinding.purchaseEditButton.visibility = View.VISIBLE
+            purchaseBinding.purchaseCustomerGroup.visibility = View.VISIBLE
             purchase = arguments.purchasePost!!
-            itemList = purchase.itemDescription
-            viewModel.addItemToPurchase(itemList)
+            purchase.supList?.let {
+                supllierList = purchase.supList!!.toMutableList()
+                viewModel.changeItemToSupList(supllierList)
+            }
             itemNo = itemList.size.plus(1)
             purchaseBinding.purchase = arguments.purchasePost
-            val purchase = arguments.purchasePost!!
-            purchaseBinding.purchaseSupplierTextInputLayout.text = purchase.customerName
-            purchaseBinding.addPurchaseStreetTv.text = purchase.street
-            purchaseBinding.addPurchaseCountryTv.text = purchase.country
-            purchaseBinding.addPurchasePostTv.text = purchase.postCode
-            purchaseBinding.addPurchaseTeleTv.text = purchase.telephone
-            purchaseBinding.purchaseInfoGroup.visibility = View.VISIBLE
+            purchaseBinding.purchaseJobnoTextInput.setText(purchase.jobNo)
+            purchaseBinding.purchaseQuotationTextInput.setText(purchase.quotationNo)
+            if (purchase.custname != "") {
+                purchaseBinding.purchasAddCustomerTextView.setText("Name: ${purchase.custname}")
+                purchaseBinding.purchaseStreetTextView.setText("Street: ${purchase.street}")
+                purchaseBinding.purchaseEmailTextView.setText("Email: ${purchase.customeremail}")
+                purchaseBinding.purchaseTelephoneTextView.setText("Telephone: ${purchase.telephone}")
+                purchaseBinding.purchaseCountyTextView.setText("County: ${purchase.county}")
+                purchaseBinding.purchasePostcodeTextView.text = "Post code: ${purchase.postcode}"
+                customerName = purchase.custname
+                customerStreet = purchase.street
+                customerPostCode = purchase.postcode
+                customerTelephone = purchase.telephone
+                customerEmail = purchase.customeremail
+                customerWeb = purchase.web
+                customerCountry = purchase.country
+                customerCounty = purchase.county
+            }
             activity.setToolbarText("Update Purchase")
-            purchaseBinding.purchaseAddItemTv.text = "No. of Items: ${itemList.size}"
-        } else if (action.equals(getString(R.string.company_details))) {
-            company = arguments.companyItem!!
-            purchaseBinding.purchaseSupplierTextInputLayout.text = company.comname
-            purchaseBinding.addPurchaseStreetTv.text = company.street
-            purchaseBinding.addPurchaseCountryTv.text = company.country
-            purchaseBinding.addPurchasePostTv.text = company.postcode
-            purchaseBinding.addPurchaseTeleTv.text = company.telephone
-            purchaseBinding.purchaseInfoGroup.visibility = View.VISIBLE
         } else if (action.equals(getString(R.string.supplier_details))) {
             supplier = arguments.supplierItem!!
-            purchaseBinding.purchaseSupplierTextInputLayout.text = supplier.supname
-            purchaseBinding.addPurchaseStreetTv.text = supplier.street
-            purchaseBinding.addPurchaseCountryTv.text = supplier.country
-            purchaseBinding.addPurchasePostTv.text = supplier.postcode
-            purchaseBinding.addPurchaseTeleTv.text = supplier.telephone
-            purchaseBinding.purchaseInfoGroup.visibility = View.VISIBLE
+        } else if (action.equals(getString(R.string.quotation)) || action.equals(R.string.time_sheet)) {
+            purchaseBinding.purchaseJobnoTextInput.setText(arguments.jobno!!)
+            purchaseBinding.purchaseQuotationTextInput.setText(arguments.quotationno!!)
         }
 
-        viewModel.itemChangedToPurchase.observe(viewLifecycleOwner, Observer {
-            addedItemList = it
-            qty = addedItemList.size
-            itemAdapter.submitList(addedItemList)
-            itemAdapter.notifyDataSetChanged()
-        })
 
         //Get list of supplier to get the names
-        viewModel.getSuppliers().observe(viewLifecycleOwner, Observer {
+        viewModel.getSuppliers(comid).observe(viewLifecycleOwner, Observer {
             it?.let {
                 val list = it.posts
                 for (item in list) {
@@ -358,15 +348,16 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
             }
         })
 
-        //Get list of company
-        viewModel.getCompanyList().observe(viewLifecycleOwner, Observer {
+        //Get list of customers
+        viewModel.getCustomerList(comid).observe(viewLifecycleOwner, Observer {
             it?.let {
                 val list = it.posts
-                for (item in list!!) {
-                    comNameList.add(item.comname!!)
+                for (cust in list) {
+                    custNameList.add(cust.custname!!)
                 }
             }
         })
+
         //Set on click listener to date tv
         purchaseBinding.purchaseDateTextInputLayout.setOnClickListener {
             val now = Calendar.getInstance()
@@ -379,12 +370,52 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
                 )
             dpd.show(activity?.supportFragmentManager!!, "Datepickerdialog")
         }
+
+        //Observe supplier change to purchase
+        viewModel.supplierChangedToPurchase.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                supplierListAdapter = SupplierListAdapter(context!!, this, it)
+                purchaseBinding.supplierItemRecyclerView.adapter = supplierListAdapter
+                supplierListAdapter.notifyDataSetChanged()
+            }
+        })
+
+        viewModel.getLogoList(comid).observe(viewLifecycleOwner, Observer {
+            it.logoList?.let {
+                logoList.addAll(it)
+                if (logoList.isNotEmpty()) {
+                    for (logo in logoList) {
+                        val imgUrl =
+                            "https://alphabusinessdesigns.com/wordpress/appproject/jtapp/${logo.fileName}"
+                        Timber.e("Image url is:$imgUrl")
+                        viewModel.getBitmapFromUrl(imgUrl)
+                    }
+                }
+            }
+        })
+
+        //Observe to get logo bitmap list
+        viewModel.imageBitmap.observe(viewLifecycleOwner, Observer {
+            it?.let {
+
+                bmpList.add(it)
+                Timber.e("Bitmap list size: ${bmpList.size}")
+            }
+        })
+
+        //Observe to get company logo bitmap
+        viewModel.companyBitmap.observe(viewLifecycleOwner, Observer {
+            it?.let {
+                companyBitmap = it
+                Timber.e("Company bitmap size: ${companyBitmap.height}, ${companyBitmap.width}")
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         if (action.equals(getString(R.string.update))) {
-            inflater.inflate(R.menu.main_menu, menu)
+            inflater.inflate(R.menu.purchase_menu, menu)
         }
     }
 
@@ -432,11 +463,33 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
                 Timber.e("file path: $filePath")
                 savePdf()
             }
+            R.id.action_quotation -> {
+                findNavController().navigate(
+                    AddPurchaseFragmentDirections.actionAddPurchaseFragmentToAddQuotationFragment(
+                        null,
+                        getString(R.string.purchase),
+                        null,
+                        null,
+                        purchase.jobNo,
+                        purchase.quotationNo
+                    )
+                )
+            }
+            R.id.action_timeSheet -> {
+                findNavController().navigate(
+                    AddPurchaseFragmentDirections.actionAddPurchaseFragmentToAddTimeSheetFragment(
+                        null, getString(R.string.purchase), purchase.jobNo, purchase.quotationNo
+                    )
+                )
+            }
+            R.id.worksheet_action -> {
+                findNavController().navigate(AddPurchaseFragmentDirections.actionAddPurchaseFragmentToCreateWorkSheetFragment())
+            }
         }
         return true
     }
 
-    private fun createChoiceDialog(item: Item) {
+    private fun createChoiceDialog(item: SupList, position: Int) {
         val layout = LayoutInflater.from(context).inflate(R.layout.choose_layout, null)
         val builder = AlertDialog.Builder(context!!)
         builder.setView(layout)
@@ -445,13 +498,23 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         val editButton: MaterialButton = layout.findViewById(R.id.choice_edit_button)
         val deleteButton: MaterialButton = layout.findViewById(R.id.choice_delete_button)
         deleteButton.setOnClickListener {
-            addedItemList.remove(item)
-            viewModel.addItemToPurchase(addedItemList)
+            supllierList.remove(item)
+            viewModel.changeItemToSupList(supllierList)
             dialog.dismiss()
         }
         editButton.setOnClickListener {
+            val addSupplierBottomSheetFragment =
+                AddSupplierBottomSheetFragment(
+                    item,
+                    this, position
+                )
+            addSupplierBottomSheetFragment.isCancelable = false
+            addSupplierBottomSheetFragment.show(
+                activity!!.supportFragmentManager,
+                addSupplierBottomSheetFragment.tag
+            )
+            supllierList.remove(item)
             dialog.dismiss()
-            createItemDialog(item)
         }
 
     }
@@ -502,57 +565,106 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         try {
             PdfWriter.getInstance(doc, FileOutputStream(filePath))
             doc.open()
+            val cBitmap = BITMAP_RESIZER(companyBitmap, 80, 80)
+            val stream = ByteArrayOutputStream()
+            cBitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            val image = com.itextpdf.text.Image.getInstance(stream.toByteArray())
+            doc.add(image)
             val headTable = PdfPTable(2)
             headTable.setWidths(intArrayOf(4, 2))
             headTable.widthPercentage = 100f
-            val addressCell = getAddressTable()
+            var addressCell = getAddressTable()
             val dateCell = PdfPCell()
             dateCell.border = PdfPCell.NO_BORDER
             dateCell.addElement(Paragraph("Date: ${purchase.date}"))
+            dateCell.addElement(Paragraph("Job no. : ${purchase.jobNo}"))
             dateCell.addElement(Paragraph("Quotation No. : ${purchase.quotationNo}"))
             dateCell.horizontalAlignment = Element.ALIGN_RIGHT
             headTable.addCell(addressCell)
             headTable.addCell(dateCell)
             doc.add(headTable)
             doc.add(Paragraph(" "))
-            val detailsTable = populateDetailsTable()
-            doc.add(detailsTable)
             doc.add(Paragraph(" "))
             doc.add(
                 Paragraph(
-                    "WEBSITE: www.jeffelectrical.com", Font(
+                    "Click the link below to visit our website", Font(
                         Font.FontFamily.COURIER, 10f, Font.BOLD,
                         BaseColor.RED
                     )
                 )
             )
             doc.add(Paragraph(" "))
+            val web = companyDetails.web
+            if (web.isNotEmpty()){
+                val chunk = Chunk(web)
+                chunk.setAnchor(URL(web))
+                doc.add(Paragraph(chunk))
+            }
+            doc.add(Paragraph(" "))
             val invoiceTitle =
-                Paragraph("INVOICE", Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD))
+                Paragraph("PURCHASE", Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD))
             invoiceTitle.alignment = Element.ALIGN_CENTER
-            val invoiceTable = createInvoiceTable()
             doc.add(invoiceTitle)
+
+            val suppliers = purchase.supList
+            suppliers?.let {
+                for (supplier in suppliers) {
+                    doc.add(Paragraph(" "))
+                    doc.add(Paragraph("Supplier Name: ${supplier.supName}"))
+                    doc.add(Paragraph("County Name: ${supplier.county}"))
+                    doc.add(Paragraph("Purchase Date: ${supplier.supDate}"))
+                    doc.add(Paragraph(" "))
+                    val supplierTable = createSupplierTable(supplier.itemList)
+                    doc.add(supplierTable)
+                    doc.add(Paragraph("Vat%: ${supplier.vat}"))
+                    var totalEx = 0.0
+                    supplier.itemList?.let {
+                        for (item in supplier.itemList!!) {
+                            item.totalAmount?.let {
+                                totalEx += item.totalAmount!!
+                            }
+                        }
+                        val totalPurhcase = (supplier.vat?.div(100)?.times(totalEx))?.plus(totalEx)
+                        doc.add(Paragraph("Total Expense with Vat: $totalPurhcase"))
+                        doc.add(Paragraph("Payment Method: ${supplier.paymentMethod}"))
+                    }
+                    doc.add(Paragraph(" "))
+
+                }
+            }
+
             doc.add(Paragraph(" "))
-            doc.add(invoiceTable)
-            doc.add(Paragraph(" "))
-            doc.add(Paragraph("Additional Charges"))
-            doc.add(Paragraph(" "))
-            doc.add(Paragraph("Special Instructions "))
-            doc.add(Paragraph(purchase.specialInstruction))
-            doc.add(Paragraph(""))
-            val totalTable = createTotalTable()
-            doc.add(totalTable)
-            doc.add(Paragraph(" "))
-            doc.add(Paragraph(getString(R.string.jeff_message_to_cus)))
+            doc.add(Paragraph(companyDetails.comDesription))
             doc.add(
                 Paragraph(
-                    getString(R.string.jeff_inquiry_message),
+                    "${getString(R.string.jeff_inquiry_message)} ${companyDetails.web}",
                     Font(Font.FontFamily.UNDEFINED, 10f, Font.BOLD, BaseColor.RED)
                 )
             )
+
+            doc.add(Paragraph(" "))
+            for (bitmap in bmpList) {
+                try {
+                    Timber.e("Bitmap size: ${bitmap.width}, ${bitmap.height}")
+                    val btm = BITMAP_RESIZER(bitmap, 60, 60)
+                    Timber.e(bitmap.toString())
+                    val iStream = ByteArrayOutputStream()
+                    btm?.compress(Bitmap.CompressFormat.PNG, 100, iStream)
+                    val logoImg = Image.getInstance(iStream.toByteArray())
+                    doc.add(logoImg)
+                    doc.add(Paragraph(" "))
+                } catch (e: Exception) {
+                    Timber.e("Error adding image to pdf: ${e.message}")
+                }
+            }
+
             doc.close().let {
                 Toast.makeText(context, "Pdf Saved in $filePath", Toast.LENGTH_SHORT).show()
-                createPreviewDialog(filePath, context!!, activity!!)
+                createPreviewDialog(
+                    filePath,
+                    context!!,
+                    activity!!
+                )
             }
         } catch (e: java.lang.Exception) {
 
@@ -560,151 +672,45 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         }
     }
 
-    private fun createTotalTable(): PdfPTable {
-        val table = PdfPTable(2)
-        table.widthPercentage = 100f
-        val subTotalCell = PdfPCell()
-        subTotalCell.addElement(Paragraph("SUB TOTAL"))
-        subTotalCell.setPadding(8f)
-        table.addCell(subTotalCell)
-        val subTotalDCell = PdfPCell()
-        var subTotal = 0.0
-        for (item in addedItemList) {
-            subTotal += item.unitAmount!!
-        }
-        subTotalDCell.addElement(Paragraph(subTotal.toString()))
-        subTotalDCell.setPadding(8f)
-        table.addCell(subTotalDCell)
-        val taxCell = PdfPCell()
-        taxCell.addElement(Paragraph("TAX %"))
-        taxCell.setPadding(8f)
-        table.addCell(taxCell)
-        val taxDCell = PdfPCell()
-        taxDCell.addElement(Paragraph(purchase.vat))
-        taxDCell.setPadding(8f)
-        table.addCell(taxDCell)
-        val taxAmountCell = PdfPCell()
-        taxAmountCell.addElement(Paragraph("TAX AMOUNT"))
-        taxAmountCell.setPadding(8f)
-        table.addCell(taxAmountCell)
-        val taxAmountDCell = PdfPCell()
-        val taxAmount = (purchase.vat?.toDouble()?.div(100))?.times(subTotal)
-        taxAmountDCell.addElement(Paragraph(taxAmount.toString()))
-        taxAmountDCell.setPadding(8f)
-        table.addCell(taxAmountDCell)
-        val disocuntCell = PdfPCell()
-        disocuntCell.addElement(Paragraph("DISCOUNT AMOUNT"))
-        disocuntCell.setPadding(8f)
-        table.addCell(disocuntCell)
-        val discountDCell = PdfPCell()
-        var totalDiscount = 0.0
-        for (item in addedItemList) {
-            totalDiscount += item.discountAmount!!
-        }
-        discountDCell.addElement(Paragraph(totalDiscount.toString()))
-        discountDCell.setPadding(8f)
-        table.addCell(discountDCell)
-        val totalAmountCell = PdfPCell()
-        totalAmountCell.addElement(Paragraph("TOTAL AMOUNT"))
-        totalAmountCell.setPadding(8f)
-        table.addCell(totalAmountCell)
-        val totalAmountDCell = PdfPCell()
-        val totalAmount = subTotal.plus(taxAmount!!).minus(totalDiscount).roundToLong()
-        totalAmountDCell.addElement(Paragraph(totalAmount.toString()))
-        totalAmountDCell.setPadding(8f)
-        table.addCell(totalAmountDCell)
-        return table
-    }
-
-    private fun createInvoiceTable(): PdfPTable {
+    private fun createSupplierTable(itemList: List<Item>?): PdfPTable {
         val table = PdfPTable(5)
-        table.setWidths(intArrayOf(1, 4, 1, 2, 2))
-        val jobNoCell = PdfPCell(Paragraph("No."))
-        jobNoCell.setPadding(8f)
-        table.addCell(jobNoCell)
-        val desCell = PdfPCell(Paragraph("Description"))
-        desCell.horizontalAlignment = Element.ALIGN_CENTER
-        desCell.setPadding(8f)
-        table.addCell(desCell)
-        val quantityCell = PdfPCell(Paragraph("Quantity"))
-        quantityCell.setPadding(8f)
-        table.addCell(quantityCell)
-        val unitCell = PdfPCell(Paragraph("Unit Amount"))
-        unitCell.setPadding(8f)
-        table.addCell(unitCell)
-        val discountCell = PdfPCell(Paragraph("Discount Amount"))
-        discountCell.setPadding(8f)
+        table.widthPercentage = 100f
+        table.setWidths(intArrayOf(2, 1, 1, 1, 1))
+        val itemNameCell = PdfPCell(Paragraph("Item Name"))
+        itemNameCell.setPadding(4f)
+        val qtyCell = PdfPCell(Paragraph("Qty"))
+        qtyCell.setPadding(4f)
+        val amountCell = PdfPCell(Paragraph("Unit Amount"))
+        amountCell.setPadding(4f)
+        val discountCell = PdfPCell(Paragraph("Discount"))
+        discountCell.setPadding(4f)
+        val totoalCell = PdfPCell(Paragraph("Total"))
+        totoalCell.setPadding(4f)
+        table.addCell(itemNameCell)
+        table.addCell(qtyCell)
+        table.addCell(amountCell)
         table.addCell(discountCell)
-        for (item in addedItemList) {
-            val itemNoCell = PdfPCell(Paragraph(item.noOfItem.toString()))
-            itemNoCell.setPadding(8f)
-            val itemDesCell = PdfPCell(Paragraph(item.itemDes))
-            itemDesCell.setPadding(8f)
-            val qtyCell = PdfPCell(Paragraph(item.qty.toString()))
-            qtyCell.setPadding(8f)
-            val unitDCell = PdfPCell(Paragraph(item.unitAmount.toString()))
-            unitDCell.setPadding(8f)
-            val disDCell = PdfPCell(Paragraph(item.discountAmount.toString()))
-            disDCell.setPadding(8f)
-            table.addCell(itemNoCell)
-            table.addCell(itemDesCell)
-            table.addCell(qtyCell)
-            table.addCell(unitDCell)
-            table.addCell(disDCell)
+        table.addCell(totoalCell)
+
+        itemList?.let {
+            for (item in itemList) {
+                val itemNameVCell = PdfPCell(Paragraph(item.itemDes))
+                itemNameVCell.setPadding(4f)
+                val qtyVCell = PdfPCell(Paragraph(item.qty.toString() + "  " + item.unit))
+                qtyVCell.setPadding(4f)
+                val amountVCell = PdfPCell(Paragraph(item.unitAmount.toString()))
+                amountVCell.setPadding(4f)
+                val discountVCell = PdfPCell(Paragraph(item.discountAmount.toString()))
+                discountVCell.setPadding(4f)
+                val totoalVCell = PdfPCell(Paragraph(item.totalAmount.toString()))
+                totoalVCell.setPadding(4f)
+                table.addCell(itemNameVCell)
+                table.addCell(qtyVCell)
+                table.addCell(amountVCell)
+                table.addCell(discountVCell)
+                table.addCell(totoalVCell)
+            }
         }
-        table.widthPercentage = 100f
-        return table
-    }
-
-    private fun populateDetailsTable(): PdfPTable {
-
-        val table = PdfPTable(2)
-        val nameCell = PdfPCell()
-        table.widthPercentage = 100f
-        nameCell.border = PdfPCell.NO_BORDER
-        nameCell.addElement(Paragraph("Name"))
-        val nameDataCell = PdfPCell()
-        nameDataCell.border = PdfPCell.NO_BORDER
-        nameDataCell.addElement(Paragraph(purchase.customerName))
-        nameDataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        val addressCell = PdfPCell()
-        addressCell.border = PdfPCell.NO_BORDER
-        addressCell.addElement(Paragraph("Street Address"))
-        val addressDataCell = PdfPCell()
-        addressDataCell.border = PdfPCell.NO_BORDER
-        addressDataCell.addElement(Paragraph(purchase.street))
-        addressDataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        val countryCell = PdfPCell()
-        countryCell.border = PdfPCell.NO_BORDER
-        countryCell.addElement(Paragraph("Country"))
-        val countrydataCell = PdfPCell()
-        countrydataCell.border = PdfPCell.NO_BORDER
-        countrydataCell.addElement(Paragraph(purchase.country))
-        countrydataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        val postCell = PdfPCell()
-        postCell.border = PdfPCell.NO_BORDER
-        postCell.addElement(Paragraph("Post Code"))
-        val postDataCell = PdfPCell()
-        postDataCell.border = PdfPCell.NO_BORDER
-        postDataCell.addElement(Paragraph(purchase.postCode))
-        postDataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        val teleCell = PdfPCell()
-        teleCell.border = PdfPCell.NO_BORDER
-        teleCell.addElement(Paragraph("Telephone No"))
-        val teleDataCell = PdfPCell()
-        teleDataCell.border = PdfPCell.NO_BORDER
-        teleDataCell.addElement(Paragraph(purchase.telephone))
-        teleDataCell.horizontalAlignment = Element.ALIGN_RIGHT
-        table.addCell(nameCell)
-        table.addCell(nameDataCell)
-        table.addCell(addressCell)
-        table.addCell(addressDataCell)
-        table.addCell(countryCell)
-        table.addCell(countrydataCell)
-        table.addCell(postCell)
-        table.addCell(postDataCell)
-        table.addCell(teleCell)
-        table.addCell(teleDataCell)
         return table
     }
 
@@ -714,260 +720,74 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
         cell.border = PdfPCell.NO_BORDER
         cell.addElement(
             Paragraph(
-                "JEFF Electrical installation and testing",
-                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.BOLD)
+                companyDetails.comname,
+                Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.BOLD)
             )
         )
         cell.addElement(
             Paragraph(
-                "2 Palgrave Road",
-                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+                companyDetails.street,
+                Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL)
             )
         )
         cell.addElement(
             Paragraph(
-                "Bedform, MK429DH",
-                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+                "${companyDetails.county}, ${companyDetails.postcode}",
+                Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL)
             )
         )
         cell.addElement(
             Paragraph(
-                "Phone: 004-7881871100",
-                Font(Font.FontFamily.TIMES_ROMAN, 16f, Font.NORMAL)
+                "Phone: ${companyDetails.telephone}",
+                Font(Font.FontFamily.TIMES_ROMAN, 12f, Font.NORMAL)
             )
         )
         return cell
     }
 
     override fun onDateSet(view: DatePickerDialog?, year: Int, monthOfYear: Int, dayOfMonth: Int) {
-        purchaseBinding.purchaseDateTextInputLayout.text =
-            viewModel.changeDateFormat(dayOfMonth, monthOfYear, year)
-    }
-
-    private fun createItemDialog(item: Item?) {
-
-        val layout = LayoutInflater.from(context).inflate(R.layout.fragment_add_item, null)
-        val builder = context.let { androidx.appcompat.app.AlertDialog.Builder(it!!) }
-        builder.setView(layout)
-        val dialog = builder.create()
-        dialog.show()
-
-        val itemDestv: TextView = layout.findViewById(R.id.item_des_editText)
-        val qtytv: TextView = layout.findViewById(R.id.item_qty_editText)
-        val unitAmountTv: TextView = layout.findViewById(R.id.item_unitamount_editText)
-        val discountAmountTv: TextView = layout.findViewById(R.id.discount_amount_editText)
-        val totalAmountTv: TextView = layout.findViewById(R.id.total_editText)
-
-        val addButton: Button = layout.findViewById(R.id.add_item_button)
-        val negButton: ImageButton = layout.findViewById(R.id.neg_qty_button)
-        val posButton: ImageButton = layout.findViewById(R.id.pos_qty_button)
-
-        var amount = 0.0
-        var discountAmount = 0.0
-
-        unitAmountTv.addTextChangedListener(object :TextWatcher{
-            override fun afterTextChanged(s: Editable?) {
-                s?.let {
-                if (s.isNotEmpty()){
-                    amount = s.toString().toDouble()
-                    if (qtytv.text.isNotEmpty()&& discountAmountTv.text.isNotEmpty()){
-                        viewModel.calculateAmount(qty,amount,discountAmount)
-                    }
-                }
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
-        })
-
-        discountAmountTv.addTextChangedListener(object :TextWatcher{
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-              s?.let {
-                  if (s.isNotEmpty()){
-                      discountAmount = s.toString().toDouble()
-                      if (qtytv.text.isNotEmpty() && unitAmountTv.text.isNotEmpty()) {
-                          viewModel.calculateAmount(qty,amount, discountAmount)
-                      }
-                  }
-              }
-            }
-        })
-
-        qtytv.addTextChangedListener(object :TextWatcher{
-            override fun afterTextChanged(s: Editable?) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                s?.let {
-                    if (s.isNotEmpty()) {
-                        qty = s.toString().toInt()
-                        if (unitAmountTv.text.isNotEmpty() && discountAmountTv.text.isNotEmpty()) {
-                            viewModel.calculateAmount(qty, amount, discountAmount)
-                        }
-                    }
-                }
-            }
-        })
-        viewModel.totalAmount.observe(viewLifecycleOwner, Observer {
-            it?.let {
-                totalAmountTv.text = it.toString()
-            }
-        })
-        item?.let {
-            qty = item.qty!!
-            itemDestv.text = item.itemDes
-            qtytv.text = item.qty.toString()
-            unitAmountTv.text = item.unitAmount.toString()
-            discountAmountTv.text = item.discountAmount.toString()
-            totalAmountTv.text = item.totalAmount.toString()
-            addButton.text = getString(R.string.update)
-        }
-        var qty = 0
-        posButton.setOnClickListener {
-            if (qty >= 0) {
-                qty++
-                qtytv.setText(qty.toString())
-            }
-        }
-        negButton.setOnClickListener {
-            if (qty > 0) {
-                qty--
-                qtytv.setText(qty.toString())
-            }
-        }
-        if (item == null) {
-            addButton.setOnClickListener {
-                viewModel.setDefaultAmount()
-                val itemDes = itemDestv.text.toString()
-                val qty = qtytv.text.toString()
-                val unitAmount = unitAmountTv.text.toString()
-                val discountAmount = discountAmountTv.text.toString()
-                val totalAmount = totalAmountTv.text.toString()
-                when {
-                    itemDes.isEmpty() -> Toast.makeText(
-                        context,
-                        "Add item description",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    qty.isEmpty() -> Toast.makeText(context, "Add Quantity", Toast.LENGTH_SHORT)
-                        .show()
-                    unitAmount.isEmpty() -> Toast.makeText(
-                        context,
-                        "Enter Unit Amount",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    discountAmount.isEmpty() -> Toast.makeText(
-                        context,
-                        "Enter Discount Amount",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    totalAmount.isEmpty() -> Toast.makeText(
-                        context,
-                        "Enter Total Amount",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    else -> {
-                        val item = Item(
-                            itemNo,
-                            itemDes,
-                            qty.toInt(),
-                            unitAmount.toDouble(),
-                            discountAmount.toDouble(),
-                            totalAmount.toDouble()
-                        )
-                        itemNo++
-                        itemList.add(item)
-                        Timber.e("List size is ${itemList.size}")
-                        purchaseBinding.purchaseAddItemTv.setText("No. of items: ${itemList.size}")
-                        viewModel.addItemToPurchase(itemList)
-                        dialog.dismiss()
-                    }
-                }
-            }
-        }else{
-            addButton.setOnClickListener {
-                viewModel.setDefaultAmount()
-                val itemDes = itemDestv.text.toString()
-                val qty = qtytv.text.toString()
-                val unitAmount = unitAmountTv.text.toString()
-                val discountAmount = discountAmountTv.text.toString()
-                val totalAmount = totalAmountTv.text.toString()
-                when {
-                    itemDes.isEmpty() -> Toast.makeText(
-                        context,
-                        "Add item description",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    qty.isEmpty() -> Toast.makeText(context, "Add Quantity", Toast.LENGTH_SHORT)
-                        .show()
-                    unitAmount.isEmpty() -> Toast.makeText(
-                        context,
-                        "Enter Unit Amount",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    discountAmount.isEmpty() -> Toast.makeText(
-                        context,
-                        "Enter Discount Amount",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    totalAmount.isEmpty() -> Toast.makeText(
-                        context,
-                        "Enter Total Amount",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    else -> {
-                        val newItem = Item(
-                            itemNo,
-                            itemDes,
-                            qty.toInt(),
-                            unitAmount.toDouble(),
-                            discountAmount.toDouble(),
-                            totalAmount.toDouble()
-                        )
-                        itemNo++
-                        addedItemList.add(newItem)
-                        addedItemList.remove(item)
-                        Timber.e("List size is ${itemList.size}")
-                        purchaseBinding.purchaseAddItemTv.setText("No. of items: ${itemList.size}")
-                        viewModel.addItemToPurchase(addedItemList)
-                        dialog.dismiss()
-                    }
-                }
-            }
-        }
+        val date = "$dayOfMonth/${monthOfYear + 1}/$year"
+        purchaseBinding.purchaseDateTextInputLayout.text = date
     }
 
     override fun onSearchItemClick(searchCustomer: SearchCustomer) {
 
+        customerName = searchCustomer.custname
+        customerStreet = searchCustomer.street
+        customerPostCode = searchCustomer.postcode
+        customerTelephone = searchCustomer.telephone
+        customerEmail = searchCustomer.customerEmail
+        customerWeb = searchCustomer.web
+        customerCountry = searchCustomer.country
+        customerCounty = searchCustomer.county
+        purchaseBinding.purchaseCustomerGroup.visibility = View.VISIBLE
+        purchaseBinding.purchasAddCustomerTextView.setText("Name: " + customerName)
+        purchaseBinding.purchaseStreetTextView.setText("Street address: $customerStreet")
+        purchaseBinding.purchaseEmailTextView.setText("Email: $customerEmail")
+        purchaseBinding.purchaseTelephoneTextView.setText("Telephone: $customerTelephone")
+        purchaseBinding.purchaseCountyTextView.setText("County: $customerCounty")
+        purchaseBinding.purchasePostcodeTextView.text = "Post code: ${customerPostCode}"
     }
 
-    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost) {
+    override fun onSearchSupplierClick(serchSupplierPost: SearchSupplierPost, action: String) {
 
-        purchaseBinding.purchaseInfoGroup.visibility = View.VISIBLE
-        purchaseBinding.purchaseSupplierTextInputLayout.text = serchSupplierPost.supname
-        purchaseBinding.addPurchaseStreetTv.text = serchSupplierPost.street
-        purchaseBinding.addPurchaseCountryTv.text = serchSupplierPost.country
-        purchaseBinding.addPurchasePostTv.text = serchSupplierPost.postcode
-        purchaseBinding.addPurchaseTeleTv.text = serchSupplierPost.telephone
-
+        if (action.equals(getString(R.string.select))) {
+            supName = serchSupplierPost.supname!!
+            supCountyName = serchSupplierPost.county
+            val supList = SupList(supName, null, supCountyName, null, 0.0, null)
+            val addSupplierBottomSheetFragment =
+                AddSupplierBottomSheetFragment(supList, this, null)
+            addSupplierBottomSheetFragment.show(
+                activity!!.supportFragmentManager,
+                addSupplierBottomSheetFragment.tag
+            )
+        } else {
+            findNavController().navigate(
+                AddPurchaseFragmentDirections.actionAddPurchaseFragmentToAddSupplierFragment(
+                    serchSupplierPost.asSupplierPost(), getString(R.string.edit)
+                )
+            )
+        }
     }
 
     override fun onCustomerNameClick(name: String) {
@@ -991,5 +811,42 @@ class AddPurchaseFragment : Fragment(), DatePickerDialog.OnDateSetListener,
 
     override fun onTimeSheetJobClick(name: String) {
 
+    }
+
+    override fun onSaveSupplier(
+        supList: SupList, position: Int?
+    ) {
+        position?.let {
+            supllierList.add(position, supList)
+        } ?: let {
+            supllierList.add(supList)
+        }
+        viewModel.changeItemToSupList(supllierList)
+    }
+
+    override fun onSupplierClick(position: Int, supList: SupList) {
+        supList?.let {
+            Timber.e("Item position is $position")
+            createChoiceDialog(supList, position)
+        }
+    }
+
+    fun BITMAP_RESIZER(bitmap: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
+        val scaledBitmap = Bitmap.createBitmap(newWidth, newHeight, Bitmap.Config.ARGB_8888)
+        val ratioX = newWidth / bitmap.width.toFloat()
+        val ratioY = newHeight / bitmap.height.toFloat()
+        val middleX = newWidth / 2.0f
+        val middleY = newHeight / 2.0f
+        val scaleMatrix = Matrix()
+        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY)
+        val canvas = Canvas(scaledBitmap)
+        canvas.setMatrix(scaleMatrix)
+        canvas.drawBitmap(
+            bitmap,
+            middleX - bitmap.width / 2,
+            middleY - bitmap.height / 2,
+            Paint(Paint.FILTER_BITMAP_FLAG)
+        )
+        return scaledBitmap
     }
 }

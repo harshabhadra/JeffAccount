@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.home.SearchFragment">
+
+        <gr.escsoft.michaelprimez.searchablespinner.SearchableSpinner
+            android:id="@+id/searchableSpinner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center_horizontal"
+            app:BoarderColor="#F5F5F5"
+            app:BordersSize="4dp"
+            app:DividerHeight="1dp"
+            app:DoneSearchTintColor="@android:color/black"
+            app:ItemsDivider="@android:color/white"
+            app:RevealEmptyText="Select Operator"
+            app:RevealViewBackgroundColor="@android:color/white"
+            app:SearchHintText="Search Operator"
+            app:SearchViewBackgroundColor="@android:color/white"
+            app:SearchViewTextColor="@android:color/black"
+            app:ShowBorders="true"
+            app:SpinnerExpandHeight="150dp"
+            app:StartSearchTintColor="@android:color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/search_recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchableSpinner" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

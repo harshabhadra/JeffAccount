@@ -19,6 +19,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.jeffaccount.dataBase.LogInCred
 import com.example.jeffaccount.databinding.LogInFragmentBinding
+import com.example.jeffaccount.model.CompanyDetails
 import com.example.jeffaccount.ui.MainActivity
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
@@ -28,6 +29,7 @@ private var loadingDialog: AlertDialog? = null
 class LogInActivity : AppCompatActivity() {
 
     private lateinit var loginBinding: LogInFragmentBinding
+    private lateinit var companyDetails: CompanyDetails
     private lateinit var logInCred: LogInCred
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +59,7 @@ class LogInActivity : AppCompatActivity() {
                 //Log in user
                 logInCred = LogInCred(userName = userEmail, password = password)
                 loginViewModel.insertLoginCred(logInCred)
+
             } else if (!isValidEmail(userEmail)) {
                 loginBinding.logInEmailTextInputLayout.error = getString(R.string.enter_valid_email)
             } else if (password.isEmpty()) {
@@ -70,24 +73,17 @@ class LogInActivity : AppCompatActivity() {
                 snackbar.animationMode = Snackbar.ANIMATION_MODE_SLIDE
                 snackbar.show()
             }
-
-            //Observe if log in cred inserted
-            loginViewModel.loginCredInserted.observe(this, Observer {
-                it?.let {
-                    if (it) {
-                        loginViewModel.loginUser(userEmail, password)
-                    }
-                }
-            })
         }
 
         loginViewModel.userList.observe(this, Observer {
             it?.let {
                 Timber.e("Size: ${it.size}")
                 if(it.isNotEmpty()) {
-                    logInCred = it[0]
                     loadingDialog?.show()
-                    loginViewModel.loginUser(logInCred.userName!!, logInCred.password!!)
+                    logInCred = it[0]
+                    loginBinding.logInEmailTextInput.setText(it[0].userName)
+                    loginBinding.logInPasswordTextInput.setText(it[0].password)
+                    loginViewModel.loginUser(it[0].userName!!, it[0].password!!)
                 }
             }?:let {
                 Timber.e("list is empty")
@@ -98,12 +94,16 @@ class LogInActivity : AppCompatActivity() {
         loginViewModel.loginMessage.observe(this, Observer { message ->
             message?.let {
                 loadingDialog?.dismiss()
-                if (message == "success") {
+                if (it.message == "success") {
+                    companyDetails = it
                     val intent = Intent(this, MainActivity::class.java)
                     intent.putExtra("login",logInCred)
+                    intent.putExtra("company",companyDetails)
+                    loginViewModel.loginCompleted()
                     startActivity(intent)
                     finish()
                 } else {
+                    loginViewModel.deleteLogInCred(logInCred)
                     val snackbar = Snackbar.make(
                         findViewById<CoordinatorLayout>(R.id.login_coordinator_layout),
                         "Invalid Email or Password", Snackbar.LENGTH_SHORT

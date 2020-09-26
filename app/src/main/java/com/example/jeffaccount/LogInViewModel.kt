@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.dataBase.LogInCred
+import com.example.jeffaccount.model.CompanyDetails
 import com.example.jeffaccount.network.AppApiService
 import com.example.jeffaccount.network.JeffApi
 import com.google.gson.JsonObject
@@ -17,11 +18,12 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import timber.log.Timber
 
 class LogInViewModel(application: JeffApplication) : AndroidViewModel(application) {
 
-    private var _loginMessage = MutableLiveData<String>()
-    val loginMessage: LiveData<String>
+    private var _loginMessage = MutableLiveData<CompanyDetails>()
+    val loginMessage: LiveData<CompanyDetails>
         get() = _loginMessage
 
     private val viewModelJob = Job()
@@ -48,17 +50,14 @@ class LogInViewModel(application: JeffApplication) : AndroidViewModel(applicatio
 
         uiScope.launch {
 
-            appApiService.loginUser(username, password).enqueue(object : Callback<String> {
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    _loginMessage.value = "Failure response: ${t.message}"
-                    Log.e("LoginViewModel", "Failure response: ${t.message}")
+            appApiService.loginUser(username, password).enqueue(object : Callback<CompanyDetails> {
+                override fun onFailure(call: Call<CompanyDetails>, t: Throwable) {
+                    Timber.e("Failed to log in : ${t.message}")
                 }
 
-                override fun onResponse(call: Call<String>, response: Response<String>) {
+                override fun onResponse(call: Call<CompanyDetails>, response: Response<CompanyDetails>) {
 
-                    val jsonObject: JSONObject = JSONObject(response.body()!!)
-                    val message = jsonObject.optString("message")
-                    _loginMessage.value = message
+                    _loginMessage.value = response.body()
                 }
 
             })
@@ -70,6 +69,16 @@ class LogInViewModel(application: JeffApplication) : AndroidViewModel(applicatio
         uiScope.launch {
             jeffRepository.insertLogInCred(logInCred)
             _loginCredInserted.value = true
+        }
+    }
+
+    fun loginCompleted(){
+        _loginMessage.value = null
+    }
+
+    fun deleteLogInCred(logInCred: LogInCred) {
+        uiScope.launch {
+            jeffRepository.deleteLogInCred(logInCred)
         }
     }
 

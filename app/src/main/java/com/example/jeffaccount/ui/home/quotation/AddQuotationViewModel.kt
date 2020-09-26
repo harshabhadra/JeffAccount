@@ -1,23 +1,40 @@
 package com.example.jeffaccount.ui.home.quotation
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.jeffaccount.JeffRepository
-import com.example.jeffaccount.model.Customer
-import com.example.jeffaccount.model.Post
-import com.example.jeffaccount.model.Quotation
-import com.example.jeffaccount.model.QuotationPost
+import com.example.jeffaccount.model.*
 import com.example.jeffaccount.network.Item
 import com.example.jeffaccount.network.QuotationAdd
 import com.example.jeffaccount.network.QuotationUpdate
 import com.example.jeffaccount.network.SearchCustomerList
+import kotlinx.coroutines.*
+import timber.log.Timber
+import java.io.IOException
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.net.ssl.HttpsURLConnection
 
+enum class SearchBy { JOB_NO, QUOTATION_NO, CUSTOMER_NAME }
 class AddQuotationViewModel : ViewModel() {
 
     private val jeffRepository = JeffRepository.getInstance()
+
+    private val viewModelJob = Job()
+
+    private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
+    private var _imageBitmap = MutableLiveData<Bitmap>()
+    val imageBitmap: LiveData<Bitmap>
+        get() = _imageBitmap
+
+    private var _companyBitmap = MutableLiveData<Bitmap>()
+    val companyBitmap:LiveData<Bitmap>
+        get() = _companyBitmap
 
     private var _navigateToAddQuotationFragment = MutableLiveData<QuotationPost>()
     val navigateToAddQuotationFragment: LiveData<QuotationPost>
@@ -48,6 +65,18 @@ class AddQuotationViewModel : ViewModel() {
     val jobNoList: LiveData<Set<String>>
         get() = _jobNoList
 
+    private var _quotationNoList = MutableLiveData<List<String>>()
+    val quotationNoList:LiveData<List<String>>
+    get() = _quotationNoList
+
+    private var _custNameSet = MutableLiveData<Set<String>>()
+    val custNameSet:LiveData<Set<String>>
+    get() = _custNameSet
+
+    private var _searchQuotationBy = MutableLiveData<SearchBy>()
+    val searchQuotationBy:LiveData<SearchBy>
+    get() = _searchQuotationBy
+
     init {
         _quotationQuantityValue.value = 0
         _navigateToAddQuotationFragment.value = null
@@ -69,28 +98,18 @@ class AddQuotationViewModel : ViewModel() {
     }
 
     //Get list of quotation
-    fun getQuotationList(apiKey: String): LiveData<Quotation> {
-        return jeffRepository.getAllQuotation(apiKey)
+    fun getQuotationList(comid: String,apiKey: String): LiveData<Quotation> {
+        return jeffRepository.getAllQuotation(comid,apiKey)
     }
 
     //Get list of all companies
-    fun getCustomerList(): LiveData<Customer> {
-        return jeffRepository.getAllCustomer()
+    fun getCustomerList(comid:String): LiveData<Customer> {
+        return jeffRepository.getAllCustomer(comid)
     }
 
     //Get search list of customer for quotation
-    fun searchCustomer(name: String, apiKey: String): LiveData<SearchCustomerList> {
-        return jeffRepository.searchCustomerList(apiKey, name)
-    }
-
-    //Add quantity
-    fun addQuantity(quantity: Int) {
-        _quotationQuantityValue.value = quantity
-    }
-
-    //Subtract Quantity
-    fun removeQuantity(quantity: Int) {
-        _quotationQuantityValue.value = quantity
+    fun searchCustomer(comid: String,name: String, apiKey: String): LiveData<SearchCustomerList> {
+        return jeffRepository.searchCustomerList(comid,apiKey, name)
     }
 
     //On Quotation item click
@@ -132,22 +151,6 @@ class AddQuotationViewModel : ViewModel() {
         _itemChangedToQuotation.value = itemList
     }
 
-    fun removeItem(itemList: MutableList<Item>) {
-        _itemChangedToQuotation.value = itemList
-    }
-
-    fun setCustomerData(customer: Post) {
-        _customerData.value = customer
-    }
-
-    fun doneSetCustomerData() {
-        _customerData.value = null
-    }
-
-    fun doneAddingItem() {
-        _itemChangedToQuotation.value = null
-    }
-
     fun createJobNoList(invoiceList: List<QuotationPost>) {
         val noSet = mutableSetOf<String>()
         for (item in invoiceList) {
@@ -156,13 +159,93 @@ class AddQuotationViewModel : ViewModel() {
         _jobNoList.value = noSet
     }
 
-    fun calculateAmount(qty:Int,unitA: Double, dAmount: Double) {
-        if (qty>0 && unitA.times(qty) > dAmount) {
-            _totalAmuont.value = unitA.times(qty).minus(dAmount)
+    fun createQuotationNoList(quotationList:List<QuotationPost>){
+        val quotationSet = mutableSetOf<String>()
+        for (quotation in quotationList){
+            quotationSet.add(quotation.quotationNo!!.toString())
         }
+        _quotationNoList.value = quotationSet.toList()
+    }
+
+    fun createCustomerNameList(quotationList: List<QuotationPost>){
+        val nameSet = mutableSetOf<String>()
+        for (quotation in quotationList){
+            nameSet.add(quotation.customerName!!)
+        }
+        _custNameSet.value = nameSet
+    }
+
+    fun calculateAmount(qty:Int,unitA: Double, dAmount: Double) {
+        Timber.e("qty: $qty, amount: $unitA, discount: $dAmount")
+        val totalAmount = unitA.times(qty).minus(dAmount)
+        Timber.e("Total Amount: $totalAmount")
+            _totalAmuont.value = totalAmount
     }
 
     fun setDefaultAmount(){
         _totalAmuont.value = null
+    }
+
+    //Search quotation by job no
+    fun searchQuotation(comid: String, jobNo:String, apiKey: String):LiveData<Quotation>{
+        return jeffRepository.searchQuotation(comid,jobNo, apiKey)
+    }
+
+    //Search quotation by quotation no
+    fun searchQuotationByQuotation(comid: String, quotationNO:String, apiKey: String):LiveData<Quotation>{
+        return jeffRepository.searchQuotationByQuotation(comid,quotationNO, apiKey)
+    }
+
+    //Search quotation by Customer
+    fun searchQuotationByCustomer(comid: String, custName:String, apiKey: String):LiveData<Quotation>{
+        return jeffRepository.searchQuotationByCustomer(comid,custName, apiKey)
+    }
+
+    fun setSearchBy(value:SearchBy){
+        _searchQuotationBy.value = value
+    }
+
+    //Get logo list
+    fun getLogoList(comid: String): LiveData<Logos> {
+        return jeffRepository.getLogoList(comid)
+    }
+
+    fun getBitmapFromUrl(url: String) {
+        uiScope.launch {
+            _imageBitmap.value = convertUrlToBitmap(url)
+        }
+    }
+
+    fun getCompanyBitmap(url:String){
+        uiScope.launch {
+            _companyBitmap.value = convertUrlToBitmap(url)
+        }
+    }
+
+    private suspend fun convertUrlToBitmap(src: String?): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(src)
+                val connection =
+                    url.openConnection() as HttpsURLConnection
+                connection.doInput = true
+                connection.connect()
+                val input = connection.inputStream
+                Timber.e("converted to bitmap suceesfully")
+                val option = BitmapFactory.Options()
+                option.inPreferredConfig = Bitmap.Config.ARGB_8888
+                BitmapFactory.decodeStream(input
+                ,null, option)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                Timber.e("Failed to convert to bitmap: ${e.message}")
+                null
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelJob.cancel()
     }
 }

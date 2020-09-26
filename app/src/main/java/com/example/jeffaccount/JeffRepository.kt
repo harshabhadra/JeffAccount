@@ -10,6 +10,7 @@ import com.example.jeffaccount.model.*
 import com.example.jeffaccount.network.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.RequestBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -133,6 +134,30 @@ class JeffRepository() {
     //Store search time sheet value
     private var timeSheetSearchMutableLiveData = MutableLiveData<TimeSheet>()
 
+    //Store search quotation value
+    private var quotationSearchMutableLiveData = MutableLiveData<Quotation>()
+
+    //Store password change message
+    private var changePasswordMutableLiveData = MutableLiveData<String>()
+
+    //Store image message
+    private var uploadCompanyLogo = MutableLiveData<CompanyLogo>()
+
+    //Store logo upload message
+    private var uploadLogoMutableLiveData = MutableLiveData<String>()
+
+    //Store logo list
+    private var logoListMutableLiveData = MutableLiveData<Logos>()
+
+    //Store details
+    private var detailMutableLiveData = MutableLiveData<Detail>()
+
+    //Get country list
+    private var countryListMutableLiveData = MutableLiveData<List<Country>>()
+
+    //Delete logo
+    private var deleteLogoMutableLiveData = MutableLiveData<String>()
+
     //Get LogInCred list
     fun getLogInCred(): LiveData<List<LogInCred>> {
         return userList
@@ -153,21 +178,46 @@ class JeffRepository() {
         }
     }
 
+    //Delete logo
+    fun deleteLogo(comId: String, imageId: String): LiveData<String> {
+        deleteSingleLogo(comId, imageId)
+        return deleteLogoMutableLiveData
+    }
+
+    //GEt country list
+    fun getcountries(): LiveData<List<Country>> {
+        getCountryList()
+        return countryListMutableLiveData
+    }
+
+    //Get details
+    fun getDetails(pageId: Int): LiveData<Detail> {
+        getComDetails(pageId)
+        return detailMutableLiveData
+    }
+
+    //Upload company logo
+    fun uploadLogo(comid: String, logobody: RequestBody): LiveData<CompanyLogo> {
+        uploadLogoToServer(comid, logobody)
+        return uploadCompanyLogo
+    }
+
     //Add customer
     fun getAddCustomerMessage(
-        customerName: String, streetAdd: String, coutry: String,
+        comid: String,
+        customerName: String, streetAdd: String, coutry: String, county: String,
         postCode: String, telephone: String, email: String, web: String
     ): LiveData<String> {
-        addCustomer(customerName, streetAdd, coutry, postCode, telephone, email, web)
+        addCustomer(comid, customerName, streetAdd, coutry, county, postCode, telephone, email, web)
         return _addCustomerMessage
     }
 
     //Add Supplier
     fun getAddSupplierMessage(
-        supplierName: String, streetAdd: String, coutry: String,
+        comid: String, supplierName: String, streetAdd: String, coutry: String, county: String,
         postCode: String, telephone: String, email: String, web: String
     ): LiveData<String> {
-        addSupplier(supplierName, streetAdd, coutry, postCode, telephone, email, web)
+        addSupplier(comid, supplierName, streetAdd, coutry, county, postCode, telephone, email, web)
         return addSupplierMessage
     }
 
@@ -188,7 +238,7 @@ class JeffRepository() {
     }
 
     //Add Invoice
-    fun getAddInvoiceMessage(invoiceAdd:QuotationAdd):LiveData<String>{
+    fun getAddInvoiceMessage(invoiceAdd: InvoiceAdd): LiveData<String> {
         addInvoice(invoiceAdd)
         return invoiceSaveMutableLiveData
     }
@@ -200,83 +250,96 @@ class JeffRepository() {
     }
 
     //Add time sheet
-    fun getAddTimeSheetMessage(
-        apiKey: String,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        name: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        hrs: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        addTimeSheet(
-            apiKey,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            name,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            hrs,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        )
+    fun getAddTimeSheetMessage(timeSheetAdd: TimeSheetAdd): LiveData<String> {
+        addTimeSheet(timeSheetAdd)
         return timeSheetAddMessage
     }
 
     //Update customer
     fun getUpdateCustomerMessage(
+        comid: String,
         customerId: String,
-        customerName: String, streetAdd: String, coutry: String,
+        customerName: String, streetAdd: String, coutry: String, county: String,
         postCode: String, telephone: String, email: String, web: String
     ): LiveData<String> {
-        updateCustomer(customerId, customerName, streetAdd, coutry, postCode, telephone, email, web)
+        updateCustomer(
+            comid,
+            customerId,
+            customerName,
+            streetAdd,
+            coutry,
+            county,
+            postCode,
+            telephone,
+            email,
+            web
+        )
         return _updateCustomerMessage
     }
 
     //Update Supplier
     fun getUpdateSupplierMessage(
-        supplierId: String, supplierName: String, streetAdd: String, coutry: String,
-        postCode: String, telephone: String, email: String, web: String
+        comid: String,
+        supplierId: String,
+        supplierName: String,
+        streetAdd: String,
+        coutry: String,
+        county: String,
+        postCode: String,
+        telephone: String,
+        email: String,
+        web: String
     ): LiveData<String> {
         updateSupplier(
-            supplierId, supplierName, streetAdd, coutry, postCode, telephone, email, web
+            comid,
+            supplierId,
+            supplierName,
+            streetAdd,
+            coutry,
+            county,
+            postCode,
+            telephone,
+            email,
+            web
         )
         return updateSupplierMessage
     }
 
     //Get search supplier list
-    fun getSearchSupplierList(name: String, apiKey: String):LiveData<SearchSupplier>{
-        getSearchSupplier(name,apiKey)
+    fun getSearchSupplierList(
+        comid: String,
+        name: String,
+        apiKey: String
+    ): LiveData<SearchSupplier> {
+        getSearchSupplier(comid, name, apiKey)
         return searchSupplierListMutableLiveData
     }
 
     //Update Company details
     fun getUpdateCompanyMessage(
-        companyId: Int, companyName: String, streetAdd: String, coutry: String,
-        postCode: String, telephone: String, email: String, web: String
+        apiKey: String,
+        companyId: String,
+        streetAdd: String,
+        companyDes: String,
+        country: String,
+        county: String,
+        postCode: String,
+        telephone: String,
+        email: String,
+        web: String
     ): LiveData<String> {
-        updateCompany(companyId, companyName, streetAdd, coutry, postCode, telephone, email, web)
+        updateCompany(
+            apiKey,
+            companyId,
+            streetAdd,
+            companyDes,
+            country,
+            county,
+            postCode,
+            telephone,
+            email,
+            web
+        )
         return companyUpdateMessage
     }
 
@@ -289,14 +352,18 @@ class JeffRepository() {
     }
 
     //Update Invoice
-    fun getUpdateInvoiceMessage(invoiceUpdate: InvoiceUpdate):LiveData<String>{
+    fun getUpdateInvoiceMessage(invoiceUpdate: InvoiceUpdate): LiveData<String> {
         updateInvoice(invoiceUpdate)
         return invoiceUpdateMutableLiveData
     }
 
     //Search customer for quotation
-    fun searchCustomerList(apiKey: String,name: String):LiveData<SearchCustomerList>{
-        searchCustomer(apiKey,name)
+    fun searchCustomerList(
+        comid: String,
+        apiKey: String,
+        name: String
+    ): LiveData<SearchCustomerList> {
+        searchCustomer(comid, apiKey, name)
         return searchCustListMutableLiveData
     }
 
@@ -307,49 +374,8 @@ class JeffRepository() {
     }
 
     //Update time sheet
-    fun getUpdateTimeSheetMessage(
-        apiKey: String,
-        tid: Int,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        name: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        hrs: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ): LiveData<String> {
-        updateTimeSheet(
-            apiKey,
-            tid,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            name,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            hrs,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        )
+    fun getUpdateTimeSheetMessage(timeSheetUpdate: TimeSheetUpdate): LiveData<String> {
+        updateTimeSheet(timeSheetUpdate)
         return timeSheetUpdateMessage
     }
 
@@ -384,8 +410,8 @@ class JeffRepository() {
     }
 
     //Delete Invoice
-    fun getDeleteInvoiceMessage(apiKey: String,invoiceId:Int):LiveData<String>{
-        deleteInvoice(apiKey,invoiceId)
+    fun getDeleteInvoiceMessage(apiKey: String, invoiceId: Int): LiveData<String> {
+        deleteInvoice(apiKey, invoiceId)
         return invoiceDeleteMutableLiveData
     }
 
@@ -396,14 +422,14 @@ class JeffRepository() {
     }
 
     //Get All Customer
-    fun getAllCustomer(): LiveData<Customer> {
-        getCustomerList()
+    fun getAllCustomer(companyId: String): LiveData<Customer> {
+        getCustomerList(companyId)
         return _customerList
     }
 
     //Get All Suppliers
-    fun getAllSuppliers(): LiveData<Supplier> {
-        getSupplierList()
+    fun getAllSuppliers(comid: String): LiveData<Supplier> {
+        getSupplierList(comid)
         return supplierList
     }
 
@@ -414,51 +440,105 @@ class JeffRepository() {
     }
 
     //Get all purchase
-    fun getAllPurchase(apiKey: String): LiveData<Purchase> {
-        getPurchaseList(apiKey)
+    fun getAllPurchase(comid: String, apiKey: String): LiveData<Purchase> {
+        getPurchaseList(comid, apiKey)
         return purchaseList
     }
 
     //Get All quotation
-    fun getAllQuotation(apiKey: String): LiveData<Quotation> {
-        getQuotationList(apiKey)
+    fun getAllQuotation(comid: String, apiKey: String): LiveData<Quotation> {
+        getQuotationList(comid, apiKey)
         return quotationList
     }
 
     //Get all invoices
-    fun getAllInvoices(apiKey: String):LiveData<InvoiceList>{
-        getInvoiceList(apiKey)
+    fun getAllInvoices(comid: String, apiKey: String): LiveData<InvoiceList> {
+        getInvoiceList(comid, apiKey)
         return invoiceListMutableLiveData
     }
 
     //Get all time sheet
-    fun getAllTimeSheet(apiKey: String): LiveData<TimeSheet> {
-        getTimeSheetList(apiKey)
+    fun getAllTimeSheet(comid: String, apiKey: String): LiveData<TimeSheet> {
+        getTimeSheetList(comid, apiKey)
         return timeSheetListMutableLiveData
     }
 
     //search purchase
-    fun searchPurchase(jobNo: String,apiKey: String):LiveData<Purchase>{
-        searchPurchaseList(jobNo,apiKey)
+    fun searchPurchase(comid: String, jobNo: String?, quotationNo: String?, customerName: String?, apiKey: String): LiveData<Purchase> {
+        searchPurchaseList(comid, jobNo, quotationNo, customerName, apiKey)
         return purchaseSearchMutableLiveData
     }
 
     //Search invoice
-    fun searchInvoice(jobNo: String, apiKey: String):LiveData<InvoiceList>{
-        searchInvoiceList(jobNo,apiKey)
+    fun searchInvoice(
+        comid: String,
+        jobNo: String?,
+        quotationNo: String?,
+        customerName: String?,
+        apiKey: String
+    ): LiveData<InvoiceList> {
+        searchInvoiceList(comid, jobNo, quotationNo, customerName, apiKey)
         return invoiceSearchMutableLiveData
     }
 
     //Search Timesheet
-    fun searchTimeSheet(jobNo: String,apiKey: String):LiveData<TimeSheet>{
-        searchTimeSheetList(jobNo,apiKey)
+    fun searchTimeSheet(
+        comid: String, jobNo: String?,
+        quotationNo: String?,
+        custName: String?, apiKey: String
+    ): LiveData<TimeSheet> {
+        searchTimeSheetList(comid, jobNo, quotationNo, custName, apiKey)
         return timeSheetSearchMutableLiveData
     }
 
-    //Network call to get all customer list
-    private fun getCustomerList() {
+    //Search quotation
+    fun searchQuotation(comid: String, jobNo: String, apiKey: String): LiveData<Quotation> {
+        searchQuotationList(comid, jobNo, apiKey)
+        return quotationSearchMutableLiveData
+    }
 
-        apiService.getCustomerList().enqueue(object : Callback<Customer> {
+    //Search quotation
+    fun searchQuotationByQuotation(
+        comid: String,
+        quotationNo: String,
+        apiKey: String
+    ): LiveData<Quotation> {
+        searchQuotationListByQuotation(comid, quotationNo, apiKey)
+        return quotationSearchMutableLiveData
+    }
+
+    //Search quotation
+    fun searchQuotationByCustomer(
+        comid: String,
+        customerName: String,
+        apiKey: String
+    ): LiveData<Quotation> {
+        searchQuotationListByCustomer(comid, customerName, apiKey)
+        return quotationSearchMutableLiveData
+    }
+
+    //Change password
+    fun changePassword(comid: String, password: String, newPass: String): LiveData<String> {
+        setNewPassword(comid, password, newPass)
+        return changePasswordMutableLiveData
+    }
+
+    //Upload logo
+    fun uploadLogoB(comid: String, logo: RequestBody): LiveData<String> {
+        uploadImage(comid, logo)
+        return uploadLogoMutableLiveData
+    }
+
+    //Get logo list
+    fun getLogoList(comid: String): LiveData<Logos> {
+        getLogos(comid)
+        return logoListMutableLiveData
+    }
+
+    //Network call to get all customer list
+    private fun getCustomerList(companyId: String) {
+
+        apiService.getCustomerList(companyId).enqueue(object : Callback<Customer> {
             override fun onFailure(call: Call<Customer>, t: Throwable) {
                 Timber.e("JeffRepository ${t.message}")
             }
@@ -472,9 +552,9 @@ class JeffRepository() {
     }
 
     //Network call to get all supplier list
-    private fun getSupplierList() {
+    private fun getSupplierList(comid: String) {
 
-        apiService.getSupplierList().enqueue(object : Callback<Supplier> {
+        apiService.getSupplierList(comid).enqueue(object : Callback<Supplier> {
             override fun onFailure(call: Call<Supplier>, t: Throwable) {
                 Log.e("JeffRepository", "${t.message}")
             }
@@ -500,9 +580,9 @@ class JeffRepository() {
     }
 
     //Network call to get all suppliers
-    private fun getQuotationList(apiKey: String) {
+    private fun getQuotationList(comid: String, apiKey: String) {
 
-        apiService.getQuotationList(apiKey).enqueue(object : Callback<Quotation> {
+        apiService.getQuotationList(comid, apiKey).enqueue(object : Callback<Quotation> {
             override fun onFailure(call: Call<Quotation>, t: Throwable) {
                 Timber.e("Error getting list of quotation: ${t.message}")
             }
@@ -514,8 +594,8 @@ class JeffRepository() {
     }
 
     //Network call to get all invoices
-    private fun getInvoiceList(apiKey: String) {
-        apiService.getInvoiceList(apiKey).enqueue(object :Callback<InvoiceList>{
+    private fun getInvoiceList(comid: String, apiKey: String) {
+        apiService.getInvoiceList(comid, apiKey).enqueue(object : Callback<InvoiceList> {
             override fun onFailure(call: Call<InvoiceList>, t: Throwable) {
                 Timber.e("Failed getting invoices")
             }
@@ -527,8 +607,8 @@ class JeffRepository() {
     }
 
     //Network call to get purchase list
-    private fun getPurchaseList(apiKey: String) {
-        apiService.getPurchaseList(apiKey).enqueue(object : Callback<Purchase> {
+    private fun getPurchaseList(comid: String, apiKey: String) {
+        apiService.getPurchaseList(comid, apiKey).enqueue(object : Callback<Purchase> {
             override fun onFailure(call: Call<Purchase>, t: Throwable) {
                 Timber.e("Error getting purchase list")
             }
@@ -540,9 +620,9 @@ class JeffRepository() {
     }
 
     //Network call to get Time Sheet list
-    private fun getTimeSheetList(apiKey: String) {
+    private fun getTimeSheetList(comid: String, apiKey: String) {
 
-        apiService.getTimeSheetList(apiKey).enqueue(object : Callback<TimeSheet> {
+        apiService.getTimeSheetList(comid, apiKey).enqueue(object : Callback<TimeSheet> {
             override fun onFailure(call: Call<TimeSheet>, t: Throwable) {
                 Timber.e("Error getting time sheet list ${t.message}")
             }
@@ -555,16 +635,28 @@ class JeffRepository() {
 
     //Network call to add customer
     private fun addCustomer(
+        comid: String,
         customerName: String,
         streetAdd: String,
         coutry: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ) {
 
-        apiService.addCustomer(customerName, streetAdd, coutry, postCode, telephone, email, web)
+        apiService.addCustomer(
+            comid,
+            customerName,
+            streetAdd,
+            coutry,
+            county,
+            postCode,
+            telephone,
+            email,
+            web
+        )
             .enqueue(object : Callback<String> {
                 override fun onFailure(call: Call<String>, t: Throwable) {
                     Log.e("JeffRepository", "${t.message}")
@@ -582,16 +674,28 @@ class JeffRepository() {
 
     //Network call to add supplier
     private fun addSupplier(
+        comid: String,
         supplierName: String,
         streetAdd: String,
         coutry: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ) {
 
-        apiService.addSupplier(supplierName, streetAdd, coutry, postCode, telephone, email, web)
+        apiService.addSupplier(
+            comid,
+            supplierName,
+            streetAdd,
+            coutry,
+            county,
+            postCode,
+            telephone,
+            email,
+            web
+        )
             .enqueue(object : Callback<String> {
                 override fun onFailure(call: Call<String>, t: Throwable) {
                     Log.e("JeffRepository", "${t.message}")
@@ -641,12 +745,13 @@ class JeffRepository() {
     }
 
     //Network call to save invoice
-    private fun addInvoice(invoiceAdd: QuotationAdd) {
+    private fun addInvoice(invoiceAdd: InvoiceAdd) {
 
-        apiService.addInvoice(invoiceAdd).enqueue(object :Callback<String>{
+        apiService.addInvoice(invoiceAdd).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("failed saving invoice: ${t.message}")
             }
+
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")
@@ -654,6 +759,7 @@ class JeffRepository() {
             }
         })
     }
+
     //Network call to add purchase
     private fun addPurchase(
         purchaseAdd: PurchaseAdd
@@ -673,46 +779,11 @@ class JeffRepository() {
 
     //Network call to add time sheet
     private fun addTimeSheet(
-        apiKey: String,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        name: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        hrs: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
+        timeSheetAdd: TimeSheetAdd
     ) {
 
         apiService.addTimeSheet(
-            apiKey,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            name,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            hrs,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
+            timeSheetAdd
         ).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error adding time sheet ${t.message}")
@@ -728,20 +799,24 @@ class JeffRepository() {
 
     //Network call to update customer details
     private fun updateCustomer(
+        comid: String,
         customerId: String,
         customerName: String,
         streetAdd: String,
         coutry: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ) {
         apiService.updateCustomer(
+            comid,
             customerId,
             customerName,
             streetAdd,
             coutry,
+            county,
             postCode,
             telephone,
             email,
@@ -761,20 +836,24 @@ class JeffRepository() {
 
     //Network call to update supplier data
     private fun updateSupplier(
+        comid: String,
         supplierId: String,
         supplierName: String,
         streetAdd: String,
         coutry: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ) {
         apiService.updateSupplier(
+            comid,
             supplierId,
             supplierName,
             streetAdd,
             coutry,
+            county,
             postCode,
             telephone,
             email,
@@ -793,9 +872,9 @@ class JeffRepository() {
     }
 
     //Network call to get list of search supplier
-    private fun getSearchSupplier(name: String, apiKey: String) {
+    private fun getSearchSupplier(comid: String, name: String, apiKey: String) {
 
-        apiService.searchSupplier(name, apiKey).enqueue(object :Callback<SearchSupplier>{
+        apiService.searchSupplier(comid, name, apiKey).enqueue(object : Callback<SearchSupplier> {
             override fun onFailure(call: Call<SearchSupplier>, t: Throwable) {
                 Timber.e("Error searching supplier: ${t.message}")
             }
@@ -804,25 +883,32 @@ class JeffRepository() {
                 call: Call<SearchSupplier>,
                 response: Response<SearchSupplier>
             ) {
-             searchSupplierListMutableLiveData.value = response.body()
+                searchSupplierListMutableLiveData.value = response.body()
             }
 
         })
     }
+
     //Network call to update company details
     private fun updateCompany(
-        companyId: Int,
-        companyName: String,
+        apiKey: String,
+        companyId: String,
         streetAdd: String,
-        coutry: String,
+        companyDes: String,
+        country: String,
+        county: String,
         postCode: String,
         telephone: String,
         email: String,
         web: String
     ) {
         apiService.updateCompany(
-            companyId, companyName, streetAdd,
-            coutry,
+            apiKey,
+            companyId,
+            streetAdd,
+            companyDes,
+            country,
+            county,
             postCode,
             telephone,
             email,
@@ -859,7 +945,7 @@ class JeffRepository() {
     //Network call to update invoice
     private fun updateInvoice(invoiceUpdate: InvoiceUpdate) {
 
-        apiService.updateInvoice(invoiceUpdate).enqueue(object :Callback<String>{
+        apiService.updateInvoice(invoiceUpdate).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Failed updating invoice")
             }
@@ -871,21 +957,23 @@ class JeffRepository() {
             }
         })
     }
+
     //Network call search customer for quotation
-    private fun searchCustomer(apiKey: String, name: String) {
+    private fun searchCustomer(comid: String, apiKey: String, name: String) {
 
-        apiService.searchCustomer(name,apiKey).enqueue(object :Callback<SearchCustomerList>{
-            override fun onFailure(call: Call<SearchCustomerList>, t: Throwable) {
-                Timber.e("Search customer failed: ${t.message}")
-            }
+        apiService.searchCustomer(comid, name, apiKey)
+            .enqueue(object : Callback<SearchCustomerList> {
+                override fun onFailure(call: Call<SearchCustomerList>, t: Throwable) {
+                    Timber.e("Search customer failed: ${t.message}")
+                }
 
-            override fun onResponse(
-                call: Call<SearchCustomerList>,
-                response: Response<SearchCustomerList>
-            ) {
-                searchCustListMutableLiveData.value = response.body()
-            }
-        })
+                override fun onResponse(
+                    call: Call<SearchCustomerList>,
+                    response: Response<SearchCustomerList>
+                ) {
+                    searchCustListMutableLiveData.value = response.body()
+                }
+            })
     }
 
     //Network call update purchase
@@ -894,6 +982,7 @@ class JeffRepository() {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error updating purchase")
             }
+
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 val jsonObject = JSONObject(response.body()!!)
                 val message = jsonObject.optString("message")
@@ -903,49 +992,8 @@ class JeffRepository() {
     }
 
     //Network call to update time sheet
-    private fun updateTimeSheet(
-        apiKey: String,
-        tid: Int,
-        jobNo: String,
-        quotationNo: String,
-        vat: Double,
-        date: String,
-        name: String,
-        streetAdd: String,
-        coutry: String,
-        postCode: String,
-        telephone: String,
-        comment: String,
-        itemDes: String,
-        paymentMethod: String,
-        hrs: Int,
-        unitAmount: Double,
-        advanceAmount: Double,
-        discountAmount: Double,
-        totalAmount: Double
-    ) {
-        apiService.updateTimeSheet(
-            apiKey,
-            tid,
-            jobNo,
-            quotationNo,
-            vat,
-            date,
-            name,
-            streetAdd,
-            coutry,
-            postCode,
-            telephone,
-            comment,
-            itemDes
-            ,
-            paymentMethod,
-            hrs,
-            unitAmount,
-            advanceAmount,
-            discountAmount,
-            totalAmount
-        ).enqueue(object : Callback<String> {
+    private fun updateTimeSheet(timeSheetUpdate: TimeSheetUpdate) {
+        apiService.updateTimeSheet(timeSheetUpdate).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("Error update time sheet ${t.message}")
             }
@@ -1023,9 +1071,9 @@ class JeffRepository() {
     }
 
     //Network call to delete invoice
-    private fun deleteInvoice(apiKey: String,invoiceId: Int) {
+    private fun deleteInvoice(apiKey: String, invoiceId: Int) {
 
-        apiService.deleteInvoice(apiKey,invoiceId).enqueue(object :Callback<String>{
+        apiService.deleteInvoice(apiKey, invoiceId).enqueue(object : Callback<String> {
             override fun onFailure(call: Call<String>, t: Throwable) {
                 Timber.e("failed to delete invoice data: ${t.message}")
             }
@@ -1071,9 +1119,9 @@ class JeffRepository() {
     }
 
     //Network call to search purchase list
-    private fun searchPurchaseList(jobNo: String, apiKey: String) {
+    private fun searchPurchaseList(comid: String, jobNo: String?, quotationNo: String?, customerName: String?, apiKey: String) {
 
-        apiService.searchPurchase(jobNo, apiKey).enqueue(object :Callback<Purchase>{
+        apiService.searchPurchase(comid, jobNo, quotationNo, customerName, apiKey).enqueue(object : Callback<Purchase> {
             override fun onFailure(call: Call<Purchase>, t: Throwable) {
                 Timber.e("Failed to get purchase by search: ${t.message}")
                 purchaseSearchMutableLiveData.value = null
@@ -1082,7 +1130,7 @@ class JeffRepository() {
             override fun onResponse(call: Call<Purchase>, response: Response<Purchase>) {
                 if (response.isSuccessful && response.body() != null) {
                     purchaseSearchMutableLiveData.value = response.body()
-                }else{
+                } else {
                     purchaseSearchMutableLiveData.value = null
                 }
             }
@@ -1091,38 +1139,213 @@ class JeffRepository() {
     }
 
     //Network call to search invoice
-    private fun searchInvoiceList(jobNo: String, apiKey: String) {
-        apiService.searchInvoice(jobNo, apiKey).enqueue(object:Callback<InvoiceList>{
-            override fun onFailure(call: Call<InvoiceList>, t: Throwable) {
-                Timber.e("Failed to search invoice: ${t.message}")
-                invoiceSearchMutableLiveData.value = null
+    private fun searchInvoiceList(
+        comid: String,
+        jobNo: String?,
+        quotationNo: String?,
+        customerName: String?,
+        apiKey: String
+    ) {
+        apiService.searchInvoice(comid, jobNo, quotationNo, customerName, apiKey)
+            .enqueue(object : Callback<InvoiceList> {
+                override fun onFailure(call: Call<InvoiceList>, t: Throwable) {
+                    Timber.e("Failed to search invoice: ${t.message}")
+                    invoiceSearchMutableLiveData.value = null
+                }
+
+                override fun onResponse(call: Call<InvoiceList>, response: Response<InvoiceList>) {
+                    if (response.isSuccessful && response.body() != null) {
+                        Timber.e("Success in search invoice: ${response.body().toString()}")
+                        invoiceSearchMutableLiveData.value = response.body()
+                    } else {
+                        invoiceSearchMutableLiveData.value = null
+                    }
+                }
+            })
+    }
+
+    //Network call to search time sheet
+    private fun searchTimeSheetList(
+        comid: String,
+        jobNo: String?,
+        quotationNo: String?,
+        custName: String?,
+        apiKey: String
+    ) {
+        apiService.searchTimeSheet(comid, jobNo, quotationNo, custName, apiKey)
+            .enqueue(object : Callback<TimeSheet> {
+                override fun onFailure(call: Call<TimeSheet>, t: Throwable) {
+                    Timber.e("Failed to search time sheet: ${t.message}")
+                    timeSheetSearchMutableLiveData.value = null
+                }
+
+                override fun onResponse(call: Call<TimeSheet>, response: Response<TimeSheet>) {
+                    if (response.isSuccessful && response.body() != null) {
+                        timeSheetSearchMutableLiveData.value = response.body()
+                    } else {
+                        timeSheetSearchMutableLiveData.value = null
+                    }
+                }
+            })
+    }
+
+    //Network call to search quotation list
+    private fun searchQuotationList(comid: String, jobNo: String, apiKey: String) {
+
+        apiService.searchQuotation(comid, jobNo, apiKey).enqueue(object : Callback<Quotation> {
+            override fun onFailure(call: Call<Quotation>, t: Throwable) {
+                Timber.e("failed to get quotation search list")
             }
 
-            override fun onResponse(call: Call<InvoiceList>, response: Response<InvoiceList>) {
-                if (response.isSuccessful && response.body()!=null) {
-                    Timber.e("Success in search invoice: ${response.body().toString()}")
-                    invoiceSearchMutableLiveData.value = response.body()
-                }else{
-                    invoiceSearchMutableLiveData.value = null
+            override fun onResponse(call: Call<Quotation>, response: Response<Quotation>) {
+                if (response.isSuccessful && response.body() != null) {
+                    quotationSearchMutableLiveData.value = response.body()
+                } else {
+                    quotationSearchMutableLiveData.value = null
                 }
             }
         })
     }
 
-    //Network call to search time sheet
-    private fun searchTimeSheetList(jobNo: String, apiKey: String) {
-        apiService.searchTimeSheet(jobNo, apiKey).enqueue(object :Callback<TimeSheet>{
-            override fun onFailure(call: Call<TimeSheet>, t: Throwable) {
-                Timber.e("Failed to search time sheet: ${t.message}")
-                timeSheetSearchMutableLiveData.value = null
+    //Network call to search quotation by quotation no
+    private fun searchQuotationListByQuotation(comid: String, quotationNO: String, apiKey: String) {
+
+        apiService.searchQuotationByQuta(comid, quotationNO, apiKey)
+            .enqueue(object : Callback<Quotation> {
+                override fun onFailure(call: Call<Quotation>, t: Throwable) {
+                    Timber.e("Failed to get quotation by quotation no. : ${t.message}")
+                }
+
+                override fun onResponse(call: Call<Quotation>, response: Response<Quotation>) {
+                    Timber.e("Response is: ${response.body().toString()},")
+                    quotationSearchMutableLiveData.value = response.body()
+                }
+            })
+    }
+
+    //Network call to search quotation by  customer name
+    private fun searchQuotationListByCustomer(
+        comid: String,
+        custoemerName: String,
+        apiKey: String
+    ) {
+
+        apiService.searchQuotationByName(comid, custoemerName, apiKey)
+            .enqueue(object : Callback<Quotation> {
+                override fun onFailure(call: Call<Quotation>, t: Throwable) {
+                    Timber.e("Failed to get quotation by quotation no. : ${t.message}")
+                }
+
+                override fun onResponse(call: Call<Quotation>, response: Response<Quotation>) {
+                    quotationSearchMutableLiveData.value = response.body()
+                }
+            })
+    }
+
+    //Network call to change password
+    private fun setNewPassword(comid: String, password: String, newPass: String) {
+        apiService.changePassword(comid, password, newPass).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Failed to change password")
+                changePasswordMutableLiveData.value = "Something went wrong! try again later"
             }
 
-            override fun onResponse(call: Call<TimeSheet>, response: Response<TimeSheet>) {
-                if (response.isSuccessful && response.body() != null) {
-                    timeSheetSearchMutableLiveData.value = response.body()
-                }else{
-                    timeSheetSearchMutableLiveData.value = null
-                }
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                changePasswordMutableLiveData.value = message
+            }
+        })
+    }
+
+    //Network call to upload logo
+    private fun uploadLogoToServer(comid: String, logobody: RequestBody) {
+
+        apiService.uploadCompanyLogo(comid, logobody).enqueue(object : Callback<CompanyLogo> {
+            override fun onFailure(call: Call<CompanyLogo>, t: Throwable) {
+                Timber.e("Failed to upload logo, ${t.message}")
+            }
+
+            override fun onResponse(call: Call<CompanyLogo>, response: Response<CompanyLogo>) {
+                Timber.e("Response: ${response.body().toString()}")
+                uploadCompanyLogo.value = response.body()
+            }
+        })
+    }
+
+    //Network call to upload image
+    private fun uploadImage(comid: String, logo: RequestBody) {
+
+        apiService.uploadLogo(comid, logo).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Failed uploading logo: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                Timber.e("Message sucess: ${response.body().toString()}")
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                uploadLogoMutableLiveData.value = message
+            }
+        })
+    }
+
+    //Network call to get logos
+    private fun getLogos(comid: String) {
+
+        apiService.getLogoList(comid).enqueue(object : Callback<Logos> {
+            override fun onFailure(call: Call<Logos>, t: Throwable) {
+                Timber.e("Failed to get logo list: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<Logos>, response: Response<Logos>) {
+                Timber.e("Logo list response: ${response.body().toString()}")
+                logoListMutableLiveData.value = response.body()
+            }
+        })
+    }
+
+    //Netwrok call to  get details
+    private fun getComDetails(pageId: Int) {
+
+        apiService.getDetails(pageId).enqueue(object : Callback<Detail> {
+            override fun onFailure(call: Call<Detail>, t: Throwable) {
+                Timber.e("failed to get details: ${t.message}")
+            }
+
+            override fun onResponse(call: Call<Detail>, response: Response<Detail>) {
+                detailMutableLiveData.value = response.body()
+            }
+        })
+    }
+
+    //Network call to get country list
+    private fun getCountryList() {
+        apiService.getCountryList().enqueue(object : Callback<List<Country>> {
+            override fun onFailure(call: Call<List<Country>>, t: Throwable) {
+                Timber.e("Failed to get country list : ${t.message}")
+            }
+
+            override fun onResponse(call: Call<List<Country>>, response: Response<List<Country>>) {
+                countryListMutableLiveData.value = response.body()
+            }
+        })
+    }
+
+    //Network call to delete logo
+    private fun deleteSingleLogo(comId: String, imageId: String) {
+
+        apiService.deleteLogo(comId, imageId).enqueue(object : Callback<String> {
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Timber.e("Failed to delete logo")
+                deleteLogoMutableLiveData.value = t.message
+            }
+
+            override fun onResponse(call: Call<String>, response: Response<String>) {
+                Timber.e("Message sucess: ${response.body().toString()}")
+                val jsonObject = JSONObject(response.body()!!)
+                val message = jsonObject.optString("message")
+                deleteLogoMutableLiveData.value = message
             }
         })
     }

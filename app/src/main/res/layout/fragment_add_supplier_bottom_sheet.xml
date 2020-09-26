@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/loginpage"
+    android:orientation="vertical"
+    tools:context=".ui.home.purchase.AddSupplierBottomSheetFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/add_supplier_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/supplier_date_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@android:color/white"
+        android:ems="10"
+        android:hint="@string/enter_date"
+        android:inputType="text"
+        android:drawableEnd="@drawable/ic_date_24dp"
+        android:maxLines="1"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white" />
+
+        <EditText
+            android:id="@+id/supplier_payment_method"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="@string/enter_payment_method"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            android:backgroundTint="@android:color/white"/>
+        <EditText
+            android:id="@+id/supplier_vat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:hint="@string/enter_vat"
+            android:inputType="numberDecimal"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/white"
+            android:backgroundTint="@android:color/white"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bottom_sheet_item_list_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="2"
+            tools:listitem="@layout/item_list" />
+
+        <TextView
+        android:id="@+id/supplier_add_item_tv_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:drawableEnd="@drawable/ic_add_circle_white_24dp"
+        android:padding="8dp"
+        android:text="@string/add_item"
+        android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/save_supplier_button_sheet_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="@string/save" />
+    </LinearLayout>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>
